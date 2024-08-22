@@ -26,9 +26,11 @@
 ## 截图 (过时)
 
 <!--suppress CheckImageSize -->
-<img alt="Screenshot_20240224_154259_com.muqingbfq.jpg" height="700" src="image/Screenshot_20240224_154302_com.muqingbfq.jpg" width="300"/>
-<img alt="Screenshot_20240224_154302_com.muqingbfq.jpg" height="700" src="image/Screenshot_20240224_154259_com.muqingbfq.jpg" width="300"/>
-<img alt="Screenshot_20240224_154306_com.muqingbfq.jpg" height="700" src="image/Screenshot_20240224_154306_com.muqingbfq.jpg" width="300"/>
+<img alt="Screenshot_20240224_154259_com.muqingbfq.jpg" height="300" src="image/Screenshot_20240224_154302_com.muqingbfq.jpg" width="200"/>
+
+<img alt="Screenshot_20240224_154302_com.muqingbfq.jpg" height="300" src="image/Screenshot_20240224_154259_com.muqingbfq.jpg" width="200"/>
+
+<img alt="Screenshot_20240224_154306_com.muqingbfq.jpg" height="300" src="image/Screenshot_20240224_154306_com.muqingbfq.jpg" width="200"/>
 
 ## 在使用中有任何问题，欢迎反馈给我，可以用以下联系方式跟我交流
  * QQ:1966944300
