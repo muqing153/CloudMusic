@@ -45,6 +45,7 @@ public class MP3 implements Serializable {
                 ", name='" + name + '\'' +
                 ", zz='" + zz + '\'' +
                 ", picurl=" + picurl +
+                ",url=" + url +
                 '}';
     }
 }

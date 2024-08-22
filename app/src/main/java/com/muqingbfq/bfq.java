@@ -22,7 +22,6 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.LinearInterpolator;
 import android.widget.SeekBar;
 
 import androidx.annotation.NonNull;
@@ -36,21 +35,15 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.jaeger.library.StatusBarUtil;
 import com.mpatric.mp3agic.ID3v2;
 import com.mpatric.mp3agic.Mp3File;
-import com.muqingbfq.api.FileDownloader;
 import com.muqingbfq.databinding.ActivityBfqBinding;
 import com.muqingbfq.fragment.Media;
 import com.muqingbfq.mq.AppCompatActivity;
 import com.muqingbfq.mq.gj;
 import com.muqingbfq.mq.wj;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 public class bfq extends AppCompatActivity<ActivityBfqBinding>
@@ -173,86 +166,85 @@ public class bfq extends AppCompatActivity<ActivityBfqBinding>
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         StatusBarUtil.setTransparent(this);
-
         setContentView();
-        gestureDetector = new GestureDetector(this, this);
-        setLrc();
-        rotateAnimation = ObjectAnimator.ofFloat(binding.cardview
-                , "rotation", 0f, 360f);
-        rotateAnimation.setDuration(30000); // 设置动画持续时间，单位为毫秒
-        rotateAnimation.setRepeatCount(ObjectAnimator.INFINITE); // 设置重复次数为无限
-        rotateAnimation.setInterpolator(new LinearInterpolator()); // 设置插值器，这里使用线性插值器
-        rotateAnimation.start();
-        binding.kg.setOnClickListener(v -> {
-            if (bfqkz.mt.isPlaying()) {
-                bfqkz.mt.pause();
-                setbf(false);
-            } else {
-                bfqkz.mt.start();
-                setbf(true);
-            }
-            Animation();
-        });
-        binding.xyq.setOnClickListener(v -> bfq_an.xyq());
-        binding.syq.setOnClickListener(v -> bfq_an.syq());
-
-        binding.image1.setOnClickListener(new toolbar());
-        binding.image2.setOnClickListener(new toolbar());
-
-        binding.bfqListMp3.
-                setOnClickListener(view1 -> com.muqingbfq.fragment.bflb_db.start(this));
-        binding.control.setOnClickListener(new bfq_an.control(binding.control));
-
-        binding.like.setOnClickListener(view1 -> {
-            try {
-                Gson gson = new Gson();
-                Type type = new TypeToken<List<MP3>>() {
-                }.getType();
-                List<MP3> list = gson.fromJson(wj.dqwb(wj.gd + "mp3_like.json"), type);
-                if (list == null) {
-                    list = new ArrayList<>();
-                }
-                if (bfqkz.like_bool) {
-                    list.remove(bfqkz.xm);
-                    setlike(false);
-                } else {
-                    if (!list.contains(bfqkz.xm)) {
-                        list.add(bfqkz.xm);
-                        setlike(true);
-                    }
-                }
-                bfqkz.like_bool = !bfqkz.like_bool;
-                wj.xrwb(wj.gd + "mp3_like.json", gson.toJson(list));
-            } catch (Exception e) {
-                gj.sc(e);
-            }
-        });
-        binding.download.setOnClickListener(view -> {
-            if (wj.cz(wj.mp3 + bfqkz.xm.id)) {
-                gj.ts(this, "你已经下载过这首歌曲了");
-                return;
-            }
-            if (bfqkz.xm != null) {
-                new FileDownloader(bfq.this).downloadFile(bfqkz.xm);
-            }
-        });
-        Intent intent = getIntent();
-        mp3 = (MP3) intent.getSerializableExtra("MP3");
-        new thread().start();
-        binding.fragmentBfq.setOnTouchListener((v, event) -> {
-            gestureDetector.onTouchEvent(event);
-            if (event.getAction() == MotionEvent.ACTION_UP) {
-                if (binding.getRoot().getRootView().getTranslationY() > (getResources().getDisplayMetrics().heightPixels / 2.0f)) {
-                    finish();
-                    return true;
-                }
-                ObjectAnimator animator = ObjectAnimator.ofFloat(binding.getRoot().getRootView()
-                        , "y", binding.getRoot().getRootView().getTranslationY(), 0);
-                animator.setDuration(500);
-                animator.start();
-            }
-            return true;
-        });
+//        gestureDetector = new GestureDetector(this, this);
+//        setLrc();
+//        rotateAnimation = ObjectAnimator.ofFloat(binding.cardview
+//                , "rotation", 0f, 360f);
+//        rotateAnimation.setDuration(30000); // 设置动画持续时间，单位为毫秒
+//        rotateAnimation.setRepeatCount(ObjectAnimator.INFINITE); // 设置重复次数为无限
+//        rotateAnimation.setInterpolator(new LinearInterpolator()); // 设置插值器，这里使用线性插值器
+//        rotateAnimation.start();
+//        binding.kg.setOnClickListener(v -> {
+//            if (bfqkz.mt.isPlaying()) {
+//                bfqkz.mt.pause();
+//                setbf(false);
+//            } else {
+//                bfqkz.mt.start();
+//                setbf(true);
+//            }
+//            Animation();
+//        });
+//        binding.xyq.setOnClickListener(v -> bfq_an.xyq());
+//        binding.syq.setOnClickListener(v -> bfq_an.syq());
+//
+//        binding.image1.setOnClickListener(new toolbar());
+//        binding.image2.setOnClickListener(new toolbar());
+//
+//        binding.bfqListMp3.
+//                setOnClickListener(view1 -> com.muqingbfq.fragment.bflb_db.start(this));
+//        binding.control.setOnClickListener(new bfq_an.control(binding.control));
+//
+//        binding.like.setOnClickListener(view1 -> {
+//            try {
+//                Gson gson = new Gson();
+//                Type type = new TypeToken<List<MP3>>() {
+//                }.getType();
+//                List<MP3> list = gson.fromJson(wj.dqwb(wj.gd + "mp3_like.json"), type);
+//                if (list == null) {
+//                    list = new ArrayList<>();
+//                }
+//                if (bfqkz.like_bool) {
+//                    list.remove(bfqkz.xm);
+//                    setlike(false);
+//                } else {
+//                    if (!list.contains(bfqkz.xm)) {
+//                        list.add(bfqkz.xm);
+//                        setlike(true);
+//                    }
+//                }
+//                bfqkz.like_bool = !bfqkz.like_bool;
+//                wj.xrwb(wj.gd + "mp3_like.json", gson.toJson(list));
+//            } catch (Exception e) {
+//                gj.sc(e);
+//            }
+//        });
+//        binding.download.setOnClickListener(view -> {
+//            if (wj.cz(wj.mp3 + bfqkz.xm.id)) {
+//                gj.ts(this, "你已经下载过这首歌曲了");
+//                return;
+//            }
+//            if (bfqkz.xm != null) {
+//                new FileDownloader(bfq.this).downloadFile(bfqkz.xm);
+//            }
+//        });
+//        Intent intent = getIntent();
+//        mp3 = (MP3) intent.getSerializableExtra("MP3");
+//        new thread().start();
+//        binding.fragmentBfq.setOnTouchListener((v, event) -> {
+//            gestureDetector.onTouchEvent(event);
+//            if (event.getAction() == MotionEvent.ACTION_UP) {
+//                if (binding.getRoot().getRootView().getTranslationY() > (getResources().getDisplayMetrics().heightPixels / 2.0f)) {
+//                    finish();
+//                    return true;
+//                }
+//                ObjectAnimator animator = ObjectAnimator.ofFloat(binding.getRoot().getRootView()
+//                        , "y", binding.getRoot().getRootView().getTranslationY(), 0);
+//                animator.setDuration(500);
+//                animator.start();
+//            }
+//            return true;
+//        });
 
     }
 

@@ -3,6 +3,7 @@ package com.muqingbfq;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Application;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -14,7 +15,11 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.media3.session.MediaController;
+import androidx.media3.session.SessionToken;
 
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.google.gson.reflect.TypeToken;
 import com.muqingbfq.login.visitor;
 import com.muqingbfq.mq.FloatingLyricsService;
@@ -37,6 +42,9 @@ public class main extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+
+
         if (wj.filesdri == null) {
             new wj(this);
         }

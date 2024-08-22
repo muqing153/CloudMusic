@@ -634,12 +634,7 @@ open class LyricViewX : EaseView, LyricViewXInterface {
                     return super.onDown(e)
                 }
 
-                override fun onScroll(
-                        e1: MotionEvent,
-                        e2: MotionEvent,
-                        distanceX: Float,
-                        distanceY: Float
-                ): Boolean {
+                override fun onScroll(e1: MotionEvent?, e2: MotionEvent, distanceX: Float, distanceY: Float): Boolean {
                     if (hasLrc()) {
                         // 如果没显示 Timeline 的时候，distanceY 一段距离后再显示时间线
                         if (!isShowTimeline.value && abs(distanceY) >= 10) {

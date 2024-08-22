@@ -95,30 +95,28 @@ public class bfqkz extends MediaBrowserServiceCompat {
 
     @Override
     public void onCreate() {
-        super.onCreate();
-        Intent intent = new Intent(Intent.ACTION_MAIN);
-        intent.addCategory(Intent.CATEGORY_LAUNCHER);
-        intent.setComponent(new ComponentName(this, home.class));//用ComponentName得到class对象
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);// 关键的一步，设置启动模式，两种情况
-        pendingIntent = com.muqingbfq.mq.NotificationManagerCompat.getActivity(this, intent);
-        com.muqingbfq.api.playlist.hq_hc(bfqkz.lishi_list);
-        new BluetoothMusicController(this);
-        mSession = new MediaSessionCompat(this, "MediaSessionCompat",
-                home.componentName, pendingIntent);
-        playback = new PlaybackStateCompat.Builder();
-        playback.setState(PlaybackStateCompat.STATE_NONE, 0, 1.0f)
-                .build();
-        mSession.setCallback(new callback());
-        mSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS | MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
-
-        playback.setActions(PlaybackStateCompat.ACTION_PLAY);
-        playback.setActions(PlaybackStateCompat.ACTION_STOP);
-
-        mSession.setPlaybackState(playback.build());
-        setSessionToken(mSession.getSessionToken());
-        mSession.setActive(true);
-        notify = new com.muqingbfq.mq.NotificationManagerCompat(this);
+//        super.onCreate();
+//        Intent intent = new Intent(Intent.ACTION_MAIN);
+//        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+//        intent.setComponent(new ComponentName(this, home.class));//用ComponentName得到class对象
+//        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+//                | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);// 关键的一步，设置启动模式，两种情况
+//        pendingIntent = com.muqingbfq.mq.NotificationManagerCompat.getActivity(this, intent);
+//        com.muqingbfq.api.playlist.hq_hc(bfqkz.lishi_list);
+//        new BluetoothMusicController(this);
+//        playback = new PlaybackStateCompat.Builder();
+//        playback.setState(PlaybackStateCompat.STATE_NONE, 0, 1.0f)
+//                .build();
+//        mSession.setCallback(new callback());
+//        mSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS | MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
+//
+//        playback.setActions(PlaybackStateCompat.ACTION_PLAY);
+//        playback.setActions(PlaybackStateCompat.ACTION_STOP);
+//
+//        mSession.setPlaybackState(playback.build());
+//        setSessionToken(mSession.getSessionToken());
+//        mSession.setActive(true);
+//        notify = new com.muqingbfq.mq.NotificationManagerCompat(this);
     }
 
     class callback extends MediaSessionCompat.Callback {

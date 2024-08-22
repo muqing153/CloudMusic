@@ -1,27 +1,32 @@
 package com.muqingbfq.adapter;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
-import android.util.TypedValue;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.media3.common.MediaItem;
+import androidx.media3.common.MediaMetadata;
+import androidx.media3.common.Player;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.muqingbfq.MP3;
+import com.muqingbfq.PlaybackService;
 import com.muqingbfq.R;
 import com.muqingbfq.api.url;
 import com.muqingbfq.bfqkz;
 import com.muqingbfq.databinding.ListMp3ImageBinding;
+import com.muqingbfq.main;
 import com.muqingbfq.mq.VH;
 import com.muqingbfq.mq.gj;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class AdapterMp3 extends RecyclerView.Adapter<VH<ListMp3ImageBinding>> {
     public List<MP3> list = new ArrayList<>();
@@ -33,32 +38,80 @@ public class AdapterMp3 extends RecyclerView.Adapter<VH<ListMp3ImageBinding>> {
                 LayoutInflater.from(parent.getContext()), parent, false));
     }
 
-    int position_wei;
     @SuppressLint("NotifyDataSetChanged")
     @Override
     public void onBindViewHolder(@NonNull VH<ListMp3ImageBinding> holder, int position) {
         MP3 x = list.get(position);
         holder.binding.wb1.setText(x.name);
         holder.binding.zz.setText(x.zz);
-        if (bfqkz.xm != null && x.id.equals(bfqkz.xm.id)) {
-            holder.binding.getRoot().setCardBackgroundColor(
-                    gj.getThemeColor(holder.itemView.getContext(), com.google.android.material.R.attr.colorSurfaceVariant));
-        } else {
-            holder.binding.getRoot().setCardBackgroundColor(ContextCompat
-                    .getColor(holder.itemView.getContext(), android.R.color.transparent));
+        holder.binding.getRoot().setCardBackgroundColor(ContextCompat
+                .getColor(holder.itemView.getContext(), android.R.color.transparent));
+        if (PlaybackService.mediaSession != null) {
+            Player player = PlaybackService.mediaSession.getPlayer();
+            MediaItem currentMediaItem = player.getCurrentMediaItem();
+
+            if (currentMediaItem != null) {
+                String mediaId = currentMediaItem.mediaId;
+                if (mediaId.equals(x.id)) {
+                    holder.binding.getRoot().setCardBackgroundColor(
+                            gj.getThemeColor(holder.itemView.getContext(), com.google.android.material.R.attr.colorSurfaceVariant));
+                }
+            }
         }
         holder.itemView.setOnClickListener(view -> {
-            if (bfqkz.xm == null || !bfqkz.xm.id.equals(x.id)) {
-                bfqkz.xm = x;
-                new url(x);
-                notifyDataSetChanged();
+            if (PlaybackService.mediaSession == null) {
+                return;
+            }
+            Player player = PlaybackService.mediaSession.getPlayer();
+            new Thread(){
+                @Override
+                public void run() {
+                    super.run();
+                    MP3 hq = url.hq(x);
+//                    gj.sc(hq.url);
 
-            } else if (!bfqkz.mt.isPlaying()) {
-                bfqkz.mt.start();
-            }
-            if (!bfqkz.list.contains(x)) {
-                bfqkz.list.add(0, x);
-            }
+                    main.handler.post(() -> {
+                        for (int i = 0; i < player.getMediaItemCount(); i++) {
+                            MediaItem existingItem = player.getMediaItemAt(i);
+                            if (Objects.equals(existingItem.mediaId, x.id)) {
+                                player.seekTo(i, 0);
+                                notifyDataSetChanged();
+                                return;
+                            }
+                        }
+// 创建媒体的元数据（如标题、描述、图片等）
+                        MediaMetadata mediaMetadata = new MediaMetadata.Builder()
+                                .setTitle(hq.name)
+                                .setArtist(hq.zz)
+                                .setAlbumTitle(hq.zz)
+                                .setArtworkUri(Uri.parse(hq.picurl)) // 图片URL
+                                .build();
+// 创建带有元数据的 MediaItem
+                        MediaItem mediaItem = new MediaItem.Builder()
+                                .setUri(hq.url) // 设置媒体的URL
+                                .setMediaId(x.id) // 设置媒体的唯一ID
+                                .setMediaMetadata(mediaMetadata) // 将元数据添加到 MediaItem
+                                .build();
+                        player.addMediaItem(0, mediaItem);
+                        player.prepare();
+                        player.seekTo(0, 0); // 跳到第一个媒体项
+                        player.play();
+                        notifyDataSetChanged();
+                    });
+                }
+            }.start();
+
+//            if (bfqkz.xm == null || !bfqkz.xm.id.equals(x.id)) {
+//                bfqkz.xm = x;
+//                new url(x);
+//                notifyDataSetChanged();
+//
+//            } else if (!bfqkz.mt.isPlaying()) {
+//                bfqkz.mt.start();
+//            }
+//            if (!bfqkz.list.contains(x)) {
+//                bfqkz.list.add(0, x);
+//            }
 //                    bfqkz.list.addAll(list);
 //                    bfq.start(getContext());
         });

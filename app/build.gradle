@@ -12,7 +12,7 @@ android {
         }
     }
     namespace 'com.muqingbfq'
-    compileSdk 33
+    compileSdk 34
     defaultConfig {
         applicationId "com.muqingbfq"
         minSdk 23
@@ -75,4 +75,9 @@ dependencies {
     //歌词组件库
     api "com.github.cy745:EaseView:e11c3208a9"
     api "androidx.dynamicanimation:dynamicanimation-ktx:1.0.0-alpha03"
+
+    implementation "androidx.media3:media3-exoplayer:1.4.0"
+    implementation "androidx.media3:media3-ui:1.4.0"
+    implementation "androidx.media3:media3-common:1.4.0"
+    implementation "androidx.media3:media3-session:1.4.0"
 }

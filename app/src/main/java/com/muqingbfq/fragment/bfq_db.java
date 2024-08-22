@@ -1,6 +1,7 @@
 package com.muqingbfq.fragment;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.GestureDetector;
@@ -11,37 +12,43 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
+import androidx.media3.common.MediaItem;
+import androidx.media3.common.MediaMetadata;
+import androidx.media3.common.Player;
+import androidx.media3.common.util.Util;
 
 import com.muqingbfq.MP3;
+import com.muqingbfq.PlaybackService;
 import com.muqingbfq.R;
+import com.muqingbfq.activity.Music;
 import com.muqingbfq.bfq;
 import com.muqingbfq.bfq_an;
 import com.muqingbfq.bfqkz;
 import com.muqingbfq.databinding.FragmentBfqDbBinding;
+import com.muqingbfq.mq.Fragment;
+import com.muqingbfq.mq.gj;
 
 import java.util.Objects;
 
-public class bfq_db extends Fragment implements GestureDetector.OnGestureListener {
-    FragmentBfqDbBinding binding;
+public class bfq_db extends Fragment<FragmentBfqDbBinding> implements GestureDetector.OnGestureListener {
     private GestureDetector gestureDetector;
+
+    @Override
+    protected FragmentBfqDbBinding inflateViewBinding(LayoutInflater inflater, ViewGroup container) {
+        return FragmentBfqDbBinding.inflate(inflater, container, false);
+    }
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        binding = FragmentBfqDbBinding.inflate(inflater, container, false);
+    public void setUI(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         // 获取当前活动的主题
-        binding.kg.setOnClickListener(v -> {
-            if (bfqkz.mt.isPlaying()) {
-                bfqkz.mt.pause();
-            } else {
-                bfqkz.mt.start();
-            }
-            setkg(bfqkz.mt.isPlaying());
-        });
         binding.txb.setOnClickListener(view -> bflb_db.start(getContext()));
         gestureDetector = new GestureDetector(getContext(), this);
+        binding.kg.setOnClickListener(view -> {
+            if (PlaybackService.mediaSession != null) {
+                Util.handlePlayPauseButtonAction(PlaybackService.mediaSession.getPlayer());
+            }
+        });
         binding.getRoot().setOnTouchListener((view, motionEvent) -> {
             gestureDetector.onTouchEvent(motionEvent);
             if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
@@ -51,60 +58,53 @@ public class bfq_db extends Fragment implements GestureDetector.OnGestureListene
 //                binding.getRoot().setAlpha(0.2f);
             }
             return false;
+
         });
-        return binding.getRoot();
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        handler.post(runnable);
-    }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        handler.removeCallbacks(runnable);
+    private void setPlay() {
+        PlaybackService.mediaSession.getPlayer().addListener(new Player.Listener() {
+            @Override
+            public void onEvents(@NonNull Player player, @NonNull Player.Events events) {
+                Player.Listener.super.onEvents(player, events);
+                boolean shouldShowPlayButton = Util.shouldShowPlayButton(player);
+                gj.sc("播放状态" + shouldShowPlayButton);
+                binding.kg.setImageResource(shouldShowPlayButton ? R.drawable.zt : R.drawable.bf);
+
+                // 获取当前播放的 MediaItem
+                MediaItem currentMediaItem = player.getCurrentMediaItem();
+                if (currentMediaItem != null) {
+
+                    MediaMetadata metadata = currentMediaItem.mediaMetadata;
+                    String title = metadata.title != null ? metadata.title.toString() : "没有名字的音乐？";
+                    String artist = metadata.artist != null ? metadata.artist.toString() : "未知艺术家";
+                    binding.textview1.setText(title);
+                    binding.textview2.setText(artist);
+
+                    binding.getRoot().setVisibility(View.VISIBLE);
+                } else {
+                    binding.getRoot().setVisibility(View.GONE);
+                }
+
+            }
+        });
     }
 
     MP3 mp3;
-    boolean isPlaying = false, isvisible = false;
+    boolean isPlaying = false;
     Handler handler = new Handler();
     Runnable runnable = new Runnable() {
         @Override
         public void run() {
-            if (!Objects.equals(mp3, bfqkz.xm)) {
-                mp3 = bfqkz.xm;
-                setname(mp3.name, " - " + mp3.zz);
+            if (PlaybackService.mediaSession != null) {
+                setPlay();
+                handler.removeCallbacks(this);
+            } else {
+                handler.postDelayed(this, 1000);
             }
-            if (bfqkz.mt.isPlaying() != isPlaying) {
-                setkg(bfqkz.mt.isPlaying());
-            }
-            if (isvisible != bfqkz.list.isEmpty()) {
-                isvisible = bfqkz.list.isEmpty();
-                if (isvisible) {
-                    binding.getRoot().setVisibility(View.GONE);
-                } else {
-                    binding.getRoot().setVisibility(View.VISIBLE);
-                }
-            }
-            handler.postDelayed(this, 1000);
         }
     };
-
-    public void setkg(boolean bool) {
-        if (bool) {
-            binding.kg.setImageResource(R.drawable.bf);
-        } else {
-            binding.kg.setImageResource(R.drawable.zt);
-        }
-        isPlaying = bool;
-    }
-
-    public void setname(String a,String b) {
-        binding.textview1.setText(a);
-        binding.textview2.setText(b);
-    }
 
     @Override
     public boolean onDown(@NonNull MotionEvent motionEvent) {
@@ -117,7 +117,10 @@ public class bfq_db extends Fragment implements GestureDetector.OnGestureListene
 
     @Override
     public boolean onSingleTapUp(@NonNull MotionEvent motionEvent) {
-        bfq.startactivity(getContext(), bfqkz.xm);
+//        bfq.startactivity(getContext(), bfqkz.xm);
+        Intent intent = new Intent(getContext(), Music.class);
+        intent.putExtra("mp3", bfqkz.xm);
+        getContext().startActivity(intent);
         return true;
     }
 
