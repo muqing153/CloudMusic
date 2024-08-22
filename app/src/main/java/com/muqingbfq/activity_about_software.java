@@ -51,18 +51,6 @@ public class activity_about_software extends AppCompatActivity<ActivityAboutSoft
         setSupportActionBar(findViewById(R.id.toolbar));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         findViewById(R.id.button1).setOnClickListener(view -> {
-            new Thread() {
-                @Override
-                public void run() {
-                    super.run();
-                    int jianchagengxin = gj.jianchagengxin(activity_about_software.this);
-                    if (jianchagengxin == 400) {
-                        gj.xcts(activity_about_software.this, "无网络");
-                    } else if (jianchagengxin == 0) {
-                        gj.xcts(activity_about_software.this, "已经是最新的客户端了");
-                    }
-                }
-            }.start();
         });
         TextView viewById = findViewById(R.id.text1);
         AssetManager assets = getAssets();

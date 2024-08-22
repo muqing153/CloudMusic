@@ -103,8 +103,6 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
             );
             mBrowser.connect();
         }
-        //检测更新
-        new gj.jianchagengxin(home.this);
         List<Fragment> list = new ArrayList<>();
         list.add(new gd_adapter());
         list.add(new wode());

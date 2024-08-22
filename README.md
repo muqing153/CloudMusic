@@ -4,7 +4,7 @@
 * 内置适配Android13的通知栏 (不完善)
 * 对接了网易云的歌单，歌曲，搜索，二维码登录等其余功能。
 * main.java-内api变量是网易云SDK后台服务器地址(可变更)
-* http 是我服务器php接口的地址用于软件更新用或者其他功能(个根据需要做出必须的更改或者删除)
+* 由于服务器到期软件只进行网易云Api对接，无法进行内置的更新，更新请在Github下载
 
 ## 进度
 * UI
@@ -24,9 +24,11 @@
 
   
 ## 截图 (过时)
-<img alt="Screenshot_20240224_154259_com.muqingbfq.jpg" height="700" src="image%2FScreenshot_20240224_154259_com.muqingbfq.jpg" width="300"/>
-<img alt="Screenshot_20240224_154302_com.muqingbfq.jpg" height="700" src="image%2FScreenshot_20240224_154302_com.muqingbfq.jpg" width="300"/>
-<img alt="Screenshot_20240224_154306_com.muqingbfq.jpg" height="700" src="image%2FScreenshot_20240224_154306_com.muqingbfq.jpg" width="300"/>
+
+<!--suppress CheckImageSize -->
+<img alt="Screenshot_20240224_154259_com.muqingbfq.jpg" height="700" src="image/Screenshot_20240224_154302_com.muqingbfq.jpg" width="300"/>
+<img alt="Screenshot_20240224_154302_com.muqingbfq.jpg" height="700" src="image/Screenshot_20240224_154259_com.muqingbfq.jpg" width="300"/>
+<img alt="Screenshot_20240224_154306_com.muqingbfq.jpg" height="700" src="image/Screenshot_20240224_154306_com.muqingbfq.jpg" width="300"/>
 
 ## 在使用中有任何问题，欢迎反馈给我，可以用以下联系方式跟我交流
  * QQ:1966944300

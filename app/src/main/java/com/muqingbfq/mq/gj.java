@@ -118,50 +118,6 @@ public class gj {
         return false;  // 默认为流量网络
     }
 
-    public static class jianchagengxin extends Thread {
-        Context context;
-
-        public jianchagengxin(Context context) {
-            this.context = context;
-            if (!wj.cz(wj.filesdri + "gx.mq")) {
-                start();
-            }
-        }
-
-        @Override
-        public void run() {
-            super.run();
-            jianchagengxin(context);
-        }
-    }
-
-    public static int jianchagengxin(Context context) {
-        try {
-            String versionName = context.getPackageManager()
-                    .getPackageInfo(context.getPackageName(), 0).versionName;
-            String hq = wl.get(main.http + "/muqingbfq?bb=" + versionName);
-            final JSONObject jsonObject = new JSONObject(hq);
-            boolean code = jsonObject.getInt("code") == 1;
-            String msg = jsonObject.getString("msg");
-            if (code) {
-                String url = jsonObject.getString("url");
-                String bb = jsonObject.getString("bb");
-                main.handler.post(() -> new MaterialAlertDialogBuilder(context)
-                        .setTitle("更新" + bb)
-                        .setMessage(msg)
-                        .setNegativeButton("取消", null)
-                        .setPositiveButton("更新", (dialogInterface, i) -> context.startActivity(new Intent(Intent.ACTION_VIEW,
-                                Uri.parse(url))))
-                        .show());
-            }
-            //1表示需要更新
-            return code ? 1 : 0;
-        } catch (Exception e) {
-            sc(e);
-        }
-        return 400;
-    }
-
     public static void tcjp(EditText editText) {
         editText.requestFocus();//获取焦点
         InputMethodManager imm = (InputMethodManager)

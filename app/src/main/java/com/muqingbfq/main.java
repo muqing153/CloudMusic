@@ -11,7 +11,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -31,7 +30,7 @@ public class main extends Application {
     public static Application application;
     public static Handler handler = new Handler(Looper.getMainLooper());
     public static String api = "https://api.csm.sayqz.com";
-    public static String http = "https://www.muqingkaifazhe.top/muqingbfq.php";
+//    public static String http = "https://www.muqingkaifazhe.top/muqingbfq.php"; 过时的更新检测
     public static SharedPreferences sp;
     public static SharedPreferences.Editor edit;
     private int count = 0;
