@@ -1,0 +1,53 @@
+<resources>
+    <string name="app_name">云音乐</string>
+    <string name="sz">设置</string>
+    <string name="zz">作者</string>
+    <string name="name">名称</string>
+    <string name="bflb">播放列表</string>
+    <string name="login">登录</string>
+    <string name="user">账号</string>
+
+    <string name="enroll">注册</string>
+    <string name="password">密码</string>
+    <string name="channel_id">channel_id</string>
+    <string name="fx">分享</string>
+    <string name="hdct">滑动窗体</string>
+    <string name="cookie">Cookie</string>
+    <string name="tuichudenglu">退出登录</string>
+    <string name="search">搜索</string>
+    <string name="about">关于软件</string>
+    <string name="juanzeng">投币</string>
+    <string name="fuwuzhongxing">开源地址</string>
+    <string name="shezhizhongxing">设置中心</string>
+    <string name="chucunqingli">储存清理</string>
+    <string name="guanfangliaoqun">官方聊群</string>
+    <string name="lianxizuozhe">联系作者</string>
+    <string name="guanyuruanjiang">关于软件</string>
+    <string name="deleat">删除</string>
+    <string name="lishijilu">历史记录</string>
+    <string name="_00_00">00:00</string>
+    <string name="music">音乐</string>
+    <string name="Playlist">歌单</string>
+    <string name="quxiao">取消</string>
+    <string name="jianchagegnxin">检查更新</string>
+    <string name="endapp">关闭软件</string>
+    <string name="nullPlaylists">暂无歌单</string>
+    <string name="Downloadplaylist">下载歌单</string>
+    <string name="loadnull">加载失败</string>
+
+    <string-array name="gd_list">
+        <item>下载歌单</item>
+        <item>收藏歌单（不可用)</item>
+        <item>删除歌单</item>
+    </string-array>
+    <string-array name="xingbie">
+        <item>男</item>
+        <item>女</item>
+    </string-array>
+
+    <string-array name="theme">
+        <item>跟随系统</item>
+        <item>浅色模式</item>
+        <item>深色模式</item>
+    </string-array>
+</resources>

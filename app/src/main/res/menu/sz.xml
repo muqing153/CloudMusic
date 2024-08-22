@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/a"
+        android:icon="@drawable/fuwuzhongxing"
+        android:title="@string/fuwuzhongxing" />
+    <item
+        android:id="@+id/b"
+        android:icon="@drawable/set_up"
+        android:title="@string/shezhizhongxing" />
+
+    <item
+        android:id="@+id/c"
+        android:icon="@drawable/delete"
+        android:title="@string/chucunqingli" />
+
+    <item
+        android:id="@+id/d"
+        android:icon="@drawable/liaoqun"
+        android:title="@string/guanfangliaoqun" />
+
+    <item
+        android:id="@+id/e"
+        android:icon="@drawable/qq"
+        android:title="@string/lianxizuozhe" />
+
+    <item
+        android:id="@+id/f"
+        android:icon="@drawable/app_warning"
+        android:title="@string/guanyuruanjiang" />
+
+    <item
+        android:id="@+id/g"
+        android:icon="@drawable/user_end"
+        android:title="@string/endapp" />
+
+</menu>

@@ -1,0 +1,9 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="26dp"/>
+            <stroke android:width="1dp" android:color="@color/text_tm"/>
+            <!-- 边框宽度和颜色 -->
+        </shape>
+    </item>
+</selector>
