@@ -64,7 +64,9 @@
         <activity android:name=".sz" />
         <activity android:name=".mq.llq" />
         <activity android:name=".yc" />
-        <activity android:name=".activity.Music" />
+        <activity android:name=".activity.Music"
+            android:configChanges="keyboardHidden|screenSize"
+            android:theme="@style/fragment_dialog"  />
 
         <service
             android:name=".bfqkz"

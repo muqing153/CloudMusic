@@ -79,22 +79,11 @@ public class AdapterMp3 extends RecyclerView.Adapter<VH<ListMp3ImageBinding>> {
                                 return;
                             }
                         }
-// 创建媒体的元数据（如标题、描述、图片等）
-                        MediaMetadata mediaMetadata = new MediaMetadata.Builder()
-                                .setTitle(hq.name)
-                                .setArtist(hq.zz)
-                                .setAlbumTitle(hq.zz)
-                                .setArtworkUri(Uri.parse(hq.picurl)) // 图片URL
-                                .build();
-// 创建带有元数据的 MediaItem
-                        MediaItem mediaItem = new MediaItem.Builder()
-                                .setUri(hq.url) // 设置媒体的URL
-                                .setMediaId(x.id) // 设置媒体的唯一ID
-                                .setMediaMetadata(mediaMetadata) // 将元数据添加到 MediaItem
-                                .build();
-                        player.addMediaItem(0, mediaItem);
+                        PlaybackService.list.add(hq);
+                        PlaybackService.ListSave();
+                        player.addMediaItem(PlaybackService.GetMp3(hq));
                         player.prepare();
-                        player.seekTo(0, 0); // 跳到第一个媒体项
+                        player.seekTo(player.getMediaItemCount(), 0); // 跳到第一个媒体项
                         player.play();
                         notifyDataSetChanged();
                     });

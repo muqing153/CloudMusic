@@ -53,25 +53,23 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
                 new SessionToken(this, new ComponentName(this, PlaybackService.class));
         ListenableFuture<MediaController> controllerFuture =
                 new MediaController.Builder(this, sessionToken).buildAsync();
-        controllerFuture.addListener(() -> {
-            // Call controllerFuture.get() to retrieve the MediaController.
-            // MediaController implements the Player interface, so it can be
-            // attached to the PlayerView UI component.
-            gj.sc("aaaaaa"+this);
+        controllerFuture.addListener(new Runnable() {
+            @Override
+            public void run() {
 
-//            playerView.setPlayer(controllerFuture.get());
+            }
         }, MoreExecutors.directExecutor());
-        if (PlaybackService.mediaSession!=null){
-            Player player = PlaybackService.mediaSession.getPlayer();
-            File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "26096272");
-            // 设置媒体源（音乐文件）
-            MediaItem mediaItem = MediaItem.fromUri(file.getPath()); // 替换为你的音乐文件路径或 URL
-            player.setMediaItem(mediaItem);
-
-            // 准备并开始播放
-            player.prepare();
-            player.play();
-        }
+//        if (PlaybackService.mediaSession!=null){
+//            Player player = PlaybackService.mediaSession.getPlayer();
+//            File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "26096272");
+//            // 设置媒体源（音乐文件）
+//            MediaItem mediaItem = MediaItem.fromUri(file.getPath()); // 替换为你的音乐文件路径或 URL
+//            player.setMediaItem(mediaItem);
+//
+//            // 准备并开始播放
+//            player.prepare();
+//            player.play();
+//        }
 
         wl.Cookie = main.sp.getString("Cookie", "");
         if (wl.Cookie.isEmpty()) {
@@ -165,11 +163,7 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
         super.onPause();
         //在销毁 Activity 之前，系统会先调用 onDestroy()。系统调用此回调的原因如下：
         // 保存列表数据
-//        SharedPreferences sharedPreferences = getSharedPreferences("list", Context.MODE_PRIVATE);
-//        SharedPreferences.Editor editor = sharedPreferences.edit();
-//        String jsonList = new com.google.gson.Gson().toJson(bfqkz.list);
-//        editor.putString("listData", jsonList);
-//        editor.apply();
+
     }
 
     @Override

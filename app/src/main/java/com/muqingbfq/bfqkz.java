@@ -2,7 +2,6 @@ package com.muqingbfq;
 
 import android.annotation.SuppressLint;
 import android.app.PendingIntent;
-import android.content.ComponentName;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -18,7 +17,6 @@ import androidx.annotation.Nullable;
 import androidx.media.MediaBrowserServiceCompat;
 
 import com.muqingbfq.api.url;
-import com.muqingbfq.mq.BluetoothMusicController;
 import com.muqingbfq.mq.gj;
 
 import java.util.ArrayList;

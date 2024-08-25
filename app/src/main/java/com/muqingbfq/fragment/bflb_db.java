@@ -1,21 +1,24 @@
 package com.muqingbfq.fragment;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
-import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.media3.common.C;
+import androidx.media3.common.MediaItem;
+import androidx.media3.common.Player;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.common.base.Strings;
 import com.muqingbfq.MP3;
+import com.muqingbfq.PlaybackService;
 import com.muqingbfq.R;
 import com.muqingbfq.api.url;
 import com.muqingbfq.bfqkz;
@@ -24,26 +27,43 @@ import com.muqingbfq.databinding.ListMp3ABinding;
 import com.muqingbfq.list.MyViewHoder;
 import com.muqingbfq.yc;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 public class bflb_db extends BottomSheetDialog {
     public static RecyclerView.Adapter<MyViewHoder> adapter;
     FragmentBflbDbBinding binding;
+
+    private void ingList() {
+
+        if (PlaybackService.mediaSession == null) {
+            return;
+        }
+        Player player = PlaybackService.mediaSession.getPlayer();
+        List<MediaItem> list = new ArrayList<>();
+        int mediaItemCount = player.getMediaItemCount();
+        for (int i = 0; i < mediaItemCount; i++) {
+            list.add(player.getMediaItemAt(i));
+        }
+        binding.lb.setAdapter(new spq(list));
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = FragmentBflbDbBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         try {
-            binding.lb.setAdapter(new spq());
+            ingList();
             if (bfqkz.xm != null) {
                 binding.lb.smoothScrollToPosition(getI());
             }
             binding.textView.setOnClickListener(v -> {
-                        if (bfqkz.xm != null) {
-                            binding.lb.smoothScrollToPosition(getI());
-                        }
-                    });
+                if (bfqkz.xm != null) {
+                    binding.lb.smoothScrollToPosition(getI());
+                }
+            });
             binding.sc.setOnClickListener(view -> new MaterialAlertDialogBuilder(getContext())
                     .setTitle("清空播放列表")
                     .setPositiveButton("确定", (dialogInterface, i) -> {
@@ -57,10 +77,10 @@ public class bflb_db extends BottomSheetDialog {
                     ItemTouchHelper.UP | ItemTouchHelper.DOWN, 0) {
                 @Override
                 public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
-                    int fromPosition = viewHolder.getAdapterPosition();
-                    int toPosition = target.getAdapterPosition();
+                    int fromPosition = viewHolder.getAbsoluteAdapterPosition();
+                    int toPosition = target.getAbsoluteAdapterPosition();
                     // 在这里处理数据集的移动
-                    Collections.swap(bfqkz.list,fromPosition,toPosition);
+                    Collections.swap(bfqkz.list, fromPosition, toPosition);
                     adapter.notifyItemMoved(fromPosition, toPosition);
                     return true; // 返回true表示已经处理了拖动
                 }
@@ -84,6 +104,7 @@ public class bflb_db extends BottomSheetDialog {
         }
         return i;
     }
+
     public bflb_db(Context context) {
         super(context);
     }
@@ -93,41 +114,54 @@ public class bflb_db extends BottomSheetDialog {
     }
 
     private class spq extends RecyclerView.Adapter<MyViewHoder> {
-        public spq() {
+        List<MediaItem> list;
+
+        public spq(List<MediaItem> list) {
+            this.list = list;
             adapter = this;
         }
+
         @NonNull
         @Override
         public MyViewHoder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             return new MyViewHoder(ListMp3ABinding.
-                    inflate(getLayoutInflater(),parent,false));
+                    inflate(getLayoutInflater(), parent, false));
         }
+
+        @SuppressLint("NotifyDataSetChanged")
         @Override
         public void onBindViewHolder(@NonNull MyViewHoder holder, int position) {
-            MP3 x = bfqkz.list.get(position);
-            holder.bindingA.name.setText(x.name);
-            holder.bindingA.zz.setText(String.format(" · %s", x.zz));
+            MediaItem mediaItem = list.get(position);
+            holder.bindingA.name.setText(mediaItem.mediaMetadata.title);
+            holder.bindingA.zz.setText(String.format(" · %s", mediaItem.mediaMetadata.artist));
             int color = ContextCompat.getColor(holder.getContext(), R.color.text);
-            if (bfqkz.xm != null && x.id.equals(bfqkz.xm.id)) {
-                color = ContextCompat.getColor(holder.getContext(), R.color.text_cz);
+            //获取当前播放的项目
+            if (PlaybackService.mediaSession != null) {
+
+                if (mediaItem.mediaId.equals(PlaybackService.mediaSession.getPlayer().getCurrentMediaItem().mediaId)) {
+                    color = ContextCompat.getColor(holder.getContext(), R.color.text_cz);
+                }
             }
             holder.bindingA.name.setTextColor(color);
             holder.bindingA.zz.setTextColor(color);
             holder.itemView.setOnClickListener(view -> {
-                if (bfqkz.xm != x) {
-                    bfqkz.xm = x;
-                    new url(x);
+                if (PlaybackService.mediaSession != null) {
+                    PlaybackService.mediaSession.getPlayer().seekTo(holder.getAbsoluteAdapterPosition(),0);
+                    PlaybackService.mediaSession.getPlayer().prepare();
+                    PlaybackService.mediaSession.getPlayer().play();
+                    notifyDataSetChanged();
                 }
             });
             holder.bindingA.delete.setOnClickListener(v -> {
-                bfqkz.list.remove(holder.getAdapterPosition());
-                notifyItemRemoved(holder.getAdapterPosition());
+                list.remove(holder.getAbsoluteAdapterPosition());
+                notifyItemRemoved(holder.getAbsoluteAdapterPosition());
             });
         }
+
         @Override
         public int getItemCount() {
 //            binding.textView.setText(String.valueOf(bfqkz.list.size()));
-            return bfqkz.list.size();
+            return list.size();
         }
     }
 

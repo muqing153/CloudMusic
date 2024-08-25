@@ -9,7 +9,12 @@ public class MP3 implements Serializable {
     public String id, name, zz, url;
     //    音乐的贴图
     public String picurl;
+    public MP3(){}
 
+
+    public MP3(String id) {
+        this.id = id;
+    }
 
     public MP3(String id, String name, String zz, String picurl) {
         this.id = id;
