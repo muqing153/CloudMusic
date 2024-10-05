@@ -2,46 +2,37 @@ package com.muqingbfq;
 
 import android.Manifest;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.pm.ServiceInfo;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.Window;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
-import androidx.media3.common.MediaItem;
-import androidx.media3.common.Player;
 import androidx.media3.session.MediaController;
 import androidx.media3.session.SessionToken;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.MoreExecutors;
 import com.muqingbfq.databinding.ActivityHomeBinding;
 import com.muqingbfq.fragment.gd_adapter;
 import com.muqingbfq.fragment.sz;
 import com.muqingbfq.fragment.wode;
 import com.muqingbfq.mq.AppCompatActivity;
-import com.muqingbfq.mq.gj;
 import com.muqingbfq.mq.wl;
 
 import org.json.JSONObject;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -101,13 +92,12 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
 
 
     public void toolbar() {
-//        binding.bar.setupWithDrawer
         setSupportActionBar(binding.toolbar);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, binding.chct, binding.toolbar, R.string.app_name, R.string.app_name);
-        binding.chct.addDrawerListener(toggle);
-        toggle.syncState();
-        binding.toolbar.setOnClickListener(v -> activity_search.start(home.this, v));
+//        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+//                this, binding.chct, binding.toolbar, R.string.app_name, R.string.app_name);
+//        binding.chct.addDrawerListener(toggle);
+//        toggle.syncState();
+//        binding.toolbar.setOnClickListener(v -> activity_search.start(home.this, v));
     }
 
     public void UI() {
@@ -115,11 +105,14 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
+                if (binding.searchview.isShowing()) {
+                    binding.searchview.hide();
+                    return;
+                }
                 moveTaskToBack(true);
             }
         });
 
-        toolbar();
         //初始化侧滑
         binding.chb.setNavigationItemSelectedListener(item -> {
             sz.switch_sz(home.this, item.getItemId());
@@ -174,7 +167,8 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
                 }
             }
         }
-
+        toolbar();
+        SearchUI();
 
     }
 
@@ -186,9 +180,22 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
 
     }
 
-    @Override
-    public void finish() {
-        super.finish();
+    public void SearchUI() {
+        binding.searchview
+                .getEditText()
+                .setOnEditorActionListener(
+                        (v, actionId, event) -> {
+                            binding.toolbar.setText(binding.searchview.getText());
+                            binding.searchview.hide();
+                            return false;
+                        });
+        binding.searchview.setOnMenuItemClickListener(
+                menuItem -> {
+                    // Handle menuItem click.
+                    return true;
+                });
+        binding.toolbar.setNavigationIcon(R.drawable.menu);
+
     }
 
     @Override
@@ -201,6 +208,9 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_search) {
             startActivity(new Intent(this, activity_search.class));
+        } else if (item.getItemId() == android.R.id.home) {
+            //展开侧滑
+            binding.chct.openDrawer(GravityCompat.START);
         }
         return super.onOptionsItemSelected(item);
     }

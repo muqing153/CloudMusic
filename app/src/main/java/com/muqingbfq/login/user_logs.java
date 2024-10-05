@@ -11,7 +11,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
+import androidx.core.view.WindowCompat;
 
 import com.muqingbfq.databinding.ActivityUserLogsBinding;
 import com.muqingbfq.main;
@@ -42,13 +44,19 @@ public class user_logs extends AppCompatActivity<ActivityUserLogsBinding> {
     }
 
     erweima thread;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView();
         setSupportActionBar(binding.toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        binding.login.setOnClickListener(view -> new CloudUser());
+        binding.login.setOnClickListener(view1 -> {
+            String nickname = binding.editUser.getText().toString();
+            if (TextUtils.isEmpty(nickname)) {
+                wl.setcookie(nickname);
+            }
+        });
         binding.button1.setOnClickListener(view -> {
             if (binding.layout1.getVisibility() == View.VISIBLE) {
                 binding.layout1.setVisibility(View.GONE);
@@ -61,6 +69,12 @@ public class user_logs extends AppCompatActivity<ActivityUserLogsBinding> {
                 binding.button1.setText("二维码");
                 binding.layout1.setVisibility(View.VISIBLE);
                 binding.layout2.setVisibility(View.GONE);
+            }
+        });
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                finish(false);
             }
         });
     }
@@ -81,10 +95,6 @@ public class user_logs extends AppCompatActivity<ActivityUserLogsBinding> {
         super.finish();
     }
 
-    @Override
-    public void onBackPressed() {
-        finish(false);
-    }
 
     public static Bitmap stringToBitmap(String string) {
         Bitmap bitmap = null;

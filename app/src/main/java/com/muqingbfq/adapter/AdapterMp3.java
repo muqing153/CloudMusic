@@ -1,24 +1,23 @@
 package com.muqingbfq.adapter;
 
 import android.annotation.SuppressLint;
-import android.net.Uri;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.media3.common.MediaItem;
-import androidx.media3.common.MediaMetadata;
 import androidx.media3.common.Player;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.common.base.Strings;
 import com.muqingbfq.MP3;
 import com.muqingbfq.PlaybackService;
 import com.muqingbfq.R;
 import com.muqingbfq.api.url;
-import com.muqingbfq.bfqkz;
 import com.muqingbfq.databinding.ListMp3ImageBinding;
 import com.muqingbfq.main;
 import com.muqingbfq.mq.VH;
@@ -26,10 +25,17 @@ import com.muqingbfq.mq.gj;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class AdapterMp3 extends RecyclerView.Adapter<VH<ListMp3ImageBinding>> {
     public List<MP3> list = new ArrayList<>();
+
+    public AdapterMp3() {
+
+    }
+
+    public AdapterMp3(List<MP3> list) {
+        this.list = list;
+    }
 
     @NonNull
     @Override
@@ -58,6 +64,18 @@ public class AdapterMp3 extends RecyclerView.Adapter<VH<ListMp3ImageBinding>> {
                 }
             }
         }
+
+        if (Strings.isNullOrEmpty(x.picurl)) {
+            holder.binding.text1.setText(String.valueOf(position + 1));
+            holder.binding.imageView.setVisibility(ViewGroup.GONE);
+            holder.binding.linsum.setVisibility(View.VISIBLE);
+        }else{
+            Glide.with(holder.itemView.getContext()).load(list.get(position).picurl)
+                    .apply(new RequestOptions().placeholder(R.drawable.ic_launcher_foreground))
+                    .error(R.drawable.ic_launcher_foreground)
+                    .into(holder.binding.imageView);
+        }
+
         holder.itemView.setOnClickListener(view -> {
             if (PlaybackService.mediaSession == null) {
                 return;
@@ -68,24 +86,25 @@ public class AdapterMp3 extends RecyclerView.Adapter<VH<ListMp3ImageBinding>> {
                 public void run() {
                     super.run();
                     MP3 hq = url.hq(x);
-//                    gj.sc(hq.url);
-
+//                    gj.sc(String.format("链接:%s，图片：%s", hq.url,hq.picurl));
                     main.handler.post(() -> {
                         for (int i = 0; i < player.getMediaItemCount(); i++) {
-                            MediaItem existingItem = player.getMediaItemAt(i);
-                            if (Objects.equals(existingItem.mediaId, x.id)) {
-                                player.seekTo(i, 0);
+                            MediaItem currentItem = player.getMediaItemAt(i);
+                            if (currentItem.mediaId.equals(hq.id)) {
+                                gj.sc("存在播放:" + currentItem.mediaId + "==" + hq.id + " i=" + i);
+                                player.seekTo(i,0);
                                 player.prepare();
                                 player.play();
                                 notifyDataSetChanged();
                                 return;
                             }
                         }
+                        gj.sc("不存在添加播放");
                         PlaybackService.list.add(hq);
                         PlaybackService.ListSave();
                         MediaItem mediaItem = PlaybackService.GetMp3(hq);
-                        player.addMediaItem(mediaItem);
-                        player.seekTo(player.getMediaItemCount() - 1);
+                        player.addMediaItem(0,mediaItem);
+                        player.seekTo(0,0);
                         player.prepare();
                         player.play();
                         notifyDataSetChanged();
@@ -94,10 +113,6 @@ public class AdapterMp3 extends RecyclerView.Adapter<VH<ListMp3ImageBinding>> {
             }.start();
 
         });
-        Glide.with(holder.itemView.getContext()).load(x.picurl)
-                .apply(new RequestOptions().placeholder(R.drawable.ic_launcher_foreground))
-                .error(R.drawable.ic_launcher_foreground)
-                .into(holder.binding.imageView);
     }
 
     @Override

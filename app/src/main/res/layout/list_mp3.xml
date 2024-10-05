@@ -3,9 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    style="@style/Widget.Material3.CardView.Elevated"
+    style="@style/Widget.Material3.CardView.Filled"
     app:cardElevation="0dp"
-    app:cardBackgroundColor="?attr/colorPrimaryDark"
     app:cardUseCompatPadding="true"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <LinearLayout
@@ -23,18 +22,14 @@
             android:textSize="26sp"
             tools:ignore="HardcodedText" />
 
-        <androidx.cardview.widget.CardView
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="3dp"
             android:layout_height="30dp"
             app:cardCornerRadius="36dp"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
             android:layout_marginEnd="6dp">
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/text" />
-        </androidx.cardview.widget.CardView>
+        </com.google.android.material.card.MaterialCardView>
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"

@@ -1,12 +1,9 @@
 package com.muqingbfq;
 
-import static androidx.media3.common.Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED;
-
 import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,7 +12,6 @@ import androidx.media3.common.MediaItem;
 import androidx.media3.common.MediaMetadata;
 import androidx.media3.common.PlaybackException;
 import androidx.media3.common.Player;
-import androidx.media3.common.Timeline;
 import androidx.media3.common.Tracks;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.exoplayer.ExoPlayer;
@@ -39,7 +35,7 @@ public class PlaybackService extends MediaSessionService {
     };
 
     //历史记录
-    public static final List<MediaItem> listHistory = new ArrayList<>();
+//    public static final List<MediaItem> listHistory = new ArrayList<>();
 
     public static void ListSave() {
         new Thread(() -> wj.xrwb(wj.filesdri + "list.json", new Gson().toJson(list))).start();
@@ -69,24 +65,10 @@ public class PlaybackService extends MediaSessionService {
                 // 输出当前的 MediaItem 信息
                 String title = mediaItem.mediaMetadata.title != null ? mediaItem.mediaMetadata.title.toString() : "未知标题";
                 String artist = mediaItem.mediaMetadata.artist != null ? mediaItem.mediaMetadata.artist.toString() : "未知艺术家";
-//                    gj.sc( "播放新的音频: " + title + " - " + artist);
-                //保存下来播放的新的音频
-//                    listHistory.add(0,mediaItem);
 
-                //如果存在相同的就删除
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    bfqkz.lishi_list.removeIf(mp3 -> mp3.id.equals(mediaItem.mediaId));
-                } else {
-                    for (MP3 mp3 : bfqkz.lishi_list) {
-                        if (mp3.id.equals(mediaItem.mediaId)) {
-                            bfqkz.lishi_list.remove(mp3);
-                            break;
-                        }
-                    }
-                }
-                bfqkz.lishi_list.add(0, new MP3(mediaItem.mediaId, title, artist, mediaItem.mediaMetadata.artworkUri.toString()));
-                new Thread(() -> wj.xrwb(wj.gd + "mp3_hc.json", new Gson().toJson(bfqkz.lishi_list))).start();
+//                bfqkz.lishi_list.removeIf(mp3 -> mp3.id.equals(mediaItem.mediaId));
+//                bfqkz.lishi_list.add(0, new MP3(mediaItem.mediaId, title, artist, mediaItem.mediaMetadata.artworkUri.toString()));
+//                new Thread(() -> wj.xrwb(wj.gd + "mp3_hc.json", new Gson().toJson(bfqkz.lishi_list))).start();
             }
         }
 
@@ -119,6 +101,7 @@ public class PlaybackService extends MediaSessionService {
             }
             new Thread(() -> {
                 MP3 hq = url.hq(new MP3(currentMediaItem.mediaId));
+                hq.picurl = url.picurl(hq.id);
                 // 设置新的 MediaItem
                 MediaItem newMediaItem = currentMediaItem.buildUpon()
                         .setUri(hq.url)  // 更新 URI
@@ -200,7 +183,6 @@ public class PlaybackService extends MediaSessionService {
                 .setMediaMetadata(mediaMetadata) // 将元数据添加到 MediaItem
                 .build();
     }
-
 
     public static void AddMediaItem(MP3 mp3) {
         if (mediaSession != null) {

@@ -15,6 +15,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.muqingbfq.MP3;
 import com.muqingbfq.XM;
+import com.muqingbfq.adapter.AdapterMp3;
 import com.muqingbfq.databinding.FragmentSearchBinding;
 import com.muqingbfq.databinding.RecyclerVBinding;
 import com.muqingbfq.main;
@@ -68,7 +69,7 @@ public class search extends Fragment {
             String string = getArguments().getString("string");
             RecyclerVBinding binding = RecyclerVBinding.inflate(inflater, container, false);
             binding.recycleview.setLayoutManager(new LinearLayoutManager(getContext()));
-            binding.recycleview.setAdapter(new com.muqingbfq.fragment.mp3.Adapter(list));
+            binding.recycleview.setAdapter(new AdapterMp3(list));
             list.clear();
             binding.recyclerviewBar.setVisibility(View.VISIBLE);
             binding.recyclerviewText.setVisibility(View.GONE);

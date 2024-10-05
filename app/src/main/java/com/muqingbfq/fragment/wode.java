@@ -183,7 +183,7 @@ public class wode extends Fragment<FragmentWdBinding> {
         adaper = new baseadapter();
         binding.recyclerview2.setAdapter(adaper);
         sx();
-        new threadLogin(main.sp.getString("Cookie", "")).start();
+        new threadLogin().start();
     }
 
     ActivityResultLauncher<Intent> dlintent = registerForActivityResult(
@@ -194,7 +194,7 @@ public class wode extends Fragment<FragmentWdBinding> {
                     Intent data = result.getData();
                     boolean bool = data.getBooleanExtra("bool", false);
                     if (bool) {
-                        new threadLogin(main.sp.getString("Cookie", ""));
+                        new threadLogin();
                     }
                     // ...
                 }
@@ -289,15 +289,9 @@ public class wode extends Fragment<FragmentWdBinding> {
 
     //登陆 获取用户信息 头像 昵称 签名
     class threadLogin extends Thread {
-        String cookie;
-
-        public threadLogin(String cookie) {
-            this.cookie = cookie;
-
-        }
 
         public void run() {
-            String hq = wl.hq("/user/account?cookie=" + cookie);
+            String hq = wl.hq("/user/account?cookie=" + wl.Cookie);
             if (hq != null) {
                 try {
                     JSONObject jsonObject = new JSONObject(hq);
@@ -376,7 +370,7 @@ public class wode extends Fragment<FragmentWdBinding> {
                                                     xm.message = fh.message;
 //                                                        json.put(fh.id, json);
                                                     wj.xrwb(wj.gd + xm.id, json.toString());
-                                                    requireActivity().runOnUiThread(() -> notifyItemChanged(holder.getAdapterPosition()));
+                                                    requireActivity().runOnUiThread(() -> notifyItemChanged(holder.getBindingAdapterPosition()));
                                                 } catch (JSONException e) {
                                                     gj.sc("list gd onclick thear " + e);
                                                 }

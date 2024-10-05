@@ -4,6 +4,7 @@ import static android.content.Context.WINDOW_SERVICE;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.ViewGroup;
@@ -18,12 +19,17 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.muqingbfq.MP3;
 import com.muqingbfq.PlaybackService;
 import com.muqingbfq.R;
+import com.muqingbfq.api.url;
 import com.muqingbfq.bfqkz;
 import com.muqingbfq.databinding.FragmentBflbDbBinding;
 import com.muqingbfq.databinding.ListMp3ABinding;
 import com.muqingbfq.list.MyViewHoder;
+import com.muqingbfq.main;
+import com.muqingbfq.mq.gj;
+import com.muqingbfq.mq.wl;
 import com.muqingbfq.yc;
 
 import java.util.ArrayList;
@@ -159,14 +165,30 @@ public class bflb_db extends BottomSheetDialog {
             holder.bindingA.zz.setTextColor(color);
             holder.itemView.setOnClickListener(view -> {
                 if (PlaybackService.mediaSession != null) {
-                    PlaybackService.mediaSession.getPlayer().seekTo(holder.getAbsoluteAdapterPosition(), 0);
-                    PlaybackService.mediaSession.getPlayer().prepare();
-                    PlaybackService.mediaSession.getPlayer().play();
-                    notifyDataSetChanged();
+                    new Thread() {
+                        @Override
+                        public void run() {
+                            super.run();
+//                        gj.sc(String.format("id=%s",mediaItem.mediaId));
+//                            MP3 hq = url.hq(new MP3(mediaItem.mediaId));
+//                            gj.sc(hq);
+                            main.handler.post(() -> {
+                                Player player = PlaybackService.mediaSession.getPlayer();
+                                int absoluteAdapterPosition = holder.getAbsoluteAdapterPosition();
+                                player.seekTo(absoluteAdapterPosition, 0);
+//                                player.replaceMediaItem(absoluteAdapterPosition, PlaybackService.GetMp3(hq));
+                                player.prepare();
+                                player.play();
+                                notifyDataSetChanged();
+                            });
+                        }
+                    }.start();
                 }
             });
             holder.bindingA.delete.setOnClickListener(v -> {
                 list.remove(holder.getAbsoluteAdapterPosition());
+                PlaybackService.ListSave();
+                PlaybackService.list.removeIf(mp3 -> mp3.id.equals(mediaItem.mediaId));
                 notifyItemRemoved(holder.getAbsoluteAdapterPosition());
             });
         }
