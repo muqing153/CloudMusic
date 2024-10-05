@@ -49,10 +49,10 @@ public class AdapterMp3 extends RecyclerView.Adapter<VH<ListMp3ImageBinding>> {
         if (PlaybackService.mediaSession != null) {
             Player player = PlaybackService.mediaSession.getPlayer();
             MediaItem currentMediaItem = player.getCurrentMediaItem();
-
             if (currentMediaItem != null) {
                 String mediaId = currentMediaItem.mediaId;
                 if (mediaId.equals(x.id)) {
+//                    holder.binding.getRoot()
                     holder.binding.getRoot().setCardBackgroundColor(
                             gj.getThemeColor(holder.itemView.getContext(), com.google.android.material.R.attr.colorSurfaceVariant));
                 }
@@ -63,7 +63,7 @@ public class AdapterMp3 extends RecyclerView.Adapter<VH<ListMp3ImageBinding>> {
                 return;
             }
             Player player = PlaybackService.mediaSession.getPlayer();
-            new Thread(){
+            new Thread() {
                 @Override
                 public void run() {
                     super.run();
@@ -75,34 +75,24 @@ public class AdapterMp3 extends RecyclerView.Adapter<VH<ListMp3ImageBinding>> {
                             MediaItem existingItem = player.getMediaItemAt(i);
                             if (Objects.equals(existingItem.mediaId, x.id)) {
                                 player.seekTo(i, 0);
+                                player.prepare();
+                                player.play();
                                 notifyDataSetChanged();
                                 return;
                             }
                         }
                         PlaybackService.list.add(hq);
                         PlaybackService.ListSave();
-                        player.addMediaItem(PlaybackService.GetMp3(hq));
+                        MediaItem mediaItem = PlaybackService.GetMp3(hq);
+                        player.addMediaItem(mediaItem);
+                        player.seekTo(player.getMediaItemCount() - 1);
                         player.prepare();
-                        player.seekTo(player.getMediaItemCount(), 0); // 跳到第一个媒体项
                         player.play();
                         notifyDataSetChanged();
                     });
                 }
             }.start();
 
-//            if (bfqkz.xm == null || !bfqkz.xm.id.equals(x.id)) {
-//                bfqkz.xm = x;
-//                new url(x);
-//                notifyDataSetChanged();
-//
-//            } else if (!bfqkz.mt.isPlaying()) {
-//                bfqkz.mt.start();
-//            }
-//            if (!bfqkz.list.contains(x)) {
-//                bfqkz.list.add(0, x);
-//            }
-//                    bfqkz.list.addAll(list);
-//                    bfq.start(getContext());
         });
         Glide.with(holder.itemView.getContext()).load(x.picurl)
                 .apply(new RequestOptions().placeholder(R.drawable.ic_launcher_foreground))

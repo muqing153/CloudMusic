@@ -35,7 +35,6 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
-import com.jaeger.library.StatusBarUtil;
 import com.mpatric.mp3agic.ID3v2;
 import com.mpatric.mp3agic.Mp3File;
 import com.muqingbfq.databinding.ActivityBfqBinding;
@@ -165,9 +164,8 @@ public class bfq extends AppCompatActivity<ActivityBfqBinding>
 
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        StatusBarUtil.setTransparent(this);
         setContentView();
-//        gestureDetector = new GestureDetector(this, this);
+        gestureDetector = new GestureDetector(this, this);
 //        setLrc();
 //        rotateAnimation = ObjectAnimator.ofFloat(binding.cardview
 //                , "rotation", 0f, 360f);
@@ -568,7 +566,7 @@ public class bfq extends AppCompatActivity<ActivityBfqBinding>
 
     // 判断触摸点是否在视图范围内的辅助方法
     @Override
-    public boolean onScroll(@NonNull MotionEvent e1, @NonNull MotionEvent e2,
+    public boolean onScroll(MotionEvent e1, @NonNull MotionEvent e2,
                             float distanceX, float distanceY) {
         float y = binding.getRoot().getRootView().getTranslationY() - distanceY;
         y = Math.max(0, y);

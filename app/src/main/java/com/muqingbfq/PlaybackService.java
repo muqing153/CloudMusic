@@ -3,12 +3,14 @@ package com.muqingbfq;
 import static androidx.media3.common.Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED;
 
 import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.media3.common.C;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.MediaMetadata;
 import androidx.media3.common.PlaybackException;
@@ -55,6 +57,7 @@ public class PlaybackService extends MediaSessionService {
             // 处理播放状态的变化
 
         }
+
         @Override
         public void onPositionDiscontinuity(@NonNull Player.PositionInfo oldPosition, @NonNull Player.PositionInfo newPosition, int reason) {
             // 处理位置不连续变化
@@ -86,24 +89,47 @@ public class PlaybackService extends MediaSessionService {
                 new Thread(() -> wj.xrwb(wj.gd + "mp3_hc.json", new Gson().toJson(bfqkz.lishi_list))).start();
             }
         }
+
         @Override
         public void onTracksChanged(@Nullable Tracks tracks) {
             gj.sc(tracks);
             // Update UI using current tracks.
         }
+
+        int error_count = 0;//设置错误次数
+        MediaItem currentMediaItem = null;
+        int currentIndex = 0;
+
         @Override
         public void onPlayerError(@NonNull PlaybackException error) {
             // 当播放发生错误时调用
-                // 如果错误是由于资源找不到
+            // 如果错误是由于资源找不到
             Player player = mediaSession.getPlayer();
-            MediaItem currentMediaItem = player.getCurrentMediaItem();
+            if (++error_count > 3) {
+                currentIndex = player.getNextMediaItemIndex();
+                if (currentIndex != C.INDEX_UNSET) {
+                    gj.sc("播放失败，已跳过");
+                    return;
+                } else {
+                    currentMediaItem = player.getMediaItemAt(currentIndex);  // 获取下一首的 MediaItem
+                }
+            } else {
+                currentMediaItem = player.getCurrentMediaItem();
+                currentIndex = player.getCurrentMediaItemIndex();  // 获取当前播放项的索引
+            }
             new Thread(() -> {
                 MP3 hq = url.hq(new MP3(currentMediaItem.mediaId));
-                currentMediaItem.buildUpon().setUri(hq.url);
-                gj.sc(hq);
+                // 设置新的 MediaItem
+                MediaItem newMediaItem = currentMediaItem.buildUpon()
+                        .setUri(hq.url)  // 更新 URI
+                        .build();  // 构建新的 MediaItem
+                main.handler.post(() -> {
+                    player.replaceMediaItem(currentIndex, newMediaItem);
+                    player.prepare();
+                    player.play();
+                    error_count = 0;
+                });
             }).start();
-                player.prepare();
-                player.play();
         }
     };
 
@@ -114,7 +140,10 @@ public class PlaybackService extends MediaSessionService {
         ExoPlayer player = new ExoPlayer.Builder(this)
                 .build();
         mediaSession = new MediaSession.Builder(this, player).build();
-        Intent intent = new Intent(this, home.class);
+
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.setComponent(new ComponentName(this, home.class));//用ComponentName得到class对象
+        intent.addCategory(Intent.CATEGORY_LAUNCHER);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                 | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);// 关键的一步，设置启动模式，两种情况
         PendingIntent pendingIntent = PendingIntent.getActivity(
@@ -138,81 +167,63 @@ public class PlaybackService extends MediaSessionService {
                 wj.sc(wj.filesdri + "list.json");
             }
         }
-//            player.setMediaItems(list);
-//
-//        if (wj.cz(wj.gd + "mp3_hc.json")) {
-//
-//            try {
-//
-//                String dqwb = wj.dqwb(wj.gd + "mp3_hc.json");
-//                List<MP3> o = new Gson().fromJson(dqwb, new TypeToken<List<MP3>>() {
-//                }.getType());
-//                for (MP3 mp3 : o) {
-////                MP3 hq = url.hq(mp3);
-//                    player.addMediaItem(GetMp3(mp3));
-////                list.add(GetMp3());
-//                }
-//            } catch (Exception e) {
-//                wj.sc(wj.gd + "mp3_hc.json");
-//                gj.sc(e);
-//            }
-//        }
-        }
-
-        @Nullable
-        @Override
-        public MediaSession onGetSession (@NonNull MediaSession.ControllerInfo controllerInfo){
-            return mediaSession;
-        }
-
-        @Override
-        public void onDestroy () {
-            mediaSession.getPlayer().release();
-            mediaSession.release();
-            mediaSession = null;
-            super.onDestroy();
-        }
-
-        public static MediaItem GetMp3 (MP3 mp3){
-            // 创建媒体的元数据（如标题、描述、图片等）
-            MediaMetadata mediaMetadata = new MediaMetadata.Builder()
-                    .setTitle(mp3.name)
-                    .setArtist(mp3.zz)
-                    .setAlbumTitle(mp3.zz)
-                    .setArtworkUri(Uri.parse(mp3.picurl)) // 图片URL
-                    .build();
-// 创建带有元数据的 MediaItem
-
-            return new MediaItem.Builder()
-                    .setMediaId(mp3.id) // 设置媒体的唯一ID
-                    .setUri(Strings.isNullOrEmpty(mp3.url) ? "" : mp3.url)
-                    .setMediaMetadata(mediaMetadata) // 将元数据添加到 MediaItem
-                    .build();
-        }
-
-
-        public static void AddMediaItem (MP3 mp3){
-            if (mediaSession != null) {
-                new Thread(() -> {
-                    MediaItem mediaItem = GetMp3(mp3);
-                    main.handler.post(() -> {
-                        Player player = mediaSession.getPlayer();
-                        for (int i = 0; i < player.getMediaItemCount(); i++) {
-                            MediaItem existingItem = player.getMediaItemAt(i);
-                            if (Objects.equals(existingItem.mediaId, mp3.id)) {
-                                player.seekTo(i, 0);
-                                return;
-                            }
-                        }
-                        player.addMediaItem(0, mediaItem);
-                        player.seekTo(0, 0);
-                        player.prepare();
-                        player.play();
-                    });
-                }).start();
-            }
-
-        }
-
 
     }
+
+    @Nullable
+    @Override
+    public MediaSession onGetSession(@NonNull MediaSession.ControllerInfo controllerInfo) {
+        return mediaSession;
+    }
+
+    @Override
+    public void onDestroy() {
+        mediaSession.getPlayer().release();
+        mediaSession.release();
+        mediaSession = null;
+        super.onDestroy();
+    }
+
+    public static MediaItem GetMp3(MP3 mp3) {
+        // 创建媒体的元数据（如标题、描述、图片等）
+        MediaMetadata mediaMetadata = new MediaMetadata.Builder()
+                .setTitle(mp3.name)
+                .setArtist(mp3.zz)
+                .setAlbumTitle(mp3.zz)
+                .setArtworkUri(Uri.parse(mp3.picurl)) // 图片URL
+                .build();
+// 创建带有元数据的 MediaItem
+
+        return new MediaItem.Builder()
+                .setMediaId(mp3.id) // 设置媒体的唯一ID
+                .setUri(Strings.isNullOrEmpty(mp3.url) ? "" : mp3.url)
+                .setMediaMetadata(mediaMetadata) // 将元数据添加到 MediaItem
+                .build();
+    }
+
+
+    public static void AddMediaItem(MP3 mp3) {
+        if (mediaSession != null) {
+            new Thread(() -> {
+                MediaItem mediaItem = GetMp3(mp3);
+                main.handler.post(() -> {
+                    Player player = mediaSession.getPlayer();
+                    for (int i = 0; i < player.getMediaItemCount(); i++) {
+                        MediaItem existingItem = player.getMediaItemAt(i);
+                        if (Objects.equals(existingItem.mediaId, mp3.id)) {
+                            player.seekTo(i, 0);
+                            return;
+                        }
+                    }
+                    player.addMediaItem(0, mediaItem);
+                    player.seekTo(0, 0);
+                    player.prepare();
+                    player.play();
+                });
+            }).start();
+        }
+
+    }
+
+
+}

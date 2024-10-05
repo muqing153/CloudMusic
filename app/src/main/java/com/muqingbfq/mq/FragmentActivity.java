@@ -8,7 +8,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.viewbinding.ViewBinding;
 
-import com.jaeger.library.StatusBarUtil;
 import com.muqingbfq.R;
 
 public abstract class FragmentActivity<ViewBindingType extends ViewBinding>

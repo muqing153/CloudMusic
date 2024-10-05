@@ -17,6 +17,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 
 public class playlist extends Thread {
@@ -79,6 +80,47 @@ public class playlist extends Thread {
             gj.sc("失败的错误 " + e);
         }
         return false;
+    }
+
+    public static List<MP3> hq(String uid) {
+        List<MP3> list = new ArrayList<>();
+        try {
+            String hq = wj.dqwb(wj.gd + uid);
+            if (hq == null || hq.isEmpty()) {
+                hq = gethq(uid);
+            }
+            JSONObject json = new JSONObject(hq);
+            JSONArray songs = json.getJSONArray("songs");
+            int length = songs.length();
+            for (int i = 0; i < length; i++) {
+                JSONObject jsonObject = songs.getJSONObject(i);
+                String id = jsonObject.getString("id");
+                String name = jsonObject.getString("name");
+                try {
+                    String tns = jsonObject.getString("tns");
+                    tns = tns.replace("[\"", "(");
+                    tns = tns.replace("\"]", ")");
+                    name += tns;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                JSONObject al = jsonObject.getJSONObject("al");
+                JSONArray ar = jsonObject.getJSONArray("ar");
+                StringBuilder zz = new StringBuilder();
+                int length_a = ar.length();
+                for (int j = 0; j < length_a; j++) {
+                    zz.append(ar.getJSONObject(j).getString("name"))
+                            .append("/");
+                }
+                zz.append("-").append(al.getString("name"));
+                String picUrl = al.getString("picUrl");
+                list.add(new MP3(id, name, zz.toString(), picUrl));
+            }
+            return list;
+        } catch (Exception e) {
+            gj.sc("失败的错误 " + e);
+        }
+        return list;
     }
 
     public static boolean hq_like(List<MP3> list) {

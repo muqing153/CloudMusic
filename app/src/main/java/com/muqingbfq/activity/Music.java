@@ -1,6 +1,10 @@
 package com.muqingbfq.activity;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
@@ -11,8 +15,13 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.SeekBar;
 
@@ -40,7 +49,7 @@ import com.muqingbfq.mq.AppCompatActivity;
 import com.muqingbfq.mq.gj;
 
 
-public class Music extends AppCompatActivity<ActivityMusicBinding> {
+public class Music extends AppCompatActivity<ActivityMusicBinding> implements GestureDetector.OnGestureListener {
 
     private Player player = PlaybackService.mediaSession.getPlayer();
     private int TdtHeight = 15;
@@ -58,10 +67,21 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> {
         context.startActivity(intent);
     }
 
+    DisplayMetrics displayMetrics = new DisplayMetrics();
+
+    GestureDetector gestureDetector;
+    float Minfloat = 1000f;
+
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        gestureDetector = new GestureDetector(this, this);
         setContentView();
+        // 获取屏幕的高度
+        WindowManager windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
+        windowManager.getDefaultDisplay().getMetrics(displayMetrics);
+        Minfloat = displayMetrics.heightPixels - displayMetrics.heightPixels / 3f;
         binding.kg.setOnClickListener(view -> Util.handlePlayPauseButtonAction(player));
         binding.xyq.setOnClickListener(v -> {
             boolean b = player.hasNextMediaItem();
@@ -139,6 +159,49 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> {
             }
         });
         binding.back.setOnClickListener(v -> finish());
+
+        binding.fragmentBfq.setOnClickListener(v -> {
+            if (binding.cardview.getVisibility() == View.VISIBLE) {
+                binding.cardview.setVisibility(View.GONE);
+                binding.lrcView.setVisibility(View.VISIBLE);
+            } else {
+                binding.cardview.setVisibility(View.VISIBLE);
+                binding.lrcView.setVisibility(View.GONE);
+            }
+        });
+        binding.lrcView.setNormalTextSize(80f);
+        binding.lrcView.setCurrentTextSize(100f);
+        binding.lrcView.setTranslateTextScaleValue(0.8f);
+        binding.lrcView.setHorizontalOffset(-50f);
+        binding.lrcView.setHorizontalOffsetPercent(0.5f);
+        binding.lrcView.setItemOffsetPercent(0.5f);
+        binding.lrcView.setIsDrawTranslation(true);
+        binding.lrcView.setIsEnableBlurEffect(true);
+//        binding.cardview.setLayoutParams(layoutParams);
+
+        binding.lrcView.setDraggable(true, time -> {
+            player.seekTo((int) time);
+            return false;
+        });
+
+        binding.lrcView.setOnSingerClickListener(() -> {
+            switchViews(binding.lrcView, binding.cardview);
+        });
+
+        binding.fragmentBfq.setOnTouchListener((v, event) -> {
+            gestureDetector.onTouchEvent(event);
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                if (binding.getRoot().getRootView().getTranslationY() > (getResources().getDisplayMetrics().heightPixels / 2.0f)) {
+                    finish();
+                    return true;
+                }
+                ObjectAnimator animator = ObjectAnimator.ofFloat(binding.getRoot().getRootView()
+                        , "y", binding.getRoot().getRootView().getTranslationY(), 0);
+                animator.setDuration(500);
+                animator.start();
+            }
+            return true;
+        });
     }
 
     //是否拖动
@@ -160,6 +223,7 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> {
                     }
                     binding.tdt.setProgress(progress);
 //                    binding.tdt.setMax(100);
+                    binding.lrcView.updateTime(currentPosition,false);
                     binding.timeA.setText(bfq_an.getTime(duration));
                     binding.timeB.setText(bfq_an.getTime(currentPosition));
                 }
@@ -351,4 +415,78 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> {
 
     //触摸
 
+
+//    @Override
+//    public boolean onTouchEvent(MotionEvent event) {
+//        return gestureDetector.onTouchEvent(event);
+//    }
+
+
+    @Override
+    public boolean onDown(@NonNull MotionEvent e) {
+        return false;
+    }
+
+    @Override
+    public void onShowPress(@NonNull MotionEvent e) {
+
+    }
+
+    @Override
+    public boolean onSingleTapUp(@NonNull MotionEvent e) {
+        // 判断是哪个视图被点击了
+        if (!gj.isTablet(this)) {
+            switchViews(binding.cardview, binding.lrcView);
+        }
+        return true;
+    }
+
+    boolean isswitchViews = false;//是否在执行中
+    private void switchViews(final View view1, final View view2) {
+        // 隐藏view1并显示view2的动画效果
+        if (isswitchViews) {
+            return;
+        }
+        isswitchViews = true;
+        view1.animate()
+                .alpha(0.0f)
+                .setDuration(500)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        view1.setVisibility(View.GONE);
+                        view2.setVisibility(View.VISIBLE);
+                        view2.setAlpha(0.0f);
+                        view2.animate().alpha(1.0f).setDuration(500).setListener(null);
+                        isswitchViews = false;
+                    }
+                });
+    }
+
+    // 判断触摸点是否在视图范围内的辅助方法
+    @Override
+    public boolean onScroll(MotionEvent e1, @NonNull MotionEvent e2,
+                            float distanceX, float distanceY) {
+        float y = binding.getRoot().getRootView().getTranslationY() - distanceY;
+        y = Math.max(0, y);
+        //移动的距离
+        int heightPixels = getResources().getDisplayMetrics().heightPixels;
+        if (y > heightPixels - heightPixels / 5.0) {
+            finish();
+            return true;
+        }
+        binding.getRoot().getRootView().setTranslationY(y);
+        return true;
+    }
+
+    @Override
+    public void onLongPress(@NonNull MotionEvent e) {
+
+    }
+
+    @Override
+    public boolean onFling(MotionEvent e1, @NonNull MotionEvent e2,
+                           float velocityX, float velocityY) {
+        return false;
+    }
 }

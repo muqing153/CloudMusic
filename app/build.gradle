@@ -17,7 +17,7 @@ android {
         applicationId "com.muqingbfq"
         minSdk 23
         //noinspection ExpiredTargetSdkVersion,OldTargetApi
-        targetSdk 33
+        targetSdk 34
         versionCode 1
         versionName "2.6.0"
     }
@@ -45,6 +45,7 @@ android {
     viewBinding {
         enabled = true
     }
+
 }
 dependencies {
     implementation 'androidx.core:core-ktx:1.7.0'
@@ -70,7 +71,9 @@ dependencies {
     implementation 'com.mpatric:mp3agic:0.9.1'
 
 //    沉浸式状态栏
-    implementation project(path: ':StatusBarUtil')
+    // release 版本
+    // 将 $lastVersion 替换成上图中的版本号
+    implementation 'com.gitee.zackratos:UltimateBarX:v0.8.1'
 //    api project(path: ':lrcview')
     //歌词组件库
     api "com.github.cy745:EaseView:e11c3208a9"
@@ -80,4 +83,5 @@ dependencies {
     implementation "androidx.media3:media3-ui:1.4.0"
     implementation "androidx.media3:media3-common:1.4.0"
     implementation "androidx.media3:media3-session:1.4.0"
+    implementation 'androidx.activity:activity:1.9.1'
 }

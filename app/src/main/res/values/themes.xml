@@ -5,7 +5,9 @@
         <!--使用动画-->
         <item name="android:windowContentTransitions">true</item>
         <!-- 添加主题属性以启用沉浸式状态栏 -->
-        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+
 
         <item name="colorPrimary">@color/md_theme_primary</item>
         <item name="colorOnPrimary">@color/md_theme_onPrimary</item>
@@ -53,26 +55,7 @@
         <item name="colorSurfaceContainer">@color/md_theme_surfaceContainer</item>
         <item name="colorSurfaceContainerHigh">@color/md_theme_surfaceContainerHigh</item>
         <item name="colorSurfaceContainerHighest">@color/md_theme_surfaceContainerHighest</item>
-    </style>
 
-    <style name="ThemeOverlay.App.Toolbar" parent="">
-        <item name="colorSurface">@color/bj</item>
-        <item name="colorOnSurface">@color/bj</item>
-    </style>
-
-    <style name="ThemeOverlay.App.TabLayout" parent="">
-        <item name="colorPrimary">@color/bj_tint</item>
-        <item name="colorSurface">@color/bj</item>
-        <!--        <item name="colorOnSurface">@color/bj_tint</item>-->
-    </style>
-
-    <style name="Widget.App.TabLayout" parent="Widget.Material3.TabLayout">
-        <item name="materialThemeOverlay">@style/ThemeOverlay.App.TabLayout</item>
-        <!--        <item name="tabTextAppearance">@style/TextAppearance.App.LabelLarge</item>-->
-    </style>
-
-    <style name="Widget.App.Toolbar" parent="Widget.Material3.Toolbar">
-        <item name="materialThemeOverlay">@style/ThemeOverlay.App.Toolbar</item>
     </style>
 
 
@@ -87,17 +70,4 @@
         <item name="android:backgroundDimEnabled">true</item>
     </style>
 
-    <style name="Theme.main" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="android:windowTranslucentStatus">true</item>
-        <item name="android:windowTranslucentNavigation">true</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:navigationBarColor">@android:color/transparent</item>
-        <item name="android:windowBackground">@drawable/start</item>
-    </style>
-
-    <!--    按钮主题-->
-    <style name="Button">
-        <item name="android:textColor">@color/text</item>
-        <item name="android:backgroundTint">@color/bj</item>
-    </style>
 </resources>

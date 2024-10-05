@@ -17,6 +17,7 @@ import com.muqingbfq.MP3;
 import com.muqingbfq.R;
 import com.muqingbfq.XM;
 import com.muqingbfq.activity_search;
+import com.muqingbfq.adapter.AdapterGd;
 import com.muqingbfq.adapter.AdapterMp3;
 import com.muqingbfq.api.resource;
 import com.muqingbfq.databinding.FragmentGdBinding;
@@ -44,7 +45,7 @@ public class gd_adapter extends Fragment<FragmentGdBinding> {
         return FragmentGdBinding.inflate(inflater, container, false);
     }
 
-
+    AdapterGd adapterGd = new AdapterGd();
     @Override
     public void setUI(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
@@ -52,7 +53,8 @@ public class gd_adapter extends Fragment<FragmentGdBinding> {
         binding.recyclerview1.setHasFixedSize(true);
         binding.recyclerview1.setNestedScrollingEnabled(false);
         binding.recyclerview1.setLayoutManager(linearLayoutManager);
-        binding.recyclerview1.setAdapter(new gd.baseadapter(getActivity(), list));
+        adapterGd.list = list;
+        binding.recyclerview1.setAdapter(adapterGd);
         new Thread() {
             @Override
             public void run() {
@@ -113,5 +115,9 @@ public class gd_adapter extends Fragment<FragmentGdBinding> {
                 }
             }
         }.start();
+    }
+
+    public void Gdlist() {
+
     }
 }

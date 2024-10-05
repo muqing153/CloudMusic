@@ -1,17 +1,26 @@
 package com.muqingbfq;
 
+import android.Manifest;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.content.pm.ServiceInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.Window;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.Player;
@@ -22,9 +31,9 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
-import com.jaeger.library.StatusBarUtil;
 import com.muqingbfq.databinding.ActivityHomeBinding;
 import com.muqingbfq.fragment.gd_adapter;
+import com.muqingbfq.fragment.sz;
 import com.muqingbfq.fragment.wode;
 import com.muqingbfq.mq.AppCompatActivity;
 import com.muqingbfq.mq.gj;
@@ -45,31 +54,24 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTheme(R.style.Theme_muqing);
+//        setTheme(R.style.Theme_muqing);
         super.onCreate(savedInstanceState);
 
+        // 启动前台服务时，确保类型为媒体播放
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+//            startForegroundService(new Intent(this, YourForegroundService.class)
+//                    .putExtra("EXTRA_SERVICE_TYPE", ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK));
+//        } else {
+//            startService(new Intent(this, YourForegroundService.class));
+//        }
 
         SessionToken sessionToken =
                 new SessionToken(this, new ComponentName(this, PlaybackService.class));
         ListenableFuture<MediaController> controllerFuture =
                 new MediaController.Builder(this, sessionToken).buildAsync();
-        controllerFuture.addListener(new Runnable() {
-            @Override
-            public void run() {
-
-            }
-        }, MoreExecutors.directExecutor());
-//        if (PlaybackService.mediaSession!=null){
-//            Player player = PlaybackService.mediaSession.getPlayer();
-//            File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "26096272");
-//            // 设置媒体源（音乐文件）
-//            MediaItem mediaItem = MediaItem.fromUri(file.getPath()); // 替换为你的音乐文件路径或 URL
-//            player.setMediaItem(mediaItem);
+//        controllerFuture.addListener(() -> {
 //
-//            // 准备并开始播放
-//            player.prepare();
-//            player.play();
-//        }
+//        }, MoreExecutors.directExecutor());
 
         wl.Cookie = main.sp.getString("Cookie", "");
         if (wl.Cookie.isEmpty()) {
@@ -81,7 +83,7 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
                     try {
                         JSONObject jsonObject = new JSONObject(hq);
                         wl.setcookie(jsonObject.getString("cookie"));
-                        home.this.runOnUiThread(() -> UI());
+                        runOnUiThread(() -> UI());
                     } catch (Exception e) {
                         com.muqingbfq.mq.gj.sc(e);
                     }
@@ -109,12 +111,18 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
     }
 
     public void UI() {
-        StatusBarUtil.setTransparent(home.this);
         setContentView();
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                moveTaskToBack(true);
+            }
+        });
+
         toolbar();
         //初始化侧滑
         binding.chb.setNavigationItemSelectedListener(item -> {
-            com.muqingbfq.fragment.sz.switch_sz(home.this, item.getItemId());
+            sz.switch_sz(home.this, item.getItemId());
             return false;
         });
         List<Fragment> list = new ArrayList<>();
@@ -156,6 +164,18 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
                 }
             }
         });
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK)
+                    != PackageManager.PERMISSION_GRANTED) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{Manifest.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK},
+                            1001);
+                }
+            }
+        }
+
+
     }
 
     @Override
@@ -166,10 +186,6 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
 
     }
 
-    @Override
-    public void onBackPressed() {
-        moveTaskToBack(true);
-    }
     @Override
     public void finish() {
         super.finish();

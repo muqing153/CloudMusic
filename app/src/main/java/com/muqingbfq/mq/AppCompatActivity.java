@@ -1,13 +1,16 @@
 package com.muqingbfq.mq;
 
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
 
-import androidx.annotation.Nullable;
+import androidx.activity.EdgeToEdge;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.viewbinding.ViewBinding;
 
-import com.jaeger.library.StatusBarUtil;
+import com.muqingbfq.R;
 
 public abstract class AppCompatActivity<ViewBindingType extends ViewBinding> extends androidx.appcompat.app.AppCompatActivity {
 
@@ -19,7 +22,14 @@ public abstract class AppCompatActivity<ViewBindingType extends ViewBinding> ext
     }
 
     public ViewBindingType binding;
+
     public void setContentView() {
+        EdgeToEdge.enable(this);
         super.setContentView(getViewBinding().getRoot());
+        ViewCompat.setOnApplyWindowInsetsListener(binding.getRoot(), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
     }
 }

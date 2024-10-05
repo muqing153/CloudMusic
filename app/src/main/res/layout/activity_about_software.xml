@@ -101,14 +101,12 @@
 
                 <Button
                     android:id="@+id/button1"
-                    style="@style/Button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/jianchagegnxin" />
 
                 <Button
                     android:id="@+id/button2"
-                    style="@style/Button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/juanzeng" />
