@@ -32,6 +32,7 @@ import java.util.List;
 public class search extends Fragment {
     public FragmentSearchBinding binding;
     public String string;
+    List<Fragment> fragments=new ArrayList<>();
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -134,7 +135,6 @@ public class search extends Fragment {
             return binding.getRoot();
         }
     }
-    List<Fragment> fragments=new ArrayList<>();
     private FragmentStateAdapter adapter;
     @SuppressLint("NotifyDataSetChanged")
     public void sx(String string) {

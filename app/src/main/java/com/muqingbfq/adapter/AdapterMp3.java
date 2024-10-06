@@ -50,8 +50,8 @@ public class AdapterMp3 extends RecyclerView.Adapter<VH<ListMp3ImageBinding>> {
         MP3 x = list.get(position);
         holder.binding.wb1.setText(x.name);
         holder.binding.zz.setText(x.zz);
-        holder.binding.getRoot().setCardBackgroundColor(ContextCompat
-                .getColor(holder.itemView.getContext(), android.R.color.transparent));
+        int themeColor = gj.getThemeColor(holder.itemView.getContext(), com.google.android.material.R.attr.colorSurface);
+        holder.binding.getRoot().setCardBackgroundColor(themeColor);
         if (PlaybackService.mediaSession != null) {
             Player player = PlaybackService.mediaSession.getPlayer();
             MediaItem currentMediaItem = player.getCurrentMediaItem();

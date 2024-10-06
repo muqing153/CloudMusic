@@ -16,10 +16,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.android.flexbox.AlignItems;
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexWrap;
@@ -30,8 +32,10 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.muqingbfq.databinding.ActivitySearchBinding;
 import com.muqingbfq.databinding.ListTextBinding;
+import com.muqingbfq.databinding.ViewSearchItemBinding;
 import com.muqingbfq.fragment.search;
 import com.muqingbfq.mq.FragmentActivity;
+import com.muqingbfq.mq.VH;
 import com.muqingbfq.mq.gj;
 import com.muqingbfq.mq.wj;
 import com.muqingbfq.view.Edit;
@@ -51,12 +55,6 @@ public class activity_search extends FragmentActivity<ActivitySearchBinding> {
         ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(context,
                 view, "edit");
         context.startActivity(new Intent(context, activity_search.class), options.toBundle());
-    }
-
-    class VH extends RecyclerView.ViewHolder {
-        public VH(@NonNull View itemView) {
-            super(itemView);
-        }
     }
 
     @Override
@@ -96,29 +94,7 @@ public class activity_search extends FragmentActivity<ActivitySearchBinding> {
                 })
                 .show());
         binding.searchRecycler.setLayoutManager(new LinearLayoutManager(this));
-        binding.searchRecycler.setAdapter(new RecyclerView.Adapter<VH>() {
-            @NonNull
-            @Override
-            public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                return new VH(LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.view_search_item, parent, false));
-            }
-
-            @Override
-            public void onBindViewHolder(@NonNull VH holder, int position) {
-                String s = list.get(position);
-                ((TextView) holder.itemView).setText(s);
-                holder.itemView.setOnClickListener(v -> {
-                    binding.searchview.setText(s);
-                    start(s);
-                });
-            }
-
-            @Override
-            public int getItemCount() {
-                return list.size();
-            }
-        });
+        binding.searchRecycler.setAdapter(new search_adapter(list, this::start));
         //设置项点击监听
         final Object o = new Object();
         binding.searchview.getEditText().addTextChangedListener(new Edit.TextWatcher() {
@@ -196,6 +172,44 @@ public class activity_search extends FragmentActivity<ActivitySearchBinding> {
             return true;
         });
     }
+
+    @FunctionalInterface
+    public interface TaskAction<T> {
+        void execute(T t);
+    }
+
+    public static class search_adapter extends RecyclerView.Adapter<VH<ViewSearchItemBinding>> {
+        public List<String> list;
+        TaskAction<String> taskAction;
+
+        public search_adapter(List<String> list, TaskAction<String> taskAction) {
+            this.taskAction = taskAction;
+            this.list = list;
+        }
+
+        @NonNull
+        @Override
+        public VH<ViewSearchItemBinding> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            return new VH<>(ViewSearchItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull VH holder, int position) {
+            String s = list.get(position);
+            ((TextView) holder.itemView).setText(s);
+            holder.itemView.setOnClickListener(v -> {
+                taskAction.execute(s);
+            });
+        }
+
+        @Override
+        public int getItemCount() {
+            return list.size();
+        }
+
+    }
+
+    ;
 
     public void dismiss() {
         binding.searchview.hide();

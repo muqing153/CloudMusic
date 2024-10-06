@@ -1,19 +1,21 @@
 package com.muqingbfq;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
@@ -23,14 +25,20 @@ import androidx.media3.session.SessionToken;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.google.android.material.search.SearchView;
+import com.google.common.base.Strings;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.muqingbfq.databinding.ActivityHomeBinding;
 import com.muqingbfq.fragment.gd_adapter;
+import com.muqingbfq.fragment.search;
 import com.muqingbfq.fragment.sz;
 import com.muqingbfq.fragment.wode;
 import com.muqingbfq.mq.AppCompatActivity;
+import com.muqingbfq.mq.gj;
 import com.muqingbfq.mq.wl;
+import com.muqingbfq.view.Edit;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -180,13 +188,16 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
 
     }
 
+    public boolean issearchclicklist = false;//是否点击了列表项目
+    //搜索建议列表
+    private List<String> searchList = new ArrayList<>();
     public void SearchUI() {
         binding.searchview
                 .getEditText()
                 .setOnEditorActionListener(
                         (v, actionId, event) -> {
                             binding.toolbar.setText(binding.searchview.getText());
-                            binding.searchview.hide();
+//                            binding.searchview.hide();
                             return false;
                         });
         binding.searchview.setOnMenuItemClickListener(
@@ -194,10 +205,90 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
                     // Handle menuItem click.
                     return true;
                 });
+        binding.searchview.addTransitionListener(
+                (searchView, previousState, newState) -> {
+                    if (newState == SearchView.TransitionState.SHOWING) {
+                        // Handle search view opened.
+                        gj.sc("SHOWING");
+                        binding.tablayout.setVisibility(View.GONE);
+                    } else if (newState == SearchView.TransitionState.SHOWN) {
+                        gj.sc("SHOWN");
+                    } else if (newState == SearchView.TransitionState.HIDING) {
+                        binding.tablayout.setVisibility(View.VISIBLE);
+                        binding.searchFragment.setVisibility(View.GONE);
+                        binding.searchRecycler.setVisibility(View.GONE);
+                        binding.xxbj1.setVisibility(View.VISIBLE);
+                    }
+                });
+        final Object o = new Object();
+        binding.searchview.getEditText().addTextChangedListener(new Edit.TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence var1, int var2, int var3, int var4) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence var1, int var2, int var3, int var4) {
+                new Thread() {
+                    @SuppressLint("NotifyDataSetChanged")
+                    @Override
+                    public void run() {
+                        synchronized (o) {
+                            searchList.clear();
+                            String hq = com.muqingbfq.mq.wl.
+                                    hq("/search/suggest?keywords=" + var1.toString() + "&type=mobile");
+                            try {
+                                JSONArray jsonArray = new JSONObject(hq).getJSONObject("result")
+                                        .getJSONArray("allMatch");
+                                int length = jsonArray.length();
+                                for (int i = 0; i < length; i++) {
+                                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                                    String keyword = jsonObject.getString("keyword");
+                                    searchList.add(keyword);
+                                }
+                                runOnUiThread(() -> binding.searchRecycler.setAdapter(new activity_search.search_adapter(searchList, string -> {
+                                    gj.sc(string);
+                                    issearchclicklist = true;
+                                    binding.searchRecycler.setAdapter(null);
+                                    binding.searchRecycler.setVisibility(View.GONE);
+                                    binding.xxbj1.setVisibility(View.GONE);
+                                    binding.searchFragment.setVisibility(View.VISIBLE);
+                                    binding.searchview.setText(string);
+                                    searchStart(string);
+//                                        binding.searchRecycler.set
+                                })));
+                            } catch (Exception e) {
+                                gj.sc(e);
+                            }
+                        }
+                    }
+                }.start();
+            }
+
+            @Override
+            public void afterTextChanged(Editable var1) {
+                if (Strings.isNullOrEmpty(var1.toString())) {
+                    binding.searchRecycler.setAdapter(null);
+                    binding.searchRecycler.setVisibility(View.GONE);
+                    binding.xxbj1.setVisibility(View.VISIBLE);
+                } else if (!issearchclicklist){
+                    binding.searchRecycler.setVisibility(View.VISIBLE);
+                    binding.xxbj1.setVisibility(View.GONE);
+                }else issearchclicklist = false;
+
+            }
+        });
         binding.toolbar.setNavigationIcon(R.drawable.menu);
 
     }
 
+    public void searchStart(String name) {
+        if (!TextUtils.isEmpty(name)) {
+            search sea = (search) getSupportFragmentManager().findFragmentById(binding.searchFragment.getId());
+            binding.searchFragment.setVisibility(View.VISIBLE);
+            sea.sx(name);
+//            addSearchRecord(name);
+        }
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.home, menu);
@@ -207,6 +298,7 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_search) {
+//            binding.searchview.show();
             startActivity(new Intent(this, activity_search.class));
         } else if (item.getItemId() == android.R.id.home) {
             //展开侧滑
