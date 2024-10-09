@@ -5,7 +5,7 @@
         <!--使用动画-->
         <item name="android:windowContentTransitions">true</item>
         <!-- 添加主题属性以启用沉浸式状态栏 -->
-        <item name="android:windowTranslucentStatus">true</item>
+<!--        <item name="android:windowTranslucentStatus">true</item>-->
 
         <item name="colorPrimary">@color/md_theme_primary</item>
         <item name="colorOnPrimary">@color/md_theme_onPrimary</item>

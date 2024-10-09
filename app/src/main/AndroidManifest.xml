@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" /> <!-- 存储权限 -->
@@ -77,16 +76,9 @@
             </intent-filter>
         </service>
         <service android:name=".mq.floating" />
-        <service android:name=".mq.FloatingLyricsService" />
+        <service android:name=".mq.FloatingLyricsService" android:exported="true"
+            tools:ignore="ExportedService" />
 
-        <receiver
-            android:name=".MyButtonClickReceiver"
-            android:enabled="true"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MEDIA_BUTTON" />
-            </intent-filter>
-        </receiver>
 
         <service
             android:name=".PlaybackService"

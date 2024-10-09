@@ -1,25 +1,21 @@
 package com.muqingbfq;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.Application;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
-import androidx.media3.session.MediaController;
-import androidx.media3.session.SessionToken;
+import androidx.lifecycle.DefaultLifecycleObserver;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.ProcessLifecycleOwner;
 
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.MoreExecutors;
 import com.google.gson.reflect.TypeToken;
 import com.muqingbfq.login.visitor;
 import com.muqingbfq.mq.FloatingLyricsService;
@@ -30,26 +26,23 @@ import com.muqingbfq.mq.wl;
 import java.io.File;
 import java.lang.reflect.Type;
 import java.util.List;
-
 public class main extends Application {
     public static Application application;
     public static Handler handler = new Handler(Looper.getMainLooper());
     public static String api = "https://api.csm.sayqz.com";
-//    public static String http = "https://www.muqingkaifazhe.top/muqingbfq.php"; 过时的更新检测
+    //    public static String http = "https://www.muqingkaifazhe.top/muqingbfq.php"; 过时的更新检测
     public static SharedPreferences sp;
     public static SharedPreferences.Editor edit;
-    private int count = 0;
+    private boolean count = false;//是否在后台
+
     @Override
     public void onCreate() {
         super.onCreate();
-
-
-
         if (wj.filesdri == null) {
             new wj(this);
         }
         File file = new File(wj.filesdri + "API.mq");
-        if (file.exists()&&file.isFile()) {
+        if (file.exists() && file.isFile()) {
             String dqwb = wj.dqwb(file.toString());
             if (!TextUtils.isEmpty(dqwb) && dqwb.startsWith("http")) {
                 api = dqwb;
@@ -119,57 +112,25 @@ public class main extends Application {
                 }
             }.start();
         }
-        registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
+        // 注册 ProcessLifecycleOwner 以监听应用生命周期事件
+        ProcessLifecycleOwner.get().getLifecycle().addObserver(new DefaultLifecycleObserver() {
             @Override
-            public void onActivityCreated(@NonNull Activity activity, Bundle savedInstanceState) {
-            }
-            @Override
-            public void onActivityStarted(@NonNull Activity activity) {
-                if (count == 0) { //后台切换到前台
-                    if (FloatingLyricsService.lei != null) {
-                        stopService(new Intent(main.this, FloatingLyricsService.class));
-                    }
-                }
-                count++;
-            }
-            @Override
-            public void onActivityResumed(@NonNull Activity activity) {
-            }
-            @Override
-            public void onActivityPaused(@NonNull Activity activity) {
-            }
-            @Override
-            public void onActivityStopped(@NonNull Activity activity) {
-                count--;
-                if (count == 0) { //后台切换到前台
-                    new Thread(){
-                        @Override
-                        public void run() {
-                            try {
-                                sleep(1000);
-                            } catch (InterruptedException e) {
-                                gj.sc(e);
-                            }
-                            if (count != 0) {
-                                return;
-                            }
-                            if (!FloatingLyricsService.get()) {
-                                return;
-                            }
-                            if (Settings.canDrawOverlays(main.this)) {
-                                startService(new Intent(main.this, FloatingLyricsService.class));
-                            }
-                            super.run();
-                        }
-                    }.start();
+            public void onStart(@Nullable LifecycleOwner owner) {
+                // 应用进入前台
+                gj.sc("onStart");
+                if (FloatingLyricsService.lei != null) {
+                    stopService(new Intent(main.this, FloatingLyricsService.class));
                 }
             }
 
             @Override
-            public void onActivitySaveInstanceState(@NonNull Activity activity, @NonNull Bundle outState) {
-            }
-            @Override
-            public void onActivityDestroyed(@NonNull Activity activity) {
+            public void onStop(@Nullable LifecycleOwner owner) {
+                // 应用进入后台
+                gj.sc("onStop");
+
+                if (Settings.canDrawOverlays(main.this) && FloatingLyricsService.lei == null ) {
+                    startService(new Intent(main.this, FloatingLyricsService.class));
+                }
             }
         });
     }

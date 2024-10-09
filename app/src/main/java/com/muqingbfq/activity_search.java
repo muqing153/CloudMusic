@@ -1,8 +1,5 @@
 package com.muqingbfq;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityOptions;
@@ -18,7 +15,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -26,7 +22,6 @@ import com.google.android.flexbox.AlignItems;
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexWrap;
 import com.google.android.flexbox.FlexboxLayoutManager;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.search.SearchView;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -44,11 +39,10 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class activity_search extends FragmentActivity<ActivitySearchBinding> {
-    private List<String> json_list = new ArrayList<>();
+//    private List<String> json_list = new ArrayList<>();
     private final List<String> list = new ArrayList<>();
 
     public static void start(Activity context, View view) {
@@ -75,8 +69,8 @@ public class activity_search extends FragmentActivity<ActivitySearchBinding> {
         manager.setFlexWrap(FlexWrap.WRAP);
         manager.setAlignItems(AlignItems.STRETCH);//历史记录的LayoutManager
         binding.listRecycler.setLayoutManager(manager);
-        binding.listRecycler.setAdapter(new SearchRecordAdapter());
-        binding.deleat.setOnClickListener(v -> new MaterialAlertDialogBuilder(
+//        binding.listRecycler.setAdapter(new SearchRecordAdapter());
+/*        binding.deleat.setOnClickListener(v -> new MaterialAlertDialogBuilder(
                 activity_search.this)
                 .setTitle("删除")
                 .setMessage("清空历史记录？")
@@ -92,7 +86,7 @@ public class activity_search extends FragmentActivity<ActivitySearchBinding> {
                     binding.xxbj1.setVisibility(View.GONE);
                     wj.sc(wj.filesdri + wj.lishi_json);
                 })
-                .show());
+                .show());*/
         binding.searchRecycler.setLayoutManager(new LinearLayoutManager(this));
         binding.searchRecycler.setAdapter(new search_adapter(list, this::start));
         //设置项点击监听
@@ -197,9 +191,7 @@ public class activity_search extends FragmentActivity<ActivitySearchBinding> {
         public void onBindViewHolder(@NonNull VH holder, int position) {
             String s = list.get(position);
             ((TextView) holder.itemView).setText(s);
-            holder.itemView.setOnClickListener(v -> {
-                taskAction.execute(s);
-            });
+            holder.itemView.setOnClickListener(v -> taskAction.execute(s));
         }
 
         @Override
@@ -209,27 +201,22 @@ public class activity_search extends FragmentActivity<ActivitySearchBinding> {
 
     }
 
-    ;
-
     public void dismiss() {
         binding.searchview.hide();
     }
 
-    private void addSearchRecord(String name) {
+    public static void addSearchRecord(String name,List<String> json_list,SearchRecordAdapter adapter) {
         try {
-            if (!binding.xxbj1.isShown()) {
-                binding.xxbj1.setVisibility(View.VISIBLE);
-            }
             int existingIndex = json_list.indexOf(name);
             if (existingIndex != -1) {
                 // 交换两个元素的位置
                 json_list.remove(name);
                 json_list.add(0, name);
-                binding.listRecycler.getAdapter().notifyItemMoved(existingIndex, 0);
+                adapter.notifyItemMoved(existingIndex, 0);
             } else {
 //                json_list.remove(name);
                 json_list.add(0, name);
-                binding.listRecycler.getAdapter().notifyItemInserted(0);
+                adapter.notifyItemInserted(0);
             }
             wj.xrwb(wj.filesdri + wj.lishi_json, new Gson().toJson(json_list));
         } catch (Exception e) {
@@ -264,12 +251,16 @@ public class activity_search extends FragmentActivity<ActivitySearchBinding> {
             search sea = (search) getSupportFragmentManager().findFragmentById(R.id.search_fragment);
             binding.searchFragment.setVisibility(View.VISIBLE);
             sea.sx(name);
-            addSearchRecord(name);
+//            addSearchRecordd(name);
         }
     }
 
-    class SearchRecordAdapter extends RecyclerView.Adapter<SearchRecordAdapter.ViewHolder> {
-        public SearchRecordAdapter() {
+    public static class SearchRecordAdapter extends RecyclerView.Adapter<VH<ListTextBinding>> {
+        SearchView searchView;
+        public List<String> json_list = new ArrayList<>();
+
+        public SearchRecordAdapter(SearchView searchView) {
+            this.searchView = searchView;
             String dqwb = wj.dqwb(wj.filesdri + wj.lishi_json);
             if (dqwb != null) {
                 try {
@@ -277,49 +268,47 @@ public class activity_search extends FragmentActivity<ActivitySearchBinding> {
                     }.getType());
                 } catch (Exception e) {
                     wj.sc(wj.filesdri + wj.lishi_json);
-                    yc.start(activity_search.this, e);
+//                    yc.start(activity_search.this, e);
                 }
             }
-            if (json_list.isEmpty()) {
-                binding.xxbj1.setVisibility(View.INVISIBLE);
-            }
-            RecyclerView.ItemAnimator animator = new DefaultItemAnimator() {
-                @Override
-                public boolean animateRemove(RecyclerView.ViewHolder holder) {
-                    ObjectAnimator fadeAnimator = ObjectAnimator.ofFloat(holder.itemView, "alpha", 1f, 0f);
-                    fadeAnimator.setDuration(getRemoveDuration());
-                    fadeAnimator.addListener(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            dispatchRemoveFinished(holder);
-                            holder.itemView.setAlpha(1f);
-                        }
-                    });
-                    fadeAnimator.start();
-                    return false;
-                }
-            };
-            binding.listRecycler.setItemAnimator(animator);
+            gj.sc(json_list.size());
+//            RecyclerView.ItemAnimator animator = new DefaultItemAnimator() {
+//                @Override
+//                public boolean animateRemove(RecyclerView.ViewHolder holder) {
+//                    ObjectAnimator fadeAnimator = ObjectAnimator.ofFloat(holder.itemView, "alpha", 1f, 0f);
+//                    fadeAnimator.setDuration(getRemoveDuration());
+//                    fadeAnimator.addListener(new AnimatorListenerAdapter() {
+//                        @Override
+//                        public void onAnimationEnd(Animator animation) {
+//                            dispatchRemoveFinished(holder);
+//                            holder.itemView.setAlpha(1f);
+//                        }
+//                    });
+//                    fadeAnimator.start();
+//                    return false;
+//                }
+//            };
+//            binding.listRecycler.setItemAnimator(animator);
         }
 
         @NonNull
         @Override
-        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            return new ViewHolder(ListTextBinding.inflate(LayoutInflater.from(parent.getContext()),
+        public VH<ListTextBinding> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            return new VH<>(ListTextBinding.inflate(LayoutInflater.from(parent.getContext()),
                     parent, false));
         }
 
         @Override
-        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        public void onBindViewHolder(@NonNull VH<ListTextBinding> holder, int position) {
             String keyword = json_list.get(position);
             holder.binding.getRoot().setText(keyword);
             holder.binding.getRoot().setOnClickListener(v -> {
-                binding.toolbar.setText(keyword);
-                start(keyword);
+                searchView.setText(keyword);
+//                start(keyword);
             });
             holder.binding.getRoot().setOnCloseIconClickListener(view -> {
                 json_list.remove(keyword);
-                notifyItemRemoved(holder.getAdapterPosition());
+                notifyItemRemoved(holder.getBindingAdapterPosition());
                 wj.xrwb(wj.filesdri + wj.lishi_json, new Gson().toJson(json_list));
             });
         }
@@ -328,22 +317,12 @@ public class activity_search extends FragmentActivity<ActivitySearchBinding> {
         public int getItemCount() {
             return json_list.size();
         }
-
-        class ViewHolder extends RecyclerView.ViewHolder {
-            ListTextBinding binding;
-
-
-            public ViewHolder(ListTextBinding itemView) {
-                super(itemView.getRoot());
-                binding = itemView;
-            }
-        }
     }
 
-    @Override
-    public void onBackPressed() {
-        end();
-    }
+//    @Override
+//    public void onBackPressed() {
+//        end();
+//    }
 
     private void end() {
         if (binding.searchview.isShowing()) {

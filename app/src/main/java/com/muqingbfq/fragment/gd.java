@@ -3,59 +3,43 @@ package com.muqingbfq.fragment;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityOptions;
+import android.content.Context;
 import android.content.Intent;
-import android.content.res.ColorStateList;
-import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.Filter;
+import android.widget.Filterable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.palette.graphics.Palette;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.Target;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.muqingbfq.R;
 import com.muqingbfq.XM;
-import com.muqingbfq.api.playlist;
+import com.muqingbfq.adapter.AdapterGdH;
 import com.muqingbfq.api.resource;
-import com.muqingbfq.bfqkz;
 import com.muqingbfq.databinding.ActivityGdBinding;
 import com.muqingbfq.databinding.ListGdBBinding;
-import com.muqingbfq.databinding.ListGdBinding;
-import com.muqingbfq.main;
+import com.muqingbfq.mq.FragmentActivity;
+import com.muqingbfq.mq.VH;
 import com.muqingbfq.mq.gj;
-import com.muqingbfq.mq.wj;
 import com.muqingbfq.mq.wl;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-public class gd extends com.muqingbfq.mq.FragmentActivity<ActivityGdBinding> {
-    public static String gdid;
-    private final List<XM> list = new ArrayList<>();
-    public baseadapter adapter;
+public class gd extends FragmentActivity<ActivityGdBinding> {
+
+    public Adapter adapter = new Adapter();
     int k;
 
     public static void start(Activity context, String[] str, View view) {
@@ -67,32 +51,52 @@ public class gd extends com.muqingbfq.mq.FragmentActivity<ActivityGdBinding> {
         context.startActivity(intent, options.toBundle());
     }
 
+    public static void start(Context context, String[] str) {
+        Intent intent = new Intent(context, gd.class);
+        intent.putExtra("id", str[0]);
+        intent.putExtra("name", str[1]);
+        context.startActivity(intent);
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(getViewBinding().getRoot());
-        setToolbar();
-
-
+        setContentView();
         Intent intent = getIntent();
         binding.title.setText(intent.getStringExtra("name"));
-        adapter = new baseadapter(this, list);
-        k = (int) (getResources().getDisplayMetrics().widthPixels / getResources().getDisplayMetrics().density + 0.5f);
-
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, k / 120);
-        binding.lb.setLayoutManager(gridLayoutManager);
+//        k = (int) (getResources().getDisplayMetrics().widthPixels / getResources().getDisplayMetrics().density + 0.5f);
+//        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, k / 120);
+        binding.lb.setLayoutManager(new LinearLayoutManager(this));
         binding.lb.setAdapter(adapter);
+
+        binding.edittext.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (binding.edittext.getVisibility() == View.VISIBLE) {
+                    adapter.getFilter().filter(charSequence);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
         String id = intent.getStringExtra("id");
+
+        binding.fragmentDb.post(new Runnable() {
+            @Override
+            public void run() {
+                int height = binding.fragmentDb.getHeight();
+                binding.lb.setPadding(0,0,0,height);
+            }
+        });
         new start(id);
-    }
-
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            ActivityCompat.finishAfterTransition(this);
-        }
-        return true;
     }
 
     @Override
@@ -100,14 +104,13 @@ public class gd extends com.muqingbfq.mq.FragmentActivity<ActivityGdBinding> {
         return ActivityGdBinding.inflate(layoutInflater);
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     class start extends Thread {
         String id;
 
         public start(String id) {
             binding.recyclerview1Bar.setVisibility(View.VISIBLE);
             this.id = id;
-            list.clear();
+            adapter.list.clear();
             start();
         }
 
@@ -115,7 +118,7 @@ public class gd extends com.muqingbfq.mq.FragmentActivity<ActivityGdBinding> {
         public void run() {
             super.run();
             if (id.equals("排行榜")) {
-                resource.leaderboard(list);
+                resource.leaderboard(adapter.list);
             } else {
                 String hq = wl.hq("/search?keywords=" + id + "&limit=" + (k * 3) + "&type=1000");
                 try {
@@ -127,16 +130,16 @@ public class gd extends com.muqingbfq.mq.FragmentActivity<ActivityGdBinding> {
                         String id = jsonObject.getString("id");
                         String name = jsonObject.getString("name");
                         String coverImgUrl = jsonObject.getString("coverImgUrl");
-                        list.add(new XM(id, name, coverImgUrl));
+                        adapter.list.add(new XM(id, name, coverImgUrl));
                     }
                 } catch (Exception e) {
                     gj.sc(e);
                 }
             }
-            main.handler.post(() -> {
-                adapter.notifyDataSetChanged();
+            runOnUiThread(() -> {
+                binding.lb.setAdapter(adapter);
                 binding.recyclerview1Bar.setVisibility(View.GONE);
-                if (list.isEmpty()) {
+                if (adapter.list.isEmpty()) {
                     binding.recyclerview1Text.setVisibility(View.VISIBLE);
                     binding.recyclerview1Text.setOnClickListener(v -> new start(id));
                 } else {
@@ -146,207 +149,134 @@ public class gd extends com.muqingbfq.mq.FragmentActivity<ActivityGdBinding> {
         }
     }
 
-    public static class baseadapter extends RecyclerView.Adapter<VH> {
-        Activity context;
-        public List<XM> list;
-
-        public baseadapter(Activity context, List<XM> list) {
-            this.context = context;
-            this.list = list;
+/*
+    public void setonlong(int position) {
+        XM xm = list.get(position);
+        gj.sc(xm.name);
+        String[] stringArray = getResources()
+                .getStringArray(R.array.gd_list);
+        if (!wj.cz(wj.gd + xm.id)) {
+            stringArray = new String[]{"下载歌单"};
         }
-
-        boolean bool = false;
-
-        public baseadapter(Activity context, List<XM> list, boolean bool) {
-            this.context = context;
-            this.list = list;
-            this.bool = bool;
-        }
-
-        public void setonlong(int position) {
-            XM xm = list.get(position);
-            gj.sc(xm.name);
-            String[] stringArray = context.getResources()
-                    .getStringArray(R.array.gd_list);
-            if (!wj.cz(wj.gd + xm.id)) {
-                stringArray = new String[]{"下载歌单"};
-            }
-            String[] finalStringArray = stringArray;
-            new MaterialAlertDialogBuilder(context).
-                    setItems(stringArray, (dialog, id) -> {
-                        switch (finalStringArray[id]) {
-                            case "下载歌单":
-                                new Thread() {
-                                    @SuppressLint("NotifyDataSetChanged")
-                                    @Override
-                                    public void run() {
-                                        String hq = playlist.gethq(xm.id);
-                                        if (hq != null) {
-                                            try {
-                                                XM fh = resource.Playlist_content(xm.id);
-                                                JSONObject json = new JSONObject(hq);
-                                                json.put("name", fh.name);
-                                                json.put("picUrl", fh.picurl);
-                                                json.put("message", fh.message);
+        String[] finalStringArray = stringArray;
+        new MaterialAlertDialogBuilder(this).
+                setItems(stringArray, (dialog, id) -> {
+                    switch (finalStringArray[id]) {
+                        case "下载歌单":
+                            new Thread() {
+                                @SuppressLint("NotifyDataSetChanged")
+                                @Override
+                                public void run() {
+                                    String hq = playlist.gethq(xm.id);
+                                    if (hq != null) {
+                                        try {
+                                            XM fh = resource.Playlist_content(xm.id);
+                                            JSONObject json = new JSONObject(hq);
+                                            json.put("name", fh.name);
+                                            json.put("picUrl", fh.picurl);
+                                            json.put("message", fh.message);
 //                                                        json.put(fh.id, json);
-                                                wj.xrwb(wj.gd + xm.id, json.toString());
-                                                wode.addlist(fh);
-                                                main.handler.post(() -> notifyItemChanged(position));
-                                            } catch (JSONException e) {
-                                                gj.sc("list gd onclick thear " + e);
-                                            }
+                                            wj.xrwb(wj.gd + xm.id, json.toString());
+//                                            wode.addlist(fh);
+//                                            main.handler.post(() -> notifyItemChanged(position));
+                                        } catch (JSONException e) {
+                                            gj.sc("list gd onclick thear " + e);
                                         }
                                     }
-                                }.start();
-                                break;
-                            case "删除歌单":
-//                                        删除项目
-                                try {
-                                    wj.sc(wj.gd + xm.id);
-                                    wode.removelist(xm);
-                                } catch (Exception e) {
-                                    gj.sc(e);
                                 }
-                                break;
-                        }
-                        // 在这里处理菜单项的点击事件
-                    }).show();
-        }
-
-        @NonNull
-        @Override
-        public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            if (bool) {
-                return new VH(ListGdBBinding.bind(LayoutInflater.from(context)
-                        .inflate(R.layout.list_gd_b, parent, false)));
-            }
-            return new VH(ListGdBinding.bind(LayoutInflater.from(context)
-                    .inflate(R.layout.list_gd, parent, false)));
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull VH holder, int position) {
-            XM xm = list.get(position);
-            holder.itemView.setOnClickListener(new CARD(position));
-            Drawable color_kg = ContextCompat.getDrawable(context, R.drawable.zt);
-            if (xm.id.equals(gdid)) {
-                color_kg = ContextCompat.getDrawable(context, R.drawable.bf);
-            }
-            if (bool) {
-                holder.bindingB.text1.setText(xm.name);
-                holder.bindingB.text2.setText(xm.message);
-                Glide.with(holder.itemView.getContext())
-                        .load(xm.picurl)
-                        .apply(new RequestOptions()
-                                .placeholder(R.drawable.ic_launcher_foreground)
-                                .error(R.drawable.ic_launcher_foreground))
-                        .into(holder.bindingB.image);
-                holder.bindingB.kg.setOnClickListener(new KG(this, xm.id));
-            } else {
-                holder.binding.text1.setText(xm.name);
-                holder.binding.kg.setImageDrawable(color_kg);
-                holder.binding.kg.setOnClickListener(new KG(this, xm.id));
-                Glide.with(holder.itemView.getContext())
-                        .asBitmap()
-                        .load(xm.picurl)
-                        .addListener(new RequestListener<Bitmap>() {
-                            @Override
-                            public boolean onLoadFailed(@Nullable GlideException e, @Nullable Object model, @NonNull Target<Bitmap> target, boolean isFirstResource) {
-                                return false;
+                            }.start();
+                            break;
+                        case "删除歌单":
+//                                        删除项目
+                            try {
+                                wj.sc(wj.gd + xm.id);
+//                                wode.removelist(xm);
+                            } catch (Exception e) {
+                                gj.sc(e);
                             }
-
-                            @Override
-                            public boolean onResourceReady(@NonNull Bitmap resource, @NonNull Object model, Target<Bitmap> target, @NonNull DataSource dataSource, boolean isFirstResource) {
-                                Palette.from(resource).generate(palette -> {
-                                    int color = palette.getLightMutedColor(Color.WHITE);
-                                    GradientDrawable gradientDrawable = new GradientDrawable(
-                                            GradientDrawable.Orientation.BOTTOM_TOP,
-                                            new int[]{color, color});
-                                    gradientDrawable.setAlpha(128);
-                                    holder.binding.text1.setBackground(gradientDrawable);
-                                    holder.binding.getRoot().setRippleColor(ColorStateList.valueOf(color));
-                                });
-                                holder.binding.image.setImageBitmap(resource);
-                                return true;
-                            }
-                        })
-                        .into(holder.binding.image);
-            }
-            holder.itemView.setOnLongClickListener(v -> {
-                setonlong(position);
-                return false;
-            });
-        }
-
-        class KG implements View.OnClickListener {
-            RecyclerView.Adapter adapter;
-            String id;
-
-            public KG(RecyclerView.Adapter adapter, String id) {
-                this.adapter = adapter;
-                this.id = id;
-
-            }
-
-            @Override
-            public void onClick(View v) {
-                new Thread() {
-                    @SuppressLint("NotifyDataSetChanged")
-                    @Override
-                    public void run() {
-                        super.run();
-                        boolean an = playlist.hq(bfqkz.list, id);
-                        if (bfqkz.ms == 2) {
-                            Collections.shuffle(bfqkz.list);
-                        }
-                        main.handler.post(() -> {
-                            if (an) {
-                                com.muqingbfq.bfq_an.xyq();
-                                ((ImageView) v).setImageResource(R.drawable.bf);
-                                com.muqingbfq.fragment.gd.gdid = id;
-                            }
-                            adapter.notifyDataSetChanged();
-                        });
+                            break;
                     }
-                }.start();
+                    // 在这里处理菜单项的点击事件
+                }).show();
+    }
+*/
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuItem itemA = menu.add("搜索");
+        itemA.setTitle("搜索");
+        itemA.setIcon(R.drawable.sousuo);
+        itemA.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {
+            if (binding.edittext.getVisibility() == View.VISIBLE) {
+                binding.title.setVisibility(View.VISIBLE);
+                binding.edittext.setVisibility(View.GONE);
+                gj.ycjp(binding.edittext);
+                adapter.getFilter().filter("");
+            } else {
+                ActivityCompat.finishAfterTransition(this);
             }
+        } else if (itemId == 0) {
+            binding.title.setVisibility(View.GONE);
+            binding.edittext.setVisibility(View.VISIBLE);
+//            gj.tcjp(binding.edittext);
+        }
+        return true;
+    }
+
+
+    public class Adapter extends AdapterGdH implements Filterable {
+        private List<XM> list_ys;
+
+        public Adapter() {
+            list_ys = list;
         }
 
         @Override
-        public int getItemCount() {
-            return list.size();
+        public void onBindViewHolder(@NonNull VH<ListGdBBinding> holder, int position) {
+            super.onBindViewHolder(holder, position);
         }
 
-        class CARD implements View.OnClickListener {
-            int position;
+        @Override
+        public Filter getFilter() {
+            return new Filter() {
+                @Override
+                protected FilterResults performFiltering(CharSequence charSequence) {
+                    String charString = charSequence.toString();
+                    if (charString.isEmpty()) {
+                        //没有过滤的内容，则使用源数据
+                        list = list_ys;
+                    } else {
+                        List<XM> filteredList = new ArrayList<>();
+                        for (int i = 0; i < list_ys.size(); i++) {
+                            XM xm = list_ys.get(i);
+                            if (xm.name.contains(charString)) {
+                                filteredList.add(list_ys.get(i));
+                            }
+                        }
+                        list = filteredList;
+                    }
 
-            public CARD(int position) {
-                this.position = position;
-            }
+                    FilterResults filterResults = new FilterResults();
+                    filterResults.values = list;
+                    return filterResults;
+                }
 
-            @Override
-            public void onClick(View view) {
-                XM xm = list.get(position);
-                mp3.start(context, new String[]{xm.id, xm.name}, view);
-            }
+
+                @SuppressLint("NotifyDataSetChanged")
+                @SuppressWarnings("unchecked")
+                @Override
+                protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+                    list = (List<XM>) filterResults.values;
+                    binding.lb.setAdapter(adapter);
+                }
+            };
         }
-
     }
-
-    static class VH extends RecyclerView.ViewHolder {
-        public ListGdBinding binding;
-
-        public VH(@NonNull ListGdBinding itemView) {
-            super(itemView.getRoot());
-            binding = itemView;
-        }
-
-        ListGdBBinding bindingB;
-
-        public VH(@NonNull ListGdBBinding itemView) {
-            super(itemView.getRoot());
-            bindingB = itemView;
-        }
-    }
-
 }

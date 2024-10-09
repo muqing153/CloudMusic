@@ -19,7 +19,7 @@ public class sz {
     @SuppressLint("NonConstantResourceId")
     public static void switch_sz(Context context, int id) {
         if (id == R.id.a) {
-            gj.llq(context, "https://github.com/muqing153/Cloud_music");
+            gj.llq(context, "https://github.com/muqing153/CloudMusic");
         } else if (id == R.id.b) {
             context.startActivity(new Intent(context, com.muqingbfq.sz.class));
 //                    设置中心

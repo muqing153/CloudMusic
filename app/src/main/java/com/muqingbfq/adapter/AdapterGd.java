@@ -46,6 +46,7 @@ public class AdapterGd extends RecyclerView.Adapter<VH<ListGdBinding>> {
 
     public List<XM> list = new ArrayList<>();
 
+
     @NonNull
     @Override
     public VH<ListGdBinding> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -55,12 +56,7 @@ public class AdapterGd extends RecyclerView.Adapter<VH<ListGdBinding>> {
     @Override
     public void onBindViewHolder(@NonNull VH<ListGdBinding> holder, int position) {
         XM xm = list.get(position);
-        holder.itemView.setOnClickListener(v -> {
-            XM xm1 = list.get(position);
-//                mp3.start(v.getContext(), new String[]{xm.id, xm.name}, v);
-        });
-
-
+        holder.itemView.setOnClickListener(v -> mp3.start(v.getContext(), new String[]{xm.id, xm.name}));
         Glide.with(holder.itemView.getContext())
                 .asBitmap()
                 .load(xm.picurl)
@@ -116,7 +112,10 @@ public class AdapterGd extends RecyclerView.Adapter<VH<ListGdBinding>> {
                             player.prepare();
                             player.seekTo(0,0);
                             player.play();
-
+                            //保存播放列表
+                            PlaybackService.list.clear();
+                            PlaybackService.list.addAll(an);
+                            PlaybackService.ListSave();
                         });
                     }
                 }.start();

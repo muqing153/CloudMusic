@@ -32,7 +32,7 @@ public class fragment_clean extends FragmentActivity<ActivityCleanBinding> {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView();
-        setToolbar();
+//        setToolbar();
         UI();
     }
 

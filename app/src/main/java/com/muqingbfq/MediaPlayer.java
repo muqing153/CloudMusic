@@ -56,10 +56,6 @@ public class MediaPlayer extends android.media.MediaPlayer {
             super.pause();
 //            bfq.isPlaying = false;
         }
-
-        if (bfqkz.notify != null) {
-            bfqkz.notify.tzl_button();
-        }
     }
 
     @Override
@@ -71,10 +67,7 @@ public class MediaPlayer extends android.media.MediaPlayer {
             return;
         }
         super.start();
-        
-        if (bfqkz.notify != null) {
-            bfqkz.notify.tzl_button();
-        }
+
 //        bfq.isPlaying = true;
     }
 
@@ -85,12 +78,6 @@ public class MediaPlayer extends android.media.MediaPlayer {
         prepare();
         start();
         bfqkz.xm = mp3;
-        main.handler.post(() -> {
-            bfui();
-            if (bfqkz.notify != null) {
-                bfqkz.notify.tzl();
-            }
-        });
 
         new Thread() {
             @Override
@@ -138,9 +125,6 @@ public class MediaPlayer extends android.media.MediaPlayer {
                         } catch (Exception a) {
                             gj.sc(getClass() + " yc:" + a);
                         }
-                        if (bfqkz.notify != null) {
-                            bfqkz.notify.setbitmap(bitmap);
-                        }
                         return false;
                     }
 
@@ -148,9 +132,6 @@ public class MediaPlayer extends android.media.MediaPlayer {
                     public boolean onResourceReady(@NonNull Bitmap bitmap, @NonNull Object model, Target<Bitmap> target,
                                                    @NonNull DataSource dataSource,
                                                    boolean isFirstResource) {
-                        if (bfqkz.notify != null) {
-                            bfqkz.notify.setbitmap(bitmap);
-                        }
                         return false;
                     }
                 })
@@ -162,9 +143,6 @@ public class MediaPlayer extends android.media.MediaPlayer {
         if (bflb_db.adapter != null) {
 //            bflb_db.adapter.
             bflb_db.adapter.notifyDataSetChanged();
-        }
-        if (mp3.adapter != null) {
-            mp3.adapter.notifyDataSetChanged();
         }
     }
 }

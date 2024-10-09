@@ -13,34 +13,36 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
 
 import com.dirror.lyricviewx.LyricEntry;
 import com.dirror.lyricviewx.LyricViewX;
-import com.google.android.material.card.MaterialCardView;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.muqingbfq.R;
+import com.muqingbfq.PlaybackService;
 import com.muqingbfq.bfqkz;
 import com.muqingbfq.databinding.FloatLrcviewBinding;
-import com.muqingbfq.main;
 
 import java.io.File;
 import java.lang.reflect.Type;
 
-public class FloatingLyricsService extends Service implements View.OnClickListener, View.OnTouchListener {
+public class FloatingLyricsService extends Service {
     private WindowManager windowManager;
     FloatLrcviewBinding binding;
 
     public Runnable updateSeekBar = new Runnable() {
         @Override
         public void run() {
+
+            if (PlaybackService.mediaSession == null || LyricViewX.lyricEntryList.isEmpty()) {
+                handler.postDelayed(this, 1000);
+                return;
+            }
             int index = 0;
             for (int i = 0; i < LyricViewX.lyricEntryList.size(); i++) {
                 LyricEntry lineLrc = LyricViewX.lyricEntryList.get(i);
-                if (lineLrc.time <= bfqkz.mt.getCurrentPosition()) {
+                if (lineLrc.time <= PlaybackService.mediaSession.getPlayer().getCurrentPosition()) {
                     index = i;
                 } else {
                     break;
@@ -51,7 +53,7 @@ public class FloatingLyricsService extends Service implements View.OnClickListen
                 binding.lrcView.setText(currentLrc.text);
                 if (currentLrc.secondText != null) {
                     binding.lrcViewMessage.setText(currentLrc.secondText);
-                }else{
+                } else {
                     binding.lrcViewMessage.setText("");
                 }
             }
@@ -97,18 +99,27 @@ public class FloatingLyricsService extends Service implements View.OnClickListen
                 | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
     }
 
+    private int initialY;
+    private float initialTouchY;
     @Override
     public void onCreate() {
         super.onCreate();
         lei = this;
-        File file = new File(wj.filesdri + "FloatingLyricsService.json");
         try {
+            File file = new File(wj.filesdri + "FloatingLyricsService.json");
             if (file.exists() && file.isFile()) {
                 String dqwb = wj.dqwb(file.toString());
                 Gson gson = new Gson();
                 Type type = new TypeToken<SETUP>() {
                 }.getType();
                 setup = gson.fromJson(dqwb, type);
+            } else {
+                setup = new SETUP();
+            }
+            if (setup.i == 0) {
+                //在Service中关闭自己
+                stopSelf();
+                return;
             }
             // 创建悬浮窗歌词的 View
 //        FloatLrcviewBinding
@@ -126,35 +137,29 @@ public class FloatingLyricsService extends Service implements View.OnClickListen
             );
 
             params.y = setup.Y;
-
             binding.getRoot().setAlpha(setup.Alpha);
             float v = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX,
                     setup.size,
                     getResources().getDisplayMetrics());
             binding.lrcView.setTextSize(v);
             binding.lrcView.setTextColor(Color.parseColor(setup.Color));
-            binding.lrcViewMessage.setTextSize(v-1.0f);
+            binding.lrcViewMessage.setTextSize(v - 1.0f);
             binding.lrcViewMessage.setTextColor(Color.parseColor(setup.Color));
-            binding.lock.setOnClickListener(this);
+            binding.lock.setColorFilter(Color.BLACK);
+            binding.lock.setOnClickListener(v1 -> setyc());
 //        params.gravity = Gravity.CENTER;
-
-
             // 获取 WindowManager 并将悬浮窗歌词添加到窗口中
             windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
             windowManager.addView(binding.getRoot(), params);
             if (setup.i == 2) {
                 setyc();
-
             } else {
                 show();
             }
-            /*
-            if (setup.i == 0)
-                setup.i = 1;
-                baocun();*/
             handler.post(updateSeekBar); // 在播放开始时启动更新进度
+
         } catch (Exception e) {
-            wj.sc(file.toString());
+            wj.sc(wj.filesdri + "FloatingLyricsService.json");
             gj.sc(getClass() + ":" + e);
         }
     }
@@ -162,6 +167,7 @@ public class FloatingLyricsService extends Service implements View.OnClickListen
     @Override
     public void onDestroy() {
         super.onDestroy();
+//        Service.stopSelf();
         // 在 Service 销毁时移除悬浮窗歌词
         if (windowManager != null && binding != null) {
             windowManager.removeView(binding.getRoot());
@@ -191,66 +197,45 @@ public class FloatingLyricsService extends Service implements View.OnClickListen
                 new Gson().toJson(setup));
     }
 
-    private int initialY;
-    private float initialTouchY;
-
     @SuppressLint("ClickableViewAccessibility")
-    @Override
-    public boolean onTouch(View view, MotionEvent motionEvent) {
-        switch (motionEvent.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                // 记录触摸事件的初始位置和坐标
-                initialY = params.y;
-                initialTouchY = motionEvent.getRawY();
-                return true;
-            case MotionEvent.ACTION_MOVE:
-                // 计算触摸事件的偏移量，将悬浮窗口的位置设置为初始位置加上偏移量
-                int offsetY = (int) (motionEvent.getRawY() - initialTouchY);
-                setup.Y = initialY + offsetY;
-                params.y = setup.Y;
-                windowManager.updateViewLayout(binding.getRoot(), params);
-                return true;
-            case MotionEvent.ACTION_UP:
-                baocun();
-                break;
-
-        }
-        return false;
-    }
-
-    @Override
-    public void onClick(View view) {
-        int id = view.getId();
-        if (id == R.id.kg) {
-            ImageView kg = (ImageView) view;
-            if (bfqkz.mt == null) {
-                return;
-            }
-            if (bfqkz.mt.isPlaying()) {
-                bfqkz.mt.pause();
-                kg.setImageResource(R.drawable.zt);
-            } else {
-                bfqkz.mt.start();
-                kg.setImageResource(R.drawable.bf);
-            }
-        } else if (id == R.id.lock) {
-            setyc();
-        }
-    }
-
     public void setyc() {
         setup.i = 2;
         params.flags = lock();
         binding.lock.setVisibility(View.GONE);
+        binding.getRoot().setCardBackgroundColor(Color.parseColor("#00FFFFFF"));
+        binding.getRoot().setOnTouchListener(null);
+        params.type = Build.VERSION.SDK_INT < Build.VERSION_CODES.O ?
+                WindowManager.LayoutParams.TYPE_SYSTEM_ALERT : WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
+//将alpha设置为最大遮挡不透明度
+        params.alpha = 0.8f;
         windowManager.updateViewLayout(binding.getRoot(), params);
         baocun();
     }
 
-    @SuppressLint("CheckResult")
+    @SuppressLint({"CheckResult", "ClickableViewAccessibility"})
     public void show() {
         setup.i = 1;
         params.flags = lock();
         binding.lock.setVisibility(View.VISIBLE);
+        binding.getRoot().setCardBackgroundColor(Color.parseColor("#FFFFFF"));
+        binding.getRoot().setOnTouchListener((v12, event) -> {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    // 获取初始Y位置和初始触摸Y坐标
+                    initialY = params.y;
+                    initialTouchY = event.getRawY();
+                    return true;
+
+                case MotionEvent.ACTION_MOVE:
+                    // 手指在Y轴移动时，计算新的Y位置
+                    params.y = initialY + (int) (event.getRawY() - initialTouchY);
+                    // 更新悬浮窗的Y轴位置
+                    setup.Y = params.y;
+                    windowManager.updateViewLayout(binding.getRoot(), params);
+                    return true;
+            }
+            return true;
+        });
         windowManager.updateViewLayout(binding.getRoot(), params);
         baocun();
     }

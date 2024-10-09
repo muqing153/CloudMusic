@@ -68,6 +68,13 @@ public class gd_adapter extends Fragment<FragmentGdBinding> {
         binding.recyclerview2.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.recyclerview2.setNestedScrollingEnabled(false);
         binding.recyclerview2.setAdapter(adapterMp3);
+//        requireActivity().findViewById(R.id.linearLayout4).post(new Runnable() {
+//            @Override
+//            public void run() {
+//                binding.recyclerview2.setPadding(0, 0, 0,
+//                        requireActivity().findViewById(R.id.linearLayout4).getHeight());
+//            }
+//        });
     }
     private class sx implements Runnable {
         @SuppressLint("NotifyDataSetChanged")

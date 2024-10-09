@@ -9,6 +9,7 @@
     android:orientation="vertical"
     tools:context=".home">
 
+
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -28,19 +29,13 @@
                 app:layout_scrollFlags="exitUntilCollapsed" />
         </com.google.android.material.appbar.AppBarLayout>
 
-        <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/viewPager"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipToPadding="false"
-            app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />
-
         <com.google.android.material.search.SearchView
             android:id="@+id/searchview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:hint="@string/search"
-            app:layout_anchor="@id/toolbar">
+            app:layout_anchor="@id/toolbar"
+            android:layout_marginBottom="51dp">
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -53,12 +48,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
-
                 <LinearLayout
                     android:id="@+id/xxbj1"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_margin="13dp"
+                    android:layout_marginHorizontal="9dp"
                     android:orientation="vertical">
 
                     <LinearLayout
@@ -96,37 +90,51 @@
                     android:id="@+id/search_fragment"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:visibility="gone" />
+                    android:visibility="gone"/>
             </RelativeLayout>
         </com.google.android.material.search.SearchView>
 
-        <LinearLayout
-            android:id="@+id/linearLayout4"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:alpha="0.9"
+            android:layout_height="match_parent"
             android:orientation="vertical"
-            app:layout_constraintBottom_toBottomOf="parent">
+            app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
-            <androidx.fragment.app.FragmentContainerView
-                android:id="@+id/fragment_db"
-                android:name="com.muqingbfq.fragment.bfq_db"
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/viewPager"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                app:layout_constraintBottom_toTopOf="@+id/linearLayout4"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <LinearLayout
+                android:id="@+id/linearLayout4"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                tools:layout="@layout/fragment_bfq_db" />
+                android:orientation="vertical"
+                app:layout_constraintBottom_toBottomOf="parent">
 
-            <com.google.android.material.bottomnavigation.BottomNavigationView
-                android:id="@+id/tablayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:contentDescription="@string/Playlist"
-                app:compatShadowEnabled="false"
-                app:elevation="1dp"
-                app:itemHorizontalTranslationEnabled="false"
-                app:labelVisibilityMode="selected"
-                app:menu="@menu/bottom_gd" />
-        </LinearLayout>
+                <androidx.fragment.app.FragmentContainerView
+                    android:id="@+id/fragment_db"
+                    android:name="com.muqingbfq.fragment.bfq_db"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:layout="@layout/fragment_bfq_db" />
+
+                <com.google.android.material.bottomnavigation.BottomNavigationView
+                    android:id="@+id/tablayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/Playlist"
+                    app:compatShadowEnabled="false"
+                    app:elevation="1dp"
+                    android:visibility="gone"
+                    app:itemHorizontalTranslationEnabled="false"
+                    app:labelVisibilityMode="selected"
+                    app:menu="@menu/bottom_gd" />
+            </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <com.google.android.material.navigation.NavigationView

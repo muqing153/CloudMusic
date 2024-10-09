@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -21,6 +22,7 @@ import com.muqingbfq.mq.AppCompatActivity;
 import com.muqingbfq.mq.gj;
 import com.muqingbfq.mq.wl;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Objects;
@@ -52,10 +54,26 @@ public class user_logs extends AppCompatActivity<ActivityUserLogsBinding> {
         setSupportActionBar(binding.toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         binding.login.setOnClickListener(view1 -> {
-            String nickname = binding.editUser.getText().toString();
-            if (TextUtils.isEmpty(nickname)) {
-                wl.setcookie(nickname);
+            if (!TextUtils.isEmpty(binding.editUser.getText())) {
+                wl.setcookie(binding.editUser.getText().toString());
             }
+            new Thread(() -> {
+                gj.sc(wl.Cookie);
+                String hq = wl.hq("/login/status?cookie=" + wl.Cookie);
+                try {
+                    JSONObject jsonObject = new JSONObject(hq);
+                    JSONObject data = jsonObject.getJSONObject("data");
+                    JSONObject account1 = data.getJSONObject("account");
+                    finish(true);
+
+                } catch (JSONException e) {
+                    gj.sc(e);
+                    runOnUiThread(() -> {
+                        gj.ycjp(binding.editUser);
+                        Toast.makeText(user_logs.this, "不成功的Cookie登陆", Toast.LENGTH_SHORT).show();
+                    });
+                }
+            }).start();
         });
         binding.button1.setOnClickListener(view -> {
             if (binding.layout1.getVisibility() == View.VISIBLE) {

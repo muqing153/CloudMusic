@@ -7,21 +7,21 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
+import android.view.LayoutInflater;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.muqingbfq.databinding.ActivityYcBinding;
+import com.muqingbfq.mq.AppCompatActivity;
 import com.muqingbfq.mq.gj;
 
-public class yc extends AppCompatActivity {
+public class yc extends AppCompatActivity<ActivityYcBinding> {
     public Object exception;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ActivityYcBinding binding = ActivityYcBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+        setContentView();
         Intent intent = getIntent();
         exception = intent.getStringExtra("e");
 
@@ -63,5 +63,10 @@ public class yc extends AppCompatActivity {
                 .setNegativeButton("无视", null)
                 .setPositiveButton("分享", null)
                 .show();
+    }
+
+    @Override
+    protected ActivityYcBinding getViewBindingObject(LayoutInflater layoutInflater) {
+        return ActivityYcBinding.inflate(layoutInflater);
     }
 }

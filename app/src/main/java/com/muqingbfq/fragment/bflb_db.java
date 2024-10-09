@@ -4,7 +4,6 @@ import static android.content.Context.WINDOW_SERVICE;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.ViewGroup;
@@ -19,17 +18,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.muqingbfq.MP3;
 import com.muqingbfq.PlaybackService;
 import com.muqingbfq.R;
-import com.muqingbfq.api.url;
 import com.muqingbfq.bfqkz;
 import com.muqingbfq.databinding.FragmentBflbDbBinding;
 import com.muqingbfq.databinding.ListMp3ABinding;
 import com.muqingbfq.list.MyViewHoder;
 import com.muqingbfq.main;
-import com.muqingbfq.mq.gj;
-import com.muqingbfq.mq.wl;
 import com.muqingbfq.yc;
 
 import java.util.ArrayList;
@@ -58,11 +53,7 @@ public class bflb_db extends BottomSheetDialog {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = FragmentBflbDbBinding.inflate(getLayoutInflater());
-
         setContentView(binding.getRoot());
-
-        // 计算高度，比如设定为 300dp 高度
-        int heightInDp = 300;
         // 设置高度
         DisplayMetrics displayMetrics = new DisplayMetrics();
         WindowManager windowManager = (WindowManager) getContext().getSystemService(WINDOW_SERVICE);
@@ -96,7 +87,9 @@ public class bflb_db extends BottomSheetDialog {
                     int fromPosition = viewHolder.getAbsoluteAdapterPosition();
                     int toPosition = target.getAbsoluteAdapterPosition();
                     // 在这里处理数据集的移动
-                    Collections.swap(bfqkz.list, fromPosition, toPosition);
+//                    Collections.swap(bfqkz.list, fromPosition, toPosition);
+                    Player player = PlaybackService.mediaSession.getPlayer();
+                    player.moveMediaItem(fromPosition, toPosition);
                     adapter.notifyItemMoved(fromPosition, toPosition);
                     return true; // 返回true表示已经处理了拖动
                 }

@@ -30,6 +30,7 @@ import androidx.annotation.Nullable;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.MediaMetadata;
 import androidx.media3.common.Player;
@@ -46,9 +47,12 @@ import com.muqingbfq.MP3;
 import com.muqingbfq.PlaybackService;
 import com.muqingbfq.R;
 import com.muqingbfq.bfq_an;
+import com.muqingbfq.bfqkz;
 import com.muqingbfq.databinding.ActivityMusicBinding;
+import com.muqingbfq.fragment.Media;
 import com.muqingbfq.main;
 import com.muqingbfq.mq.AppCompatActivity;
+import com.muqingbfq.mq.MusicViewModel;
 import com.muqingbfq.mq.gj;
 
 
@@ -81,15 +85,28 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
         super.onCreate(savedInstanceState);
         gestureDetector = new GestureDetector(this, this);
         setContentView();
-        ViewCompat.setOnApplyWindowInsetsListener(binding.getRoot(), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-//            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right,0);
-            return insets;
-        });
+
+
         // 获取屏幕的高度
         WindowManager windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
         windowManager.getDefaultDisplay().getMetrics(displayMetrics);
+        ViewCompat.setOnApplyWindowInsetsListener(binding.getRoot(), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+// 创建新的MarginLayoutParams
+            ViewGroup.LayoutParams layoutParams = binding.back.getLayoutParams();
+// 设置margin
+            ((ViewGroup.MarginLayoutParams) layoutParams).setMargins(0, systemBars.top, 0, 0);
+            binding.back.setLayoutParams(layoutParams);
+            if (gj.isTablet(this)) {
+                binding.image2.setLayoutParams(layoutParams);
+                ViewGroup.LayoutParams layoutParams1 = binding.cardview.getLayoutParams();
+                layoutParams1.width = displayMetrics.heightPixels / 2;
+                layoutParams1.height = displayMetrics.heightPixels / 2;
+
+            }
+            return insets;
+        });
+
         Minfloat = displayMetrics.heightPixels - displayMetrics.heightPixels / 3f;
         binding.kg.setOnClickListener(view -> Util.handlePlayPauseButtonAction(player));
         binding.xyq.setOnClickListener(v -> {
@@ -147,8 +164,15 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 isDrag = false;
-                long actualPosition = (seekBar.getProgress() * player.getDuration()) / 100;
-                player.seekTo(actualPosition);
+                int progress = seekBar.getProgress();
+                if (progress >= 100) {
+                    player.seekToNextMediaItem();
+                } else {
+
+                    long actualPosition = (progress * player.getDuration()) / 100;
+                    player.seekTo(actualPosition);
+                }
+
 
                 ValueAnimator animator = ValueAnimator.ofInt(TdtHeight, TdtHeight - 10);
                 animator.setDuration(300); // 设置动画持续时间为 300 毫秒
@@ -189,13 +213,11 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
 //        binding.cardview.setLayoutParams(layoutParams);
 
         binding.lrcView.setDraggable(true, time -> {
-            player.seekTo((int) time);
+            player.seekTo(time);
             return false;
         });
 
-        binding.lrcView.setOnSingerClickListener(() -> {
-            switchViews(binding.lrcView, binding.cardview);
-        });
+        binding.lrcView.setOnSingerClickListener(() -> switchViews(binding.lrcView, binding.cardview));
 
         binding.fragmentBfq.setOnTouchListener((v, event) -> {
             gestureDetector.onTouchEvent(event);
@@ -211,6 +233,10 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
             }
             return true;
         });
+
+        //播放列表
+        binding.bfqListMp3.setOnClickListener(v -> com.muqingbfq.fragment.bflb_db.start(v.getContext()));
+
     }
 
     //是否拖动
@@ -232,7 +258,7 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
                     }
                     binding.tdt.setProgress(progress);
 //                    binding.tdt.setMax(100);
-                    binding.lrcView.updateTime(currentPosition,false);
+                    binding.lrcView.updateTime(currentPosition, true);
                     binding.timeA.setText(bfq_an.getTime(duration));
                     binding.timeB.setText(bfq_an.getTime(currentPosition));
                 }
@@ -265,10 +291,7 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
             if (events.contains(Player.EVENT_MEDIA_ITEM_TRANSITION)) {
                 MediaItem currentMediaItem = player.getCurrentMediaItem();
                 if (currentMediaItem != null) {
-                    String title = currentMediaItem.mediaMetadata.title != null
-                            ? currentMediaItem.mediaMetadata.title.toString()
-                            : "未知曲目";
-                    gj.sc("播放下一曲: " + title);
+                    gj.sc("播放下一曲: ");
                 }
             }
 
@@ -284,6 +307,11 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
                 switch (playbackState) {
                     case Player.STATE_READY:
                         if (player.getPlayWhenReady()) {
+                            if (bfqkz.lrc != null) {
+                                String[] strings = Media.loadLyric();
+                                binding.lrcView.loadLyric(strings[0], strings[1]);
+                            }
+
                             gj.sc("播放开始");
                         }
                         break;
@@ -314,16 +342,17 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
     @Override
     protected void onPause() {
         super.onPause();
+        // 取消所有未完成的任务
         main.handler.removeCallbacks(runnable);
     }
 
-    private void updateUI(Player player) {
 
+    private void updateUI(Player player) {
         boolean shouldShowPlayButton = Util.shouldShowPlayButton(player);
         binding.kg.setImageResource(shouldShowPlayButton ? R.drawable.zt : R.drawable.bf);
         // 获取当前播放的 MediaItem
         MediaItem currentMediaItem = player.getCurrentMediaItem();
-        if (currentMediaItem != null) {
+        if (currentMediaItem != null && !isFinishing() && !isDestroyed()) {
             MediaMetadata metadata = currentMediaItem.mediaMetadata;
             String title = metadata.title != null ? metadata.title.toString() : "没有名字的音乐？";
             String artist = metadata.artist != null ? metadata.artist.toString() : "未知艺术家";
@@ -338,7 +367,7 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
                     .addListener(new RequestListener<Bitmap>() {
                         @Override
                         public boolean onLoadFailed(@Nullable GlideException e, @Nullable Object model, @NonNull Target<Bitmap> target, boolean isFirstResource) {
-                            return false;
+                            return true;
                         }
 
                         @Override
@@ -418,17 +447,12 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
         Drawable progress = layerDrawable.findDrawableByLayerId(android.R.id.progress);
         progress.setColorFilter(color, PorterDuff.Mode.SRC_IN);
 // 设置进度条背景的颜色
-/*        Drawable background = layerDrawable.findDrawableByLayerId(android.R.id.background);
-        background.setColorFilter(Color.GRAY, PorterDuff.Mode.SRC_IN);*/
+        Drawable background = layerDrawable.findDrawableByLayerId(android.R.id.background);
+        background.setColorFilter(Color.GRAY, PorterDuff.Mode.SRC_IN);
     }
 
     //触摸
-
-
-//    @Override
-//    public boolean onTouchEvent(MotionEvent event) {
-//        return gestureDetector.onTouchEvent(event);
-//    }
+//    public boolean onTouchEvent(MotionEvent event)
 
 
     @Override
@@ -451,12 +475,16 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
     }
 
     boolean isswitchViews = false;//是否在执行中
+
     private void switchViews(final View view1, final View view2) {
         // 隐藏view1并显示view2的动画效果
-        if (isswitchViews) {
+        if (isswitchViews || gj.isTablet(this)) {
             return;
         }
         isswitchViews = true;
+        if (view2.getId() == binding.lrcView.getId()) {
+            binding.lrcView.updateTime(player.getCurrentPosition(), true);
+        }
         view1.animate()
                 .alpha(0.0f)
                 .setDuration(500)
@@ -466,8 +494,12 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
                         view1.setVisibility(View.GONE);
                         view2.setVisibility(View.VISIBLE);
                         view2.setAlpha(0.0f);
-                        view2.animate().alpha(1.0f).setDuration(500).setListener(null);
-                        isswitchViews = false;
+                        view2.animate().alpha(1.0f).setDuration(500).setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                isswitchViews = false;
+                            }
+                        });
                     }
                 });
     }

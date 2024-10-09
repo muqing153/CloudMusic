@@ -138,6 +138,25 @@ public class bfq_db extends Fragment<FragmentBfqDbBinding> implements GestureDet
     @Override
     public boolean onScroll(@Nullable MotionEvent motionEvent, @NonNull MotionEvent motionEvent1,
                             float v, float v1) {
+        if (PlaybackService.mediaSession == null) {
+            return false;
+        }
+        Player player = PlaybackService.mediaSession.getPlayer();
+        if (player.getMediaItemCount() == 0) {
+            //如果只有一首曲子
+            return false;
+        }
+        if (player.getCurrentMediaItemIndex() == 0) {
+            //如果没有上一曲
+            if (v < 0) {
+                v = 0;
+            }
+        }else if (player.getCurrentMediaItemIndex() == player.getMediaItemCount() - 1) {
+            //如果没有下一曲
+            if (v > 0) {
+                v = 0;
+            }
+        }
         binding.linearLayout.setTranslationX(binding.linearLayout.getTranslationX() - v);
         return false;
     }
@@ -151,15 +170,18 @@ public class bfq_db extends Fragment<FragmentBfqDbBinding> implements GestureDet
                            @NonNull MotionEvent e2, float v, float v1) {
         float distance = e1.getX() - e2.getX();
         float threshold = getResources().getDisplayMetrics().widthPixels / 2.0f;
+
+        if (PlaybackService.mediaSession == null) {
+            return false;
+        }
+        Player player = PlaybackService.mediaSession.getPlayer();
         // 判断手势方向并限制滑动距离
         if (distance > threshold) {
-            // 向左滑动
-            // 在这里添加你的逻辑代码
-            bfq_an.xyq();
+            // 向左滑动 下一曲
+            player.seekToNextMediaItem();
         } else if (distance < -threshold) {
-            // 向右滑动
-            // 在这里添加你的逻辑代码
-            bfq_an.syq();
+            // 向右滑动 上一曲
+            player.seekToPreviousMediaItem();
         }
         return true;
     }

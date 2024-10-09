@@ -151,10 +151,19 @@ public class EditViewDialog {
         main.handler.post(() -> alertDialog.dismiss());
     }
 
+    /**
+     * 取消按钮
+     * @param a
+     */
     public void setNegative(View.OnClickListener a) {
         buttona.setOnClickListener(a);
     }
 
+    /**
+     * 确定按钮
+     * @param a
+     * @return
+     */
     public EditViewDialog setPositive(View.OnClickListener a) {
         buttonb.setOnClickListener(a);
         return this;

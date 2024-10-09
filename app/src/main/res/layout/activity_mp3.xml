@@ -1,48 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/toolbar"
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true">
 
-        <LinearLayout
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content">
 
-            <com.muqingbfq.view.Text
-                android:id="@+id/title"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/text"
-                android:transitionName="texst"
-                android:textSize="26sp" />
+                android:orientation="horizontal">
 
-            <EditText
-                android:id="@+id/edittext"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:autofillHints="text"
-                android:backgroundTint="@color/text_tm"
-                android:hint="输入需要搜索的音乐"
-                android:imeOptions="actionSearch"
-                android:inputType="text"
-                android:maxLines="1"
-                android:visibility="gone"
-                tools:ignore="HardcodedText" />
-        </LinearLayout>
-    </com.google.android.material.appbar.MaterialToolbar>
+                <com.muqingbfq.view.Text
+                    android:id="@+id/title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text"
+                    android:textSize="26sp"
+                    android:transitionName="texst" />
+
+                <EditText
+                    android:id="@+id/edittext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:autofillHints="text"
+                    android:backgroundTint="@color/text_tm"
+                    android:hint="输入需要搜索的音乐"
+                    android:imeOptions="actionSearch"
+                    android:inputType="text"
+                    android:maxLines="1"
+                    android:visibility="gone"
+                    tools:ignore="HardcodedText" />
+            </LinearLayout>
+        </com.google.android.material.appbar.MaterialToolbar>
+    </com.google.android.material.appbar.AppBarLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_height="match_parent"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
         <ProgressBar
             android:id="@+id/recyclerview1_bar"
@@ -64,8 +69,9 @@
             android:id="@+id/lb"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:requiresFadingEdge="vertical"
-            android:fadingEdgeLength="50dp" />
+            android:clipToPadding="false" />
+        <!--        android:requiresFadingEdge="vertical"-->
+        <!--        android:fadingEdgeLength="50dp"-->
     </RelativeLayout>
 
     <androidx.fragment.app.FragmentContainerView
@@ -73,5 +79,7 @@
         android:name="com.muqingbfq.fragment.bfq_db"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:alpha="0.9"
         tools:layout="@layout/fragment_bfq_db" />
-</LinearLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

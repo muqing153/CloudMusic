@@ -27,6 +27,7 @@ import com.google.android.material.bottomsheet.BottomSheetDragHandleView;
 import com.muqingbfq.databinding.ActivityAboutSoftwareBinding;
 import com.muqingbfq.databinding.ListKaifazheBinding;
 import com.muqingbfq.mq.AppCompatActivity;
+import com.muqingbfq.mq.FragmentActivity;
 import com.muqingbfq.mq.gj;
 import com.muqingbfq.mq.wj;
 
@@ -37,7 +38,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-public class activity_about_software extends AppCompatActivity<ActivityAboutSoftwareBinding> {
+public class activity_about_software extends FragmentActivity<ActivityAboutSoftwareBinding> {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,16 +63,11 @@ public class activity_about_software extends AppCompatActivity<ActivityAboutSoft
             while ((ling = bufferedReader.readLine()) != null) {
                 stringBuilder.append(ling);
             }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                viewById.setText(Html.fromHtml(stringBuilder.toString(), Html.FROM_HTML_MODE_LEGACY));
-            } else {
-                viewById.setText(Html.fromHtml(stringBuilder.toString()));
-            }
+            viewById.setText(Html.fromHtml(stringBuilder.toString(), Html.FROM_HTML_MODE_LEGACY));
             open.close();
             bufferedReader.close();
 
         } catch (IOException e) {
-            e.printStackTrace();
             viewById.setText(String.format("错误:%s", e));
         }
     }

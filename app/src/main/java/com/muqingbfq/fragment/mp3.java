@@ -8,49 +8,37 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.muqingbfq.MP3;
 import com.muqingbfq.R;
-import com.muqingbfq.api.FileDownloader;
+import com.muqingbfq.adapter.AdapterMp3;
 import com.muqingbfq.api.playlist;
-import com.muqingbfq.bfq;
-import com.muqingbfq.bfq_an;
-import com.muqingbfq.bfqkz;
 import com.muqingbfq.databinding.ActivityMp3Binding;
-import com.muqingbfq.databinding.ListMp3Binding;
-import com.muqingbfq.list.MyViewHoder;
+import com.muqingbfq.databinding.ListMp3ImageBinding;
 import com.muqingbfq.main;
 import com.muqingbfq.mq.FragmentActivity;
+import com.muqingbfq.mq.VH;
 import com.muqingbfq.mq.gj;
-import com.muqingbfq.mq.wj;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
 public class mp3 extends FragmentActivity<ActivityMp3Binding> {
     private List<MP3> list = new ArrayList<>();
     private List<MP3> list_ys = new ArrayList<>();
-    public static Adapter adapter;
+    public Adapter adapter;
 
     public static void start(Activity context, String[] str, View view) {
         ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(context,
@@ -60,11 +48,18 @@ public class mp3 extends FragmentActivity<ActivityMp3Binding> {
         intent.putExtra("name", str[1]);
         context.startActivity(intent, options.toBundle());
     }
+
+    public static void start(Context context, String[] strings) {
+        Intent intent = new Intent(context, mp3.class);
+        intent.putExtra("id", strings[0]);
+        intent.putExtra("name", strings[1]);
+        context.startActivity(intent);
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(getViewBinding().getRoot());
-        setToolbar();
+        setContentView();
         Intent intent = getIntent();
         binding.title.setText(intent.getStringExtra("name"));
         String id = intent.getStringExtra("id");
@@ -72,7 +67,7 @@ public class mp3 extends FragmentActivity<ActivityMp3Binding> {
         binding.lb.setLayoutManager(new LinearLayoutManager(this));
         binding.lb.setAdapter(adapter);
         new start(id);
-        binding.edittext.addTextChangedListener(new TextWatcher()  {
+        binding.edittext.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -88,6 +83,29 @@ public class mp3 extends FragmentActivity<ActivityMp3Binding> {
             @Override
             public void afterTextChanged(Editable editable) {
 
+            }
+        });
+
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+
+            @Override
+            public void handleOnBackPressed() {
+                if (binding.edittext.getVisibility() == View.VISIBLE) {
+                    binding.title.setVisibility(View.VISIBLE);
+                    binding.edittext.setVisibility(View.GONE);
+                    gj.ycjp(binding.edittext);
+                    adapter.getFilter().filter("");
+                } else {
+                    finish();
+//                    ActivityCompat.finishAfterTransition(mp3.this);
+                }
+            }
+        });
+        binding.fragmentDb.post(new Runnable() {
+            @Override
+            public void run() {
+                int height = binding.fragmentDb.getHeight();
+                binding.lb.setPadding(0, 0, 0, height);
             }
         });
     }
@@ -124,19 +142,6 @@ public class mp3 extends FragmentActivity<ActivityMp3Binding> {
             gj.tcjp(binding.edittext);
         }
         return true;
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (binding.edittext.getVisibility() == View.VISIBLE) {
-            binding.title.setVisibility(View.VISIBLE);
-            binding.edittext.setVisibility(View.GONE);
-            gj.ycjp(binding.edittext);
-            adapter.getFilter().filter("");
-        } else {
-            ActivityCompat.finishAfterTransition(this);
-        }
-
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -181,9 +186,9 @@ public class mp3 extends FragmentActivity<ActivityMp3Binding> {
             });
         }
     }
-    public static class Adapter extends RecyclerView.Adapter<MyViewHoder> implements Filterable {
 
-        private List<MP3> list;
+    public class Adapter extends AdapterMp3 implements Filterable {
+
         private List<MP3> list_ys;
 
         public Adapter(List<MP3> list) {
@@ -191,99 +196,9 @@ public class mp3 extends FragmentActivity<ActivityMp3Binding> {
             list_ys = list;
         }
 
-        @NonNull
         @Override
-        public MyViewHoder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            return new MyViewHoder(ListMp3Binding.bind(LayoutInflater.from(parent.getContext()).
-                    inflate(R.layout.list_mp3,
-                            parent, false)));
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull MyViewHoder holder, int position) {
-            MP3 x = list.get(position);
-            holder.binding.text1.setText(String.valueOf(position + 1));
-            holder.binding.name.setText(x.name);
-            holder.binding.zz.setText(x.zz);
-            if (bfqkz.xm != null && x.id.equals(bfqkz.xm.id)) {
-                TypedValue typedValue = new TypedValue();
-                holder.itemView.getContext().getTheme().resolveAttribute(
-                        com.google.android.material.R.attr.colorSurfaceVariant, typedValue, true);
-                int colorSurface = typedValue.data;
-                // 这里 colorSurface 就是你要找的颜色值
-                holder.binding.getRoot().setCardBackgroundColor(colorSurface);
-            }else{
-                holder.binding.getRoot().setCardBackgroundColor(ContextCompat
-                        .getColor(holder.itemView.getContext(), android.R.color.transparent));
-            }
-//            holder.binding.zz.setTextColor(color);
-            holder.itemView.setOnClickListener(view -> {
-                if (bfqkz.list!=list) {
-                    bfqkz.list.clear();
-                    bfqkz.list.addAll(list);
-                }
-                bfq.startactivity(holder.getContext(), x);
-            });
-            holder.itemView.setOnLongClickListener(view -> {
-                List<String> stringList = new ArrayList<>();
-                boolean getlike = bfq_an.getlike(x);
-                if (getlike) {
-                    stringList.add("取消喜欢");
-                } else {
-                    stringList.add("喜欢歌曲");
-                }
-                if (wj.cz(wj.mp3 + x.id)) {
-                    stringList.add("删除下载");
-                } else {
-                    stringList.add("下载歌曲");
-                }
-                stringList.add("复制名字");
-                String[] array = stringList.toArray(new String[0]);
-                new MaterialAlertDialogBuilder(view.getContext()).
-                        setItems(array, (dialog, id) -> {
-                            switch (array[id]) {
-                                case "下载歌曲":
-                                    new FileDownloader(view.getContext()).downloadFile(x);
-                                    break;
-                                case "删除下载":
-                                    wj.sc(wj.mp3 + x.id);
-/*                                    if (sc&&) {
-                                        list.remove(position);
-                                        notifyItemRemoved(position);
-                                    }*/
-                                    break;
-                                case "喜欢歌曲":
-                                case "取消喜欢":
-                                    try {
-                                        Gson gson = new Gson();
-                                        Type type = new TypeToken<List<MP3>>() {
-                                        }.getType();
-                                        List<MP3> list = gson.fromJson(wj.dqwb(wj.gd + "mp3_like.json"), type);
-                                        if (list == null) {
-                                            list = new ArrayList<>();
-                                        }
-                                        if (list.contains(x))
-                                            list.remove(x);
-                                        else
-                                            list.add(x);
-                                        wj.xrwb(wj.gd + "mp3_like.json", gson.toJson(list));
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
-                                    break;
-                                case "复制名字":
-                                    gj.fz(view.getContext(), x.name);
-                                    break;
-
-                            }
-                        }).show();
-                return false;
-            });
-        }
-
-        @Override
-        public int getItemCount() {
-            return list.size();
+        public void onBindViewHolder(@NonNull VH<ListMp3ImageBinding> holder, int position) {
+            super.onBindViewHolder(holder, position);
         }
 
         @Override

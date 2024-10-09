@@ -35,8 +35,6 @@ public class bfqkz extends MediaBrowserServiceCompat {
     public static boolean like_bool;
     public static String lrc;
     @SuppressLint("StaticFieldLeak")
-    public static com.muqingbfq.mq.NotificationManagerCompat notify;
-
     public static int getmti() {
         if (xm == null) {
             return 0;

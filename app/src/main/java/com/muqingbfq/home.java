@@ -1,11 +1,7 @@
 package com.muqingbfq;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.ComponentName;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -14,20 +10,28 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
+import androidx.core.graphics.Insets;
 import androidx.core.view.GravityCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.media3.session.MediaController;
 import androidx.media3.session.SessionToken;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.google.android.flexbox.AlignItems;
+import com.google.android.flexbox.FlexDirection;
+import com.google.android.flexbox.FlexWrap;
+import com.google.android.flexbox.FlexboxLayoutManager;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.search.SearchView;
 import com.google.common.base.Strings;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.muqingbfq.databinding.ActivityHomeBinding;
 import com.muqingbfq.fragment.gd_adapter;
 import com.muqingbfq.fragment.search;
@@ -45,6 +49,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class home extends AppCompatActivity<ActivityHomeBinding> {
+    @SuppressLint("StaticFieldLeak")
+    public static View viewTop, viewButton;
 
     @Override
     protected ActivityHomeBinding getViewBindingObject(LayoutInflater layoutInflater) {
@@ -53,44 +59,24 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-//        setTheme(R.style.Theme_muqing);
+        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
-
-        // 启动前台服务时，确保类型为媒体播放
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-//            startForegroundService(new Intent(this, YourForegroundService.class)
-//                    .putExtra("EXTRA_SERVICE_TYPE", ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK));
-//        } else {
-//            startService(new Intent(this, YourForegroundService.class));
-//        }
-
         SessionToken sessionToken =
                 new SessionToken(this, new ComponentName(this, PlaybackService.class));
         ListenableFuture<MediaController> controllerFuture =
                 new MediaController.Builder(this, sessionToken).buildAsync();
-//        controllerFuture.addListener(() -> {
-//
-//        }, MoreExecutors.directExecutor());
+        controllerFuture.addListener(() -> {
 
-        wl.Cookie = main.sp.getString("Cookie", "");
-        if (wl.Cookie.isEmpty()) {
-            new Thread() {
+        }, MoreExecutors.directExecutor());
+        if (Strings.isNullOrEmpty(wl.Cookie)) {
+
+            new HomeSteer(this) {
                 @Override
-                public void run() {
-                    super.run();
-                    String hq = wl.hq("/register/anonimous");
-                    try {
-                        JSONObject jsonObject = new JSONObject(hq);
-                        wl.setcookie(jsonObject.getString("cookie"));
-                        runOnUiThread(() -> UI());
-                    } catch (Exception e) {
-                        com.muqingbfq.mq.gj.sc(e);
-                    }
+                public void Yes() {
+                    UI();
                 }
-            }.start();
-        } else {
-            UI();
-        }
+            };
+        } else UI();
     }
 
     @Override
@@ -101,15 +87,18 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
 
     public void toolbar() {
         setSupportActionBar(binding.toolbar);
-//        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-//                this, binding.chct, binding.toolbar, R.string.app_name, R.string.app_name);
-//        binding.chct.addDrawerListener(toggle);
-//        toggle.syncState();
-//        binding.toolbar.setOnClickListener(v -> activity_search.start(home.this, v));
     }
 
     public void UI() {
         setContentView();
+        ViewCompat.setOnApplyWindowInsetsListener(binding.getRoot(), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+//            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            v.setPadding(systemBars.left, 0, systemBars.right, 0);
+            binding.chb.setPadding(0, systemBars.top, 0, 0);
+            return insets;
+        });
+//        viewTop=binding.
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
@@ -141,7 +130,7 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
                 return list.size();
             }
         });
-        binding.viewPager.setSaveEnabled(false);
+//        binding.viewPager.setSaveEnabled(false);
 // 将 ViewPager2 绑定到 TabLayou
         binding.tablayout.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
@@ -165,16 +154,14 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
                 }
             }
         });
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK)
-                    != PackageManager.PERMISSION_GRANTED) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                    ActivityCompat.requestPermissions(this,
-                            new String[]{Manifest.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK},
-                            1001);
-                }
-            }
-        }
+        binding.linearLayout4.post(() -> {
+            int height = binding.linearLayout4.getHeight();
+            binding.viewPager.setPadding(0, 0, 0, height);
+        });
+        binding.fragmentDb.post(() -> {
+            int height = binding.fragmentDb.getHeight();
+            binding.searchview.setPadding(0, 0, 0, height);
+        });
         toolbar();
         SearchUI();
 
@@ -191,13 +178,16 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
     public boolean issearchclicklist = false;//是否点击了列表项目
     //搜索建议列表
     private List<String> searchList = new ArrayList<>();
+
+    private activity_search.SearchRecordAdapter searchRecordAdapter;
+
     public void SearchUI() {
         binding.searchview
                 .getEditText()
                 .setOnEditorActionListener(
                         (v, actionId, event) -> {
-                            binding.toolbar.setText(binding.searchview.getText());
 //                            binding.searchview.hide();
+                            searchStart(binding.toolbar.getText().toString());
                             return false;
                         });
         binding.searchview.setOnMenuItemClickListener(
@@ -205,19 +195,43 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
                     // Handle menuItem click.
                     return true;
                 });
+        FlexboxLayoutManager manager = new FlexboxLayoutManager(this);
+        //设置主轴排列方式
+        manager.setFlexDirection(FlexDirection.ROW);
+        //设置是否换行
+        manager.setFlexWrap(FlexWrap.WRAP);
+        manager.setAlignItems(AlignItems.STRETCH);//历史记录的LayoutManager
+        binding.listRecycler.setNestedScrollingEnabled(false);
+        binding.listRecycler.setLayoutManager(manager);
         binding.searchview.addTransitionListener(
                 (searchView, previousState, newState) -> {
                     if (newState == SearchView.TransitionState.SHOWING) {
                         // Handle search view opened.
                         gj.sc("SHOWING");
                         binding.tablayout.setVisibility(View.GONE);
+                        // 添加 Fragment
+                        getSupportFragmentManager()
+                                .beginTransaction()
+                                .replace(binding.searchFragment.getId(), new search())
+                                .commit();
+                        searchRecordAdapter = new activity_search.SearchRecordAdapter(binding.searchview);
+                        binding.listRecycler.setAdapter(searchRecordAdapter);
                     } else if (newState == SearchView.TransitionState.SHOWN) {
                         gj.sc("SHOWN");
                     } else if (newState == SearchView.TransitionState.HIDING) {
-                        binding.tablayout.setVisibility(View.VISIBLE);
+                        if (!gj.isTablet(this)) {
+                            binding.tablayout.setVisibility(View.VISIBLE);
+                        }
+                        searchRecordAdapter = null;
+                        binding.listRecycler.setAdapter(null);
                         binding.searchFragment.setVisibility(View.GONE);
                         binding.searchRecycler.setVisibility(View.GONE);
                         binding.xxbj1.setVisibility(View.VISIBLE);
+                        // 移除当前显示的 Fragment
+                        getSupportFragmentManager().beginTransaction()
+                                .remove(getSupportFragmentManager()
+                                        .findFragmentById(binding.searchFragment.getId()))
+                                .commit();
                     }
                 });
         final Object o = new Object();
@@ -270,25 +284,43 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
                     binding.searchRecycler.setAdapter(null);
                     binding.searchRecycler.setVisibility(View.GONE);
                     binding.xxbj1.setVisibility(View.VISIBLE);
-                } else if (!issearchclicklist){
+                    binding.searchFragment.setVisibility(View.GONE);
+                } else if (!issearchclicklist) {
                     binding.searchRecycler.setVisibility(View.VISIBLE);
                     binding.xxbj1.setVisibility(View.GONE);
-                }else issearchclicklist = false;
+                    binding.searchFragment.setVisibility(View.GONE);
+                } else issearchclicklist = false;
 
             }
         });
         binding.toolbar.setNavigationIcon(R.drawable.menu);
+        binding.deleat.setOnClickListener(v -> new MaterialAlertDialogBuilder(
+                v.getContext())
+                .setTitle("删除")
+                .setMessage("清空历史记录？")
+                .setNegativeButton("取消", null)
+                .setPositiveButton("确定", (dialogInterface, ii) -> {
+                    searchRecordAdapter.json_list.clear();
+                    binding.listRecycler.setAdapter(searchRecordAdapter);
+                    com.muqingbfq.mq.wj.sc(com.muqingbfq.mq.wj.filesdri +
+                            com.muqingbfq.mq.wj.lishi_json);
+                })
+                .show());
 
     }
 
     public void searchStart(String name) {
+        issearchclicklist = true;
+        binding.toolbar.setText(binding.searchview.getText());
         if (!TextUtils.isEmpty(name)) {
             search sea = (search) getSupportFragmentManager().findFragmentById(binding.searchFragment.getId());
             binding.searchFragment.setVisibility(View.VISIBLE);
+            binding.searchRecycler.setVisibility(View.GONE);
             sea.sx(name);
-//            addSearchRecord(name);
+            activity_search.addSearchRecord(name, searchRecordAdapter.json_list, searchRecordAdapter);
         }
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.home, menu);
@@ -298,8 +330,8 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_search) {
-//            binding.searchview.show();
-            startActivity(new Intent(this, activity_search.class));
+            binding.searchview.show();
+//            startActivity(new Intent(this, activity_search.class));
         } else if (item.getItemId() == android.R.id.home) {
             //展开侧滑
             binding.chct.openDrawer(GravityCompat.START);

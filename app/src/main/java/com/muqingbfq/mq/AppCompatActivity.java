@@ -29,9 +29,7 @@ public abstract class AppCompatActivity<ViewBindingType extends ViewBinding> ext
 
     public void setContentView() {
         EdgeToEdge.enable(this);
-
         super.setContentView(getViewBinding().getRoot());
-//
 //        Window window = getWindow();
 ////        请求进行全屏布局+更改状态栏字体颜色
 //        //          获取程序是不是夜间模式
@@ -60,7 +58,7 @@ public abstract class AppCompatActivity<ViewBindingType extends ViewBinding> ext
         ViewCompat.setOnApplyWindowInsetsListener(binding.getRoot(), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
 //            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            v.setPadding(systemBars.left, 0, systemBars.right,0);
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right,0);
             return insets;
         });
     }

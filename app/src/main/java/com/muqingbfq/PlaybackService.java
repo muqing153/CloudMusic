@@ -30,9 +30,7 @@ import java.util.Objects;
 
 public class PlaybackService extends MediaSessionService {
     public static MediaSession mediaSession = null;
-    public static List<MP3> list = new ArrayList<MP3>() {
-
-    };
+    public static List<MP3> list = new ArrayList<>();
 
     //历史记录
 //    public static final List<MediaItem> listHistory = new ArrayList<>();
@@ -51,6 +49,15 @@ public class PlaybackService extends MediaSessionService {
         @Override
         public void onPlaybackStateChanged(int playbackState) {
             // 处理播放状态的变化
+            if (playbackState == Player.STATE_ENDED) {
+                // 检查当前播放的媒体项是否是最后一项
+                Player player = mediaSession.getPlayer();
+                if (player.getCurrentMediaItemIndex() == player.getMediaItemCount() - 1) {
+                    // 如果是最后一项，回到第一项并播放
+                    player.seekTo(0,0);
+                    player.play();
+                }
+            }
 
         }
 
@@ -71,7 +78,6 @@ public class PlaybackService extends MediaSessionService {
 //                new Thread(() -> wj.xrwb(wj.gd + "mp3_hc.json", new Gson().toJson(bfqkz.lishi_list))).start();
             }
         }
-
         @Override
         public void onTracksChanged(@Nullable Tracks tracks) {
             gj.sc(tracks);
