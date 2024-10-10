@@ -16,10 +16,12 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.core.view.WindowCompat;
 
+import com.google.gson.Gson;
 import com.muqingbfq.databinding.ActivityUserLogsBinding;
 import com.muqingbfq.main;
 import com.muqingbfq.mq.AppCompatActivity;
 import com.muqingbfq.mq.gj;
+import com.muqingbfq.mq.wj;
 import com.muqingbfq.mq.wl;
 
 import org.json.JSONException;
@@ -157,7 +159,9 @@ public class user_logs extends AppCompatActivity<ActivityUserLogsBinding> {
                     String avatarUrl = data.getString("avatarUrl");//用户头像
                     String signature = data.getString("signature");//用户签名
                     String cookie = jsonObject.getString("cookie");
-                    new user_message(nickname, signature, avatarUrl);
+
+                    String s = new Gson().toJson(new user_logs.USER(nickname, signature, avatarUrl));
+                    wj.xrwb(wj.filesdri + "user.mq", s);
                     user_logs.this.finish(true);
                 } else if (code == 502) {
                     gj.xcts(user_logs.this, jsonObject.getString("message"));

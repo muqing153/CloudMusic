@@ -199,11 +199,13 @@ public class wode extends Fragment<FragmentWdBinding> {
                         .setItems(a, (dialogInterface, i) -> {
                             boolean delete = file.delete();
                             if (delete) {
+                                wj.sc(wj.filesdri + "user.mq");
                                 binding.text1.setText(getString(R.string.app_name));
                                 binding.text2.setText(getString(R.string.app_name));
                                 imageView.setImageResource(R.drawable.ic_launcher_foreground);
                                 new visitor();//游客模式
-                                new com.muqingbfq.login.user_message();
+                                wj.sc(wj.filesdri + "user.mq");
+//                                new com.muqingbfq.login.user_message();
                             }
                         }).show();
             } else {
