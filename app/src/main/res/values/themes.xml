@@ -5,8 +5,8 @@
         <!--使用动画-->
         <item name="android:windowContentTransitions">true</item>
         <!-- 添加主题属性以启用沉浸式状态栏 -->
-<!--        <item name="android:windowTranslucentStatus">true</item>-->
-<!--        <item name="android:windowTranslucentNavigation">true</item>-->
+        <!--        <item name="android:windowTranslucentStatus">true</item>-->
+        <!--        <item name="android:windowTranslucentNavigation">true</item>-->
 
 
         <item name="colorPrimary">@color/md_theme_primary</item>
@@ -55,7 +55,12 @@
         <item name="colorSurfaceContainer">@color/md_theme_surfaceContainer</item>
         <item name="colorSurfaceContainerHigh">@color/md_theme_surfaceContainerHigh</item>
         <item name="colorSurfaceContainerHighest">@color/md_theme_surfaceContainerHighest</item>
+    </style>
 
+    <style name="Theme.start" parent="Theme.Material3.Light.NoActionBar">
+        <item name="android:windowIsTranslucent">false</item>
+        <item name="android:statusBarColor">@color/white</item>
+        <item name="android:windowBackground">@color/white</item>
     </style>
 
 

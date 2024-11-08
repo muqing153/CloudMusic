@@ -33,8 +33,6 @@ public class main extends Application {
     //    public static String http = "https://www.muqingkaifazhe.top/muqingbfq.php"; 过时的更新检测
     public static SharedPreferences sp;
     public static SharedPreferences.Editor edit;
-    private boolean count = false;//是否在后台
-
     @Override
     public void onCreate() {
         super.onCreate();
@@ -127,7 +125,6 @@ public class main extends Application {
             public void onStop(@Nullable LifecycleOwner owner) {
                 // 应用进入后台
                 gj.sc("onStop");
-
                 if (Settings.canDrawOverlays(main.this) && FloatingLyricsService.lei == null ) {
                     startService(new Intent(main.this, FloatingLyricsService.class));
                 }

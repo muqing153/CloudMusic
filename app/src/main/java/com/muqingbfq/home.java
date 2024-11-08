@@ -59,6 +59,7 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.Theme_muqing);
         EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
         SessionToken sessionToken =
@@ -69,7 +70,6 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
 
         }, MoreExecutors.directExecutor());
         if (Strings.isNullOrEmpty(wl.Cookie)) {
-
             new HomeSteer(this) {
                 @Override
                 public void Yes() {
@@ -154,10 +154,12 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
                 }
             }
         });
-        binding.linearLayout4.post(() -> {
-            int height = binding.linearLayout4.getHeight();
-            binding.viewPager.setPadding(0, 0, 0, height);
-        });
+        if (!gj.isTablet(this)) {
+            binding.linearLayout4.post(() -> {
+                int height = binding.linearLayout4.getHeight();
+                binding.viewPager.setPadding(0, 0, 0, height);
+            });
+        }
         binding.fragmentDb.post(() -> {
             int height = binding.fragmentDb.getHeight();
             binding.searchview.setPadding(0, 0, 0, height);

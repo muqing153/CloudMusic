@@ -118,8 +118,10 @@
             android:layout_marginStart="10dp"
             android:text="@string/_00_00"
             android:textColor="@color/tint_image"
+            android:paddingStart="6dp"
             app:layout_constraintBottom_toTopOf="@id/linearLayout3"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            tools:ignore="RtlSymmetry" />
 
         <TextView
             android:id="@+id/time_b"
@@ -129,7 +131,9 @@
             android:text="@string/_00_00"
             android:textColor="@color/tint_image"
             app:layout_constraintBottom_toTopOf="@id/linearLayout3"
-            app:layout_constraintEnd_toEndOf="parent" />
+            android:paddingEnd="6dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:ignore="RtlSymmetry" />
 
         <com.google.android.flexbox.FlexboxLayout
             android:id="@+id/linearLayout3"

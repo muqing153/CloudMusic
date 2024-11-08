@@ -41,7 +41,8 @@
         tools:targetApi="tiramisu">
         <activity
             android:name=".home"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/Theme.start">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -51,10 +52,10 @@
         <activity android:name=".login.user_logs" />
         <activity android:name=".clean.fragment_clean" />
         <activity android:name=".activity_search" />
-        <activity
-            android:name=".bfq"
-            android:configChanges="keyboardHidden|screenSize"
-            android:theme="@style/fragment_dialog" />
+<!--        <activity-->
+<!--            android:name=".bfq"-->
+<!--            android:configChanges="keyboardHidden|screenSize"-->
+<!--            android:theme="@style/fragment_dialog" />-->
         <activity android:name=".fragment.mp3" />
         <activity android:name=".fragment.gd" />
         <activity android:name=".activity_about_software" />
