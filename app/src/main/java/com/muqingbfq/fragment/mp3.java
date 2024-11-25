@@ -5,26 +5,49 @@ import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.media3.common.MediaItem;
+import androidx.media3.common.Player;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.Target;
 import com.muqingbfq.MP3;
+import com.muqingbfq.PlaybackService;
 import com.muqingbfq.R;
 import com.muqingbfq.adapter.AdapterMp3;
 import com.muqingbfq.api.playlist;
+import com.muqingbfq.api.url;
+import com.muqingbfq.bfqkz;
 import com.muqingbfq.databinding.ActivityMp3Binding;
 import com.muqingbfq.databinding.ListMp3ImageBinding;
 import com.muqingbfq.main;
@@ -33,7 +56,10 @@ import com.muqingbfq.mq.VH;
 import com.muqingbfq.mq.gj;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+
+import jp.wasabeef.glide.transformations.BlurTransformation;
 
 public class mp3 extends FragmentActivity<ActivityMp3Binding> {
     private List<MP3> list = new ArrayList<>();
@@ -56,10 +82,56 @@ public class mp3 extends FragmentActivity<ActivityMp3Binding> {
         context.startActivity(intent);
     }
 
+    public static Drawable drawable = null;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView();
+//        drawable=null;
+        TypedValue typedValue = new TypedValue();
+        getTheme().resolveAttribute(android.R.attr.windowBackground, typedValue, true);
+        ; // 获取当前主题的背景颜色
+        if (drawable != null) {
+
+// 4. 设置到 ImageView 上
+            ImageView imageView = findViewById(R.id.toolbarimage);
+            Glide.with(this)
+                    .load(drawable)
+                    .apply(RequestOptions.bitmapTransform(new BlurTransformation(26,3)))
+                    .addListener(new RequestListener<Drawable>() {
+                        @Override
+                        public boolean onLoadFailed(@Nullable GlideException e, @Nullable Object model, @NonNull Target<Drawable> target, boolean isFirstResource) {
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onResourceReady(@NonNull Drawable resource, @NonNull Object model, Target<Drawable> target, @NonNull DataSource dataSource, boolean isFirstResource) {
+
+                            // 使用 Glide 加载图片并应用高斯模糊效果
+// 1. 创建渐变遮罩层（从底部白色渐变到顶部透明）
+                            GradientDrawable gradient = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP,
+                                    new int[] {typedValue.data, Color.TRANSPARENT});
+                            gradient.setShape(GradientDrawable.RECTANGLE);
+
+// 3. 使用 LayerDrawable 来组合模糊图像和渐变效果
+                            LayerDrawable layerDrawable = new LayerDrawable(new Drawable[]{resource, gradient});
+                            imageView.setImageDrawable(layerDrawable);
+                            return true;
+                        }
+                    })
+                    .into(imageView);
+        }
+        ViewCompat.setOnApplyWindowInsetsListener(binding.getRoot(), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, 0, systemBars.right, systemBars.bottom);
+//            binding.toolbar.setPadding(0, systemBars.top, 0, 0);
+            FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) binding.toolbar.getLayoutParams();
+            params.setMargins(0, systemBars.top, 0, 0);  // 参数分别是 left, top, right, bottom
+            binding.toolbar.setLayoutParams(params);
+
+            return insets;
+        });
         Intent intent = getIntent();
         binding.title.setText(intent.getStringExtra("name"));
         String id = intent.getStringExtra("id");
@@ -101,12 +173,53 @@ public class mp3 extends FragmentActivity<ActivityMp3Binding> {
                 }
             }
         });
-        binding.fragmentDb.post(new Runnable() {
-            @Override
-            public void run() {
-                int height = binding.fragmentDb.getHeight();
-                binding.lb.setPadding(0, 0, 0, height);
+        binding.fragmentDb.post(() -> {
+            int height = binding.fragmentDb.getHeight();
+            binding.lb.setPadding(0, 0, 0, height);
+        });
+        binding.playButton.setOnClickListener(v -> {
+            v.setEnabled(false);
+            if (PlaybackService.mediaSession == null) {
+                return;
             }
+            Player player = PlaybackService.mediaSession.getPlayer();
+            player.clearMediaItems();
+            List<MP3> aalist = new ArrayList<>(list);
+            if (bfqkz.ms == 2) {
+                Collections.shuffle(aalist);
+            }
+            for (int i = 0; i < aalist.size(); i++) {
+                MP3 mp3 = aalist.get(i);
+//                            mp3 = url.hq(mp3);
+                MediaItem mediaItem = PlaybackService.GetMp3(mp3);
+                player.addMediaItem(mediaItem);
+            }
+            player.prepare();
+            player.seekTo(0, 0);
+            player.play();
+            //保存播放列表
+            PlaybackService.list.clear();
+            PlaybackService.list.addAll(aalist);
+            PlaybackService.ListSave();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    while (true){
+                        try {
+                            Thread.sleep(500);
+                            //检测音乐是否播放
+                            runOnUiThread(() -> {
+                                if (!player.isPlaying()) {
+                                    return;
+                                }
+                                v.setEnabled(true);
+                            });
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
+            }).start();
         });
     }
 

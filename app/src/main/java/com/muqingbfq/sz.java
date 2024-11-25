@@ -115,8 +115,8 @@ public class sz extends AppCompatActivity<ActivitySzBinding> {
             } else {
                 binding.switchA3.setChecked(false);
                 binding.slide1.setEnabled(false);
-
             }
+            UI();
         });
         FloatingLyricsService.SETUP setup;
 
@@ -157,6 +157,11 @@ public class sz extends AppCompatActivity<ActivitySzBinding> {
         @Override
         public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
             binding = ActivitySzSetlrcBinding.inflate(inflater, container, false);
+            UI();
+            return binding.getRoot();
+        }
+
+        private void UI() {
             File file = new File(wj.filesdri + "FloatingLyricsService.json");
             if (file.exists() && file.isFile()) {
                 String dqwb = wj.dqwb(file.toString());
@@ -184,7 +189,11 @@ public class sz extends AppCompatActivity<ActivitySzBinding> {
                 if (setup.i != 0) {
                     binding.switchA3.setChecked(true);
                 }
+                binding.lock.setVisibility(View.VISIBLE);
+                binding.lock.setImageResource(setup.i == 2 ? R.drawable.lock : R.drawable.lock_open);
                 handler.post(ThreadLrc);
+            } else {
+                binding.lock.setVisibility(View.GONE);
             }
             binding.switchA3.setOnCheckedChangeListener((compoundButton, b) -> {
                 if (b) {
@@ -216,7 +225,6 @@ public class sz extends AppCompatActivity<ActivitySzBinding> {
             binding.slide1.addOnChangeListener(this);
             binding.slide1.addOnChangeListener(this);
             binding.slide1.addOnSliderTouchListener(this);
-            binding.lock.setImageResource(setup.i == 2 ? R.drawable.lock : R.drawable.lock_open);
             binding.lock.setOnClickListener(view -> {
                 if (setup.i == 1) {
                     setup.i = 2;
@@ -227,7 +235,6 @@ public class sz extends AppCompatActivity<ActivitySzBinding> {
                 }
                 FloatingLyricsService.baocun(setup);
             });
-            return binding.getRoot();
         }
 
         @Override

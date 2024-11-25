@@ -14,6 +14,7 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.GestureDetector;
@@ -60,6 +61,7 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
 
     private Player player = PlaybackService.mediaSession.getPlayer();
     private int TdtHeight = 15;
+    public static Bitmap backgroundbitmap=null;
 
     public static void startActivity(Context context, MP3 mp3) {
         Intent intent = new Intent(context, Music.class);
@@ -85,7 +87,7 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
         super.onCreate(savedInstanceState);
         gestureDetector = new GestureDetector(this, this);
         setContentView();
-
+        color(backgroundbitmap);
 
         // 获取屏幕的高度
         WindowManager windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
@@ -93,12 +95,12 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
         ViewCompat.setOnApplyWindowInsetsListener(binding.getRoot(), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
 // 创建新的MarginLayoutParams
-            ViewGroup.LayoutParams layoutParams = binding.back.getLayoutParams();
+            ViewGroup.LayoutParams layoutParams = binding.toolbar.getLayoutParams();
 // 设置margin
             ((ViewGroup.MarginLayoutParams) layoutParams).setMargins(0, systemBars.top, 0, 0);
-            binding.back.setLayoutParams(layoutParams);
+            binding.toolbar.setLayoutParams(layoutParams);
             if (gj.isTablet(this)) {
-                binding.image2.setLayoutParams(layoutParams);
+//                binding.image2.setLayoutParams(layoutParams);
                 ViewGroup.LayoutParams layoutParams1 = binding.cardview.getLayoutParams();
                 layoutParams1.width = displayMetrics.heightPixels / 2;
                 layoutParams1.height = displayMetrics.heightPixels / 2;
@@ -358,34 +360,43 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
             String artist = metadata.artist != null ? metadata.artist.toString() : "未知艺术家";
             binding.name.setText(title);
             binding.zz.setText(artist);
-            Glide.with(this)
-                    .asBitmap()
-                    .load(metadata.artworkUri)
-                    .apply(new RequestOptions()
-                            .placeholder(R.drawable.ic_launcher_foreground)
-                            .error(R.drawable.ic_launcher_foreground))
-                    .addListener(new RequestListener<Bitmap>() {
-                        @Override
-                        public boolean onLoadFailed(@Nullable GlideException e, @Nullable Object model, @NonNull Target<Bitmap> target, boolean isFirstResource) {
-                            return true;
-                        }
-
-                        @Override
-                        public boolean onResourceReady(@NonNull Bitmap resource,
-                                                       @NonNull Object model, Target<Bitmap> target,
-                                                       @NonNull DataSource dataSource,
-                                                       boolean isFirstResource) {
-                            color(resource);
-                            binding.cardview.imageView.setImageBitmap(resource);
-                            return true;
-                        }
-                    }).into(binding.cardview.imageView);
+            SetBackGround(metadata.artworkUri);
         }
 
     }
 
 
+    private void SetBackGround(Uri artworkUri){
+        Glide.with(this)
+                .asBitmap()
+                .load(artworkUri)
+                .apply(new RequestOptions()
+                        .placeholder(R.drawable.ic_launcher_foreground)
+                        .error(R.drawable.ic_launcher_foreground))
+                .addListener(new RequestListener<Bitmap>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, @Nullable Object model, @NonNull Target<Bitmap> target, boolean isFirstResource) {
+                        return true;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(@NonNull Bitmap resource,
+                                                   @NonNull Object model, Target<Bitmap> target,
+                                                   @NonNull DataSource dataSource,
+                                                   boolean isFirstResource) {
+                        color(resource);
+                        backgroundbitmap = resource;
+                        binding.cardview.imageView.setImageBitmap(resource);
+                        return true;
+                    }
+                }).into(binding.cardview.imageView);
+    }
+
+
     private void color(Bitmap bitmap) {
+        if (bitmap == null) {
+            return;
+        }
         Palette.Builder builder = new Palette.Builder(bitmap);
         builder.generate(palette -> {
 //                    获取图片中柔和的亮色
