@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
@@ -27,6 +28,7 @@ import com.google.android.flexbox.AlignItems;
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexWrap;
 import com.google.android.flexbox.FlexboxLayoutManager;
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.search.SearchView;
 import com.google.common.base.Strings;
@@ -49,8 +51,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class home extends AppCompatActivity<ActivityHomeBinding> {
-    @SuppressLint("StaticFieldLeak")
-    public static View viewTop, viewButton;
 
     @Override
     protected ActivityHomeBinding getViewBindingObject(LayoutInflater layoutInflater) {
@@ -130,30 +130,7 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
                 return list.size();
             }
         });
-//        binding.viewPager.setSaveEnabled(false);
-// 将 ViewPager2 绑定到 TabLayou
-        binding.tablayout.setOnItemSelectedListener(item -> {
-            int itemId = item.getItemId();
-            if (itemId == R.id.a) {
-                binding.viewPager.setCurrentItem(0);
-            } else if (itemId == R.id.c) {
-                binding.viewPager.setCurrentItem(1);
-            }
-            return true;
-        });
-        binding.viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
-            @Override
-            public void onPageSelected(int position) {
-                switch (position) {
-                    case 0:
-                        binding.tablayout.setSelectedItemId(R.id.a);
-                        break;
-                    case 1:
-                        binding.tablayout.setSelectedItemId(R.id.c);
-                        break;
-                }
-            }
-        });
+        binding.viewPager.setCurrentItem(0,false);
         if (!gj.isTablet(this)) {
             binding.linearLayout4.post(() -> {
                 int height = binding.linearLayout4.getHeight();
@@ -163,6 +140,34 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
         binding.fragmentDb.post(() -> {
             int height = binding.fragmentDb.getHeight();
             binding.searchview.setPadding(0, 0, 0, height);
+        });
+        binding.tablayout.addView("推荐", R.drawable.zhuye).setOnClickListener(v -> {
+            gj.sc("推荐");
+            binding.viewPager.setCurrentItem(0,false);
+            for (int i = 0; i < binding.tablayout.sizeView; i++) {
+
+                MaterialCardView childAt = (MaterialCardView) ((FrameLayout) binding.tablayout.getChildAt(i)).getChildAt(0);
+                if (i == 0) {
+                    //背景高亮
+                   childAt.setCardBackgroundColor(gj.getThemeColor(v.getContext(), com.google.android.material.R.attr.colorPrimaryContainer));
+                } else {
+                    //背景恢复
+                    childAt.setCardBackgroundColor(gj.getThemeColor(v.getContext(), com.google.android.material.R.attr.colorSurface));
+                }
+            }
+        });
+        binding.tablayout.addView("我的", R.drawable.user).setOnClickListener(v -> {
+            binding.viewPager.setCurrentItem(1,false);
+            for (int i = 0; i < binding.tablayout.sizeView; i++) {
+                MaterialCardView childAt = (MaterialCardView) ((FrameLayout) binding.tablayout.getChildAt(i)).getChildAt(0);
+                if (i == 1) {
+                    //背景高亮
+                    childAt.setCardBackgroundColor(gj.getThemeColor(v.getContext(), com.google.android.material.R.attr.colorPrimaryContainer));
+                } else {
+                    //背景恢复
+                    childAt.setCardBackgroundColor(gj.getThemeColor(v.getContext(), com.google.android.material.R.attr.colorSurface));
+                }
+            }
         });
         toolbar();
         SearchUI();

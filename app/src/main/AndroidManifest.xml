@@ -76,7 +76,6 @@
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
             </intent-filter>
         </service>
-        <service android:name=".mq.floating" />
         <service android:name=".mq.FloatingLyricsService" android:exported="true"
             tools:ignore="ExportedService" />
 

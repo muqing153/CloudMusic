@@ -41,6 +41,7 @@
             android:layout_height="match_parent"
             android:hint="@string/search"
             app:layout_anchor="@id/toolbar">
+
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -116,16 +117,12 @@
                 android:layout_height="wrap_content"
                 tools:layout="@layout/fragment_bfq_db" />
 
-            <com.google.android.material.bottomnavigation.BottomNavigationView
+            <com.muqingbfq.view.TabLayout
                 android:id="@+id/tablayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:contentDescription="@string/Playlist"
-                app:compatShadowEnabled="false"
-                app:elevation="1dp"
-                app:itemHorizontalTranslationEnabled="false"
-                app:labelVisibilityMode="selected"
-                app:menu="@menu/bottom_gd" />
+                android:orientation="horizontal" />
+
         </LinearLayout>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

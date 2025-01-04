@@ -55,6 +55,11 @@ public class gj {
         return false;
     }
 
+    /**
+     * 判断是否是平板
+     * @param context
+     * @return
+     */
     public static boolean isTablet(Context context) {
         DisplayMetrics dm = context.getResources().getDisplayMetrics();
         return dm.widthPixels > dm.heightPixels;
@@ -73,7 +78,6 @@ public class gj {
             a = "null";
         }
         Log.d("打印", a.toString());
-        floating.addtext(a.toString());
     }
 
     public static void llq(Context context, String str) {
@@ -152,5 +156,15 @@ public class gj {
 //        int textColor = array.getColor(1, 0xFF00FF);
         array.recycle();
         return backgroundColor;
+    }
+
+    /**
+     * dp转px
+     * @param context
+     * @param dpValue
+     */
+    public static int dp2px(Context context, float dpValue) {
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (dpValue * scale + 0.5f);
     }
 }

@@ -90,6 +90,7 @@ public class HomeSteer {
                     "https://api.csm.sayqz.com");
 //        editViewDialog.setPositive()
             editViewDialog.buttonb.setEnabled(false);
+            editViewDialog.editText.setMaxLines(1);
             editViewDialog.editText.addTextChangedListener(new Edit.TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence var1, int var2, int var3, int var4) {

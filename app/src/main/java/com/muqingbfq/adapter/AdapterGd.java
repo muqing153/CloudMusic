@@ -66,7 +66,7 @@ public class AdapterGd extends RecyclerView.Adapter<VH<ListGdBinding>> {
                 .addListener(new RequestListener<Bitmap>() {
                     @Override
                     public boolean onLoadFailed(@Nullable GlideException e, @Nullable Object model, @NonNull Target<Bitmap> target, boolean isFirstResource) {
-                        return false;
+                        return true;
                     }
 
                     @Override
@@ -123,9 +123,6 @@ public class AdapterGd extends RecyclerView.Adapter<VH<ListGdBinding>> {
                     }
                 }.start();
             }
-        });
-        holder.itemView.setOnLongClickListener(v -> {
-            return false;
         });
     }
 
