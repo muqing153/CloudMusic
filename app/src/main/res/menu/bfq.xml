@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/fx"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:icon="@drawable/abc_ic_menu_share_mtrl_alpha"
+        app:iconTint="@color/text"
+        android:title="@string/fx"
+        android:tooltipText="@string/fx"
+        app:showAsAction="ifRoom"/>
+</menu>

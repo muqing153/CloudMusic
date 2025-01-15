@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/mpbackground">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/fragment_bfq"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_weight="1">
+
+        <com.dirror.lyricviewx.LyricViewX
+            android:id="@+id/lrcView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbar"
+            app:lrcCurrentTextColor="#FFFFFF"
+            app:lrcNormalTextColor="#FFFDFD"
+            app:lrcTimelineTextColor="#FFFFFF" />
+
+        <LinearLayout
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="10dp"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/back"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginTop="3dp"
+                android:src="@drawable/end"
+                app:tint="@color/tint_image"
+                tools:ignore="ContentDescription" />
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.muqingbfq.view.CardImage
+        android:id="@+id/cardview"
+        style="@style/Widget.Material3.CardView.Elevated"
+        android:layout_width="256dp"
+        android:layout_height="256dp"
+        app:cardBackgroundColor="@color/tm"
+        app:cardCornerRadius="180dp"
+        app:cardElevation="0dp"
+        app:layout_constraintBottom_toBottomOf="@id/fragment_bfq"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:paddingBottom="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintVertical_weight="2">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:orientation="vertical"
+            android:paddingHorizontal="10dp"
+            app:layout_constraintBottom_toTopOf="@id/tdt"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <com.muqingbfq.view.Text
+                android:id="@+id/name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:text="@string/name"
+                android:textColor="@color/tint_image"
+                android:textSize="26sp"
+                android:textStyle="bold" />
+
+            <com.muqingbfq.view.Text
+                android:id="@+id/zz"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:text="@string/zz"
+                android:textColor="@color/tint_image"
+                android:textSize="20sp" />
+        </LinearLayout>
+
+        <SeekBar
+            android:id="@+id/tdt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="3dp"
+            android:background="@null"
+            android:max="100"
+            android:progressDrawable="@drawable/progress"
+            android:theme="@null"
+            android:thumb="@null"
+            app:layout_constraintBottom_toTopOf="@id/time_a"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <TextView
+            android:id="@+id/time_a"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginStart="10dp"
+            android:text="@string/_00_00"
+            android:textColor="@color/tint_image"
+            android:paddingStart="6dp"
+            app:layout_constraintBottom_toTopOf="@id/linearLayout3"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:ignore="RtlSymmetry" />
+
+        <TextView
+            android:id="@+id/time_b"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:text="@string/_00_00"
+            android:textColor="@color/tint_image"
+            app:layout_constraintBottom_toTopOf="@id/linearLayout3"
+            android:paddingEnd="6dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:ignore="RtlSymmetry" />
+
+        <com.google.android.flexbox.FlexboxLayout
+            android:id="@+id/linearLayout3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="26dp"
+            android:orientation="horizontal"
+            app:alignItems="center"
+            app:flexDirection="row"
+            app:justifyContent="space_around"
+            app:layout_constraintBottom_toTopOf="@+id/layout2"
+            tools:ignore="MissingConstraints">
+
+            <ImageView
+                android:id="@+id/control"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/mt_sx"
+                app:tint="@color/tint_image"
+                tools:ignore="ContentDescription" />
+
+            <ImageView
+                android:id="@+id/syq"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/syq"
+                app:tint="@color/tint_image"
+                tools:ignore="ContentDescription" />
+
+            <ImageView
+                android:id="@+id/kg"
+                android:layout_width="66dp"
+                android:layout_height="66dp"
+                android:background="?selectableItemBackgroundBorderless"
+                android:src="@drawable/zt"
+                app:tint="@color/tint_image"
+
+                tools:ignore="ContentDescription" />
+
+            <ImageView
+                android:id="@+id/xyq"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/xyq"
+                app:tint="@color/tint_image"
+                tools:ignore="ContentDescription" />
+
+            <ImageView
+                android:id="@+id/bfq_list_mp3"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/gd"
+                app:tint="@color/tint_image"
+                tools:ignore="ContentDescription" />
+        </com.google.android.flexbox.FlexboxLayout>
+
+        <com.google.android.flexbox.FlexboxLayout
+            android:id="@+id/layout2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:alignItems="center"
+            app:flexDirection="row"
+            app:justifyContent="space_around"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <ImageView
+                android:id="@+id/download"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/download"
+                app:tint="@color/tint_image"
+                tools:ignore="ContentDescription" />
+
+            <ImageView
+                android:id="@+id/like"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/like"
+                app:tint="@color/tint_image"
+                tools:ignore="ContentDescription" />
+
+            <ImageView
+                android:id="@+id/image2"
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:layout_marginTop="3dp"
+                android:src="@drawable/abc_ic_menu_share_mtrl_alpha"
+                app:tint="@color/tint_image"
+                tools:ignore="ContentDescription" />
+
+        </com.google.android.flexbox.FlexboxLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
