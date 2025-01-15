@@ -1,14 +1,8 @@
 ## 简介
 一个对接网易云的音乐播放器
 
-## 截图 (过时)
-<!--suppress CheckImageSize -->
-<img alt="Screenshot_20240224_154259_com.muqingbfq.jpg" height="300" src="image/Screenshot_20240224_154302_com.muqingbfq.jpg" width="200"/>
-
-<img alt="Screenshot_20240224_154302_com.muqingbfq.jpg" height="300" src="image/Screenshot_20240224_154259_com.muqingbfq.jpg" width="200"/>
-
-<img alt="Screenshot_20240224_154306_com.muqingbfq.jpg" height="300" src="image/Screenshot_20240224_154306_com.muqingbfq.jpg" width="200"/>
-
+## 截图
+暂无
 ## 联系作者
  * QQ:1966944300
  * 邮箱:1966944300@qq.com
