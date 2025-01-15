@@ -3,12 +3,14 @@ package com.muqingbfq.fragment;
 import static android.content.Context.WINDOW_SERVICE;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -49,6 +51,19 @@ public class bflb_db extends BottomSheetDialog {
             list.add(player.getMediaItemAt(i));
         }
         binding.lb.setAdapter(new spq(list));
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        // 获取底部弹窗的根视图
+        View view = findViewById(com.google.android.material.R.id.design_bottom_sheet);
+        if (view != null) {
+            // 设置宽度
+            ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
+            layoutParams.width = (int) (getContext().getResources().getDisplayMetrics().widthPixels * 0.6); // 占屏幕宽度的 60%
+            view.setLayoutParams(layoutParams);
+        }
     }
 
     @Override
@@ -127,7 +142,17 @@ public class bflb_db extends BottomSheetDialog {
     }
 
     public static void start(Context context) {
-        new bflb_db(context).show();
+        bflb_db dialog = new bflb_db(context);
+        dialog.setOnShowListener(dialogInterface -> {
+            BottomSheetDialog d = (BottomSheetDialog) dialogInterface;
+            FrameLayout bottomSheet = d.findViewById(com.google.android.material.R.id.design_bottom_sheet);
+            if (bottomSheet != null) {
+                BottomSheetBehavior<View> behavior = BottomSheetBehavior.from(bottomSheet);
+                behavior.setState(BottomSheetBehavior.STATE_EXPANDED); // 默认展开
+                behavior.setSkipCollapsed(true); // 禁止折叠
+            }
+        });
+        dialog.show();
     }
 
     private class spq extends RecyclerView.Adapter<MyViewHoder> {

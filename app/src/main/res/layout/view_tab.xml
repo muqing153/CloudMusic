@@ -1,32 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:gravity="center"
+    android:layout_gravity="center"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:focusable="true"
-    app:cardUseCompatPadding="true"
-    style="@style/Widget.Material3.CardView.Elevated"
-    android:clickable="true"
-    app:contentPadding="6dp">
+    android:layout_marginHorizontal="6dp"
+    android:layout_width="wrap_content"
+    android:orientation="vertical"
+    tools:ignore="UseCompoundDrawables">
 
-    <LinearLayout
-        android:layout_gravity="center"
-        android:layout_width="wrap_content"
+    <ImageView
+        android:id="@+id/image"
+        android:layout_height="26dp"
+        android:layout_width="26dp"
+        android:importantForAccessibility="no"
+        android:src="@drawable/ic_launcher_foreground" />
+
+    <TextView
+        android:id="@+id/text"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_marginHorizontal="6dp"
-        android:gravity="center">
-        <ImageView
-            android:id="@+id/image"
-            android:layout_width="26dp"
-            android:layout_height="26dp"
-            android:src="@drawable/ic_launcher_foreground" />
-
-        <TextView
-            android:id="@+id/text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/app_name" />
-    </LinearLayout>
-
-</com.google.android.material.card.MaterialCardView>
+        android:layout_width="wrap_content"
+        android:text="@string/app_name" />
+</LinearLayout>

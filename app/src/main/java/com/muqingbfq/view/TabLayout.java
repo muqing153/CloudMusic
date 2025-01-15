@@ -2,6 +2,8 @@ package com.muqingbfq.view;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.media.Image;
 import android.util.AttributeSet;
 import android.util.TypedValue;
@@ -14,6 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -22,35 +25,42 @@ import com.google.android.material.card.MaterialCardView;
 import com.muqingbfq.R;
 import com.muqingbfq.mq.gj;
 
-public class TabLayout extends LinearLayoutCompat {
+public class TabLayout extends MaterialCardView {
     public TabLayout(Context context) {
         this(context, null);
     }
 
     public TabLayout(Context context, @Nullable AttributeSet attrs) {
-        this(context, attrs, 0);
+        this(context, attrs,0);
     }
 
     public TabLayout(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
+        super(context, attrs,defStyleAttr);
         Init(context, attrs, defStyleAttr);
     }
 
+    public LinearLayout linearLayout;
     private void Init(Context context, AttributeSet attrs, int defStyleAttr) {
-//        setOrientation(HORIZONTAL);
-        setBackgroundColor(gj.getThemeColor(context, com.google.android.material.R.attr.colorSurface));
-        setGravity(Gravity.CENTER);
+        linearLayout = new LinearLayout(context, attrs, defStyleAttr);
         int a = gj.dp2px(context, 9);
+        LinearLayout.LayoutParams layoutParams ;
         if (gj.isTablet(context)) {
-            setPadding(a, 0, a, 0);
+//            这是平板模式
+            layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT);
+            linearLayout.setOrientation(LinearLayout.VERTICAL);
+            linearLayout.setGravity(Gravity.CENTER);
+            setContentPadding(a, 0, a, 0);
         } else {
-            setPadding(0, a, 0, a);
+//            这是手机模式
+            layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT);
+            linearLayout.setOrientation(LinearLayout.HORIZONTAL);
+            linearLayout.setGravity(Gravity.CENTER);
+            setContentPadding(0, a, 0, a);
         }
-//        if (gj.isTablet(context)) {
-//            setOrientation(VERTICAL);
-//        } else {
-//            setOrientation(HORIZONTAL);
-//        }
+//        linearLayout.setBackgroundColor(Color.BLACK);
+        addView(linearLayout,layoutParams);
 //        addView(new Button(context));
     }
 
@@ -71,44 +81,35 @@ public class TabLayout extends LinearLayoutCompat {
         } else {
             layoutParams.setMargins(0, a, 0, a);
         }
-        addView(itemB, layoutParams);
-        MaterialCardView childAt = (MaterialCardView) itemB.getChildAt(0);
+        linearLayout.addView(itemB, layoutParams);
         if (sizeView == 0) {
-            childAt.setCardBackgroundColor(gj.getThemeColor(context, com.google.android.material.R.attr.colorPrimaryContainer));
-        } else {
-
+            itemB.setCardBackgroundColor(gj.getThemeColor(context, com.google.android.material.R.attr.colorPrimaryContainer));
         }
         sizeView++;
 
-        return childAt;
+        return itemB;
     }
 
-    public void setSelected(int a) {
-
-    }
-
-    public static class Item extends FrameLayout {
+    public static class Item extends MaterialCardView {
+        ImageView imageView;
+        TextView textView;
         public Item(Context context) {
             this(context, null);
         }
 
         public Item(Context context, @Nullable AttributeSet attrs) {
-            this(context, attrs, 0);
-        }
-
-        ImageView imageView;
-        TextView textView;
-
-        public Item(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
-            super(context, attrs, defStyleAttr);
-
+            super(new ContextThemeWrapper(context, com.google.android.material.R.style.Widget_Material3_CardView_Elevated), attrs);
+            setUseCompatPadding(true);
+            setFocusable(true);
+            setClickable(true);
+//            没有边缘线
+            setStrokeWidth(0);
+            int padding = gj.dp2px(context, 6);
+            setContentPadding(padding,padding,padding,padding);
             inflate(context, R.layout.view_tab, this);
             imageView = findViewById(R.id.image);
             textView = findViewById(R.id.text);
-
-
-//            LayoutInflater.from(context).inflate(R.layout.view_tab, this, true);
-
         }
+
     }
 }

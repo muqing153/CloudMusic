@@ -91,6 +91,8 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
 
     public void UI() {
         setContentView();
+//        禁止ViewPager2滑动
+        binding.viewPager.setUserInputEnabled(false);
         ViewCompat.setOnApplyWindowInsetsListener(binding.getRoot(), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
 //            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -142,11 +144,8 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
             binding.searchview.setPadding(0, 0, 0, height);
         });
         binding.tablayout.addView("推荐", R.drawable.zhuye).setOnClickListener(v -> {
-            gj.sc("推荐");
-            binding.viewPager.setCurrentItem(0,false);
             for (int i = 0; i < binding.tablayout.sizeView; i++) {
-
-                MaterialCardView childAt = (MaterialCardView) ((FrameLayout) binding.tablayout.getChildAt(i)).getChildAt(0);
+                MaterialCardView childAt = (MaterialCardView) binding.tablayout.linearLayout.getChildAt(i);
                 if (i == 0) {
                     //背景高亮
                    childAt.setCardBackgroundColor(gj.getThemeColor(v.getContext(), com.google.android.material.R.attr.colorPrimaryContainer));
@@ -155,11 +154,11 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
                     childAt.setCardBackgroundColor(gj.getThemeColor(v.getContext(), com.google.android.material.R.attr.colorSurface));
                 }
             }
+            binding.viewPager.setCurrentItem(0,false);
         });
         binding.tablayout.addView("我的", R.drawable.user).setOnClickListener(v -> {
-            binding.viewPager.setCurrentItem(1,false);
             for (int i = 0; i < binding.tablayout.sizeView; i++) {
-                MaterialCardView childAt = (MaterialCardView) ((FrameLayout) binding.tablayout.getChildAt(i)).getChildAt(0);
+                MaterialCardView childAt = (MaterialCardView) binding.tablayout.linearLayout.getChildAt(i);
                 if (i == 1) {
                     //背景高亮
                     childAt.setCardBackgroundColor(gj.getThemeColor(v.getContext(), com.google.android.material.R.attr.colorPrimaryContainer));
@@ -168,6 +167,7 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
                     childAt.setCardBackgroundColor(gj.getThemeColor(v.getContext(), com.google.android.material.R.attr.colorSurface));
                 }
             }
+            binding.viewPager.setCurrentItem(1,false);
         });
         toolbar();
         SearchUI();
