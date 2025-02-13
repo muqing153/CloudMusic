@@ -61,7 +61,7 @@ public class bflb_db extends BottomSheetDialog {
         if (view != null) {
             // 设置宽度
             ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
-            layoutParams.width = (int) (getContext().getResources().getDisplayMetrics().widthPixels * 0.6); // 占屏幕宽度的 60%
+            layoutParams.height = (int) (getContext().getResources().getDisplayMetrics().widthPixels * 0.6); // 占屏幕宽度的 60%
             view.setLayoutParams(layoutParams);
         }
     }
@@ -71,12 +71,6 @@ public class bflb_db extends BottomSheetDialog {
         super.onCreate(savedInstanceState);
         binding = FragmentBflbDbBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        // 设置高度
-//        DisplayMetrics displayMetrics = new DisplayMetrics();
-//        WindowManager windowManager = (WindowManager) getContext().getSystemService(WINDOW_SERVICE);
-//        windowManager.getDefaultDisplay().getMetrics(displayMetrics);
-//        binding.getRoot().getLayoutParams().height = displayMetrics.heightPixels - displayMetrics.heightPixels / 3;
-//        binding.getRoot().requestLayout();
 
 
 // 设置固定的高度（例如 500dp）

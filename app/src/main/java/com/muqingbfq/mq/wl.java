@@ -31,6 +31,9 @@ public class wl {
         main.edit.putString("Cookie", cookie);
         main.edit.commit();
     }
+    public static void getCookie(){
+        Cookie = main.sp.getString("Cookie", "");
+    }
 
     public static String hq(String url) {
         try {

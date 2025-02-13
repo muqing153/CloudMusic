@@ -52,10 +52,6 @@
         <activity android:name=".login.user_logs" />
         <activity android:name=".clean.fragment_clean" />
         <activity android:name=".activity_search" />
-<!--        <activity-->
-<!--            android:name=".bfq"-->
-<!--            android:configChanges="keyboardHidden|screenSize"-->
-<!--            android:theme="@style/fragment_dialog" />-->
         <activity android:name=".fragment.mp3" />
         <activity android:name=".fragment.gd" />
         <activity android:name=".activity_about_software" />

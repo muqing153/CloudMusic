@@ -69,7 +69,7 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
         controllerFuture.addListener(() -> {
 
         }, MoreExecutors.directExecutor());
-        if (Strings.isNullOrEmpty(wl.Cookie)) {
+        if (Strings.isNullOrEmpty(main.api) || Strings.isNullOrEmpty(wl.Cookie)) {
             new HomeSteer(this) {
                 @Override
                 public void Yes() {
@@ -132,7 +132,7 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
                 return list.size();
             }
         });
-        binding.viewPager.setCurrentItem(0,false);
+        binding.viewPager.setCurrentItem(0, false);
         if (!gj.isTablet(this)) {
             binding.linearLayout4.post(() -> {
                 int height = binding.linearLayout4.getHeight();
@@ -148,13 +148,13 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
                 MaterialCardView childAt = (MaterialCardView) binding.tablayout.linearLayout.getChildAt(i);
                 if (i == 0) {
                     //背景高亮
-                   childAt.setCardBackgroundColor(gj.getThemeColor(v.getContext(), com.google.android.material.R.attr.colorPrimaryContainer));
+                    childAt.setCardBackgroundColor(gj.getThemeColor(v.getContext(), com.google.android.material.R.attr.colorPrimaryContainer));
                 } else {
                     //背景恢复
                     childAt.setCardBackgroundColor(gj.getThemeColor(v.getContext(), com.google.android.material.R.attr.colorSurface));
                 }
             }
-            binding.viewPager.setCurrentItem(0,false);
+            binding.viewPager.setCurrentItem(0, false);
         });
         binding.tablayout.addView("我的", R.drawable.user).setOnClickListener(v -> {
             for (int i = 0; i < binding.tablayout.sizeView; i++) {
@@ -167,7 +167,7 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
                     childAt.setCardBackgroundColor(gj.getThemeColor(v.getContext(), com.google.android.material.R.attr.colorSurface));
                 }
             }
-            binding.viewPager.setCurrentItem(1,false);
+            binding.viewPager.setCurrentItem(1, false);
         });
         toolbar();
         SearchUI();
