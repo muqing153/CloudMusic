@@ -269,6 +269,10 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
             }
 
         });
+
+        binding.download.setOnClickListener(v -> {
+
+        });
     }
 
     //是否拖动
