@@ -73,9 +73,7 @@ public class bfq_db extends Fragment<FragmentBfqDbBinding> implements GestureDet
     }
 
     private void setUI(Player player) {
-
         binding.kg.setImageResource(player.isPlaying() ? R.drawable.bf : R.drawable.zt);
-
         MediaItem currentMediaItem = player.getCurrentMediaItem();
         if (currentMediaItem != null) {
             MediaMetadata metadata = currentMediaItem.mediaMetadata;
@@ -170,7 +168,10 @@ public class bfq_db extends Fragment<FragmentBfqDbBinding> implements GestureDet
     @Override
     public boolean onFling(@Nullable MotionEvent e1,
                            @NonNull MotionEvent e2, float v, float v1) {
-        float distance = e1.getX() - e2.getX();
+        float distance = 0;
+        if (e1 != null) {
+            distance = e1.getX() - e2.getX();
+        }
         float threshold = getResources().getDisplayMetrics().widthPixels / 2.0f;
 
         if (PlaybackService.mediaSession == null) {

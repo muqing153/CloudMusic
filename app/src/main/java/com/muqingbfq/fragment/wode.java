@@ -45,7 +45,7 @@ public class wode extends Fragment<FragmentWdBinding> {
     public TextView name, jieshao;
     public ImageView imageView;
     private final Object[][] lista = {
-            {R.drawable.mdimusicbox, "最近播放", "mp3_hc.json"},
+            {R.drawable.mdimusicbox, "最近播放", "mp3_listHistory.json"},
             {R.drawable.download, "下载音乐", "mp3_xz.json"},
             {R.drawable.mdialbum, "喜欢音乐", "mp3_like.json"},
             {R.drawable.filesearc, "本地搜索", "cd.json"},
@@ -88,7 +88,7 @@ public class wode extends Fragment<FragmentWdBinding> {
                 holder.itemView.setOnClickListener(view -> {
                     switch (data) {
                         case "cd.json":
-                        case "mp3_hc.json":
+                        case "mp3_listHistory.json":
                         case "mp3_xz.json":
                         case "mp3_like.json":
                             Intent a = new Intent(getContext(), com.muqingbfq.fragment.mp3.class);

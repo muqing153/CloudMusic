@@ -89,12 +89,9 @@ public class gd extends FragmentActivity<ActivityGdBinding> {
         });
         String id = intent.getStringExtra("id");
 
-        binding.fragmentDb.post(new Runnable() {
-            @Override
-            public void run() {
-                int height = binding.fragmentDb.getHeight();
-                binding.lb.setPadding(0,0,0,height);
-            }
+        binding.fragmentDb.post(() -> {
+            int height = binding.fragmentDb.getHeight();
+            binding.lb.setPadding(0,0,0,height);
         });
         new start(id);
     }

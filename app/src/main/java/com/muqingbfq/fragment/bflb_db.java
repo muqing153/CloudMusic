@@ -53,18 +53,6 @@ public class bflb_db extends BottomSheetDialog {
         binding.lb.setAdapter(new spq(list));
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        // 获取底部弹窗的根视图
-        View view = findViewById(com.google.android.material.R.id.design_bottom_sheet);
-        if (view != null) {
-            // 设置宽度
-            ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
-            layoutParams.height = (int) (getContext().getResources().getDisplayMetrics().widthPixels * 0.6); // 占屏幕宽度的 60%
-            view.setLayoutParams(layoutParams);
-        }
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -24,6 +24,7 @@ import com.muqingbfq.mq.wj;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class fragment_clean extends FragmentActivity<ActivityCleanBinding> {
     List<String[]> list = new ArrayList<>();
@@ -32,7 +33,6 @@ public class fragment_clean extends FragmentActivity<ActivityCleanBinding> {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView();
-//        setToolbar();
         UI();
     }
 
@@ -42,7 +42,7 @@ public class fragment_clean extends FragmentActivity<ActivityCleanBinding> {
         list.add(new String[]{"下载的歌单",wj.gd});
         list.add(new String[]{"缓存的音乐",wj.filesdri+"hc"});
         list.add(new String[]{"内部缓存", getCacheDir().toString()});
-        String s = Glide.getPhotoCacheDir(this).toString();
+        String s = Objects.requireNonNull(Glide.getPhotoCacheDir(this)).toString();
         list.add(new String[]{"Glide缓存", s});
         binding.toolbar.setTitle("储存清理");
         binding.recyclerview.setAdapter(adapter);

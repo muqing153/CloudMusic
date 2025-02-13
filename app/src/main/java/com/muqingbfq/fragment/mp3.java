@@ -58,11 +58,12 @@ import com.muqingbfq.mq.gj;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import jp.wasabeef.glide.transformations.BlurTransformation;
 
 public class mp3 extends FragmentActivity<ActivityMp3Binding> {
-    private List<MP3> list = new ArrayList<>();
+    private final List<MP3> list = new ArrayList<>();
     private List<MP3> list_ys = new ArrayList<>();
     public Adapter adapter;
 
@@ -98,7 +99,7 @@ public class mp3 extends FragmentActivity<ActivityMp3Binding> {
             ImageView imageView = findViewById(R.id.toolbarimage);
             Glide.with(this)
                     .load(drawable)
-                    .apply(RequestOptions.bitmapTransform(new BlurTransformation(26,3)))
+                    .apply(RequestOptions.bitmapTransform(new BlurTransformation(26, 3)))
                     .addListener(new RequestListener<Drawable>() {
                         @Override
                         public boolean onLoadFailed(@Nullable GlideException e, @Nullable Object model, @NonNull Target<Drawable> target, boolean isFirstResource) {
@@ -111,7 +112,7 @@ public class mp3 extends FragmentActivity<ActivityMp3Binding> {
                             // 使用 Glide 加载图片并应用高斯模糊效果
 // 1. 创建渐变遮罩层（从底部白色渐变到顶部透明）
                             GradientDrawable gradient = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP,
-                                    new int[] {typedValue.data, Color.TRANSPARENT});
+                                    new int[]{typedValue.data, Color.TRANSPARENT});
                             gradient.setShape(GradientDrawable.RECTANGLE);
 
 // 3. 使用 LayerDrawable 来组合模糊图像和渐变效果
@@ -204,7 +205,7 @@ public class mp3 extends FragmentActivity<ActivityMp3Binding> {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    while (true){
+                    while (true) {
                         try {
                             Thread.sleep(500);
                             //检测音乐是否播放
@@ -282,13 +283,16 @@ public class mp3 extends FragmentActivity<ActivityMp3Binding> {
                 case "cd.json":
                     playlist.hq_cd(mp3.this, list);
                     break;
+                case "mp3_listHistory.json":
+                    playlist.hq_listHistory(list);
+                    break;
                 default:
                     playlist.hq(list, id);
                     break;
             }
             list_ys = list;
             main.handler.post(() -> {
-                binding.lb.getAdapter().notifyDataSetChanged();
+                Objects.requireNonNull(binding.lb.getAdapter()).notifyDataSetChanged();
                 binding.recyclerview1Bar.setVisibility(View.GONE);
                 if (list.isEmpty()) {
                     binding.recyclerview1Text.setVisibility(View.VISIBLE);
@@ -300,9 +304,9 @@ public class mp3 extends FragmentActivity<ActivityMp3Binding> {
         }
     }
 
-    public class Adapter extends AdapterMp3 implements Filterable {
+    public static class Adapter extends AdapterMp3 implements Filterable {
 
-        private List<MP3> list_ys;
+        private final List<MP3> list_ys;
 
         public Adapter(List<MP3> list) {
             this.list = list;

@@ -13,6 +13,8 @@ import androidx.viewbinding.ViewBinding;
 
 import com.muqingbfq.R;
 
+import java.util.Objects;
+
 public abstract class FragmentActivity<ViewBindingType extends ViewBinding>
         extends AppCompatActivity<ViewBindingType> {
     @Override
@@ -27,7 +29,7 @@ public abstract class FragmentActivity<ViewBindingType extends ViewBinding>
         View viewById = findViewById(R.id.toolbar);
         if (viewById != null) {
             setSupportActionBar((Toolbar) viewById);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         }
     }
 

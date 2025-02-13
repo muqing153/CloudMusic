@@ -1,13 +1,20 @@
 package com.muqingbfq.api;
 
+import static com.muqingbfq.mq.MediaItemAdapter.type;
+
 import android.app.Activity;
 import android.os.Environment;
 
+import androidx.media3.common.MediaItem;
+
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.mpatric.mp3agic.ID3v2;
 import com.mpatric.mp3agic.Mp3File;
 import com.muqingbfq.MP3;
+import com.muqingbfq.PlaybackService;
+import com.muqingbfq.mq.MediaItemAdapter;
 import com.muqingbfq.mq.gj;
 import com.muqingbfq.mq.wj;
 import com.muqingbfq.mq.wl;
@@ -38,8 +45,6 @@ public class playlist extends Thread {
                 return playlist.hq_xz(list);
             case "mp3_like.json":
                 return playlist.hq_like(list);
-            case "mp3_hc.json":
-                return hq_hc(list);
         }
         list.clear();
         try {
@@ -129,11 +134,16 @@ public class playlist extends Thread {
             if (dqwb == null) {
                 return false;
             }
-            Type type = new TypeToken<List<MP3>>() {
-            }.getType();
-            Gson gson = new Gson();
-            list.clear();
-            list.addAll(gson.fromJson(dqwb, type));
+            Gson gson = new GsonBuilder().registerTypeAdapter(MediaItem.class, new MediaItemAdapter())
+                    .create();
+            List<MediaItem> o = gson.fromJson(dqwb, type);
+            for (MediaItem mediaItem : o) {
+                if (mediaItem.mediaMetadata.title != null && mediaItem.mediaMetadata.artist != null && mediaItem.mediaMetadata.artworkUri != null) {
+                    list.add(new MP3(mediaItem.mediaId, mediaItem.mediaMetadata.title.toString(),
+                            mediaItem.mediaMetadata.artist.toString(),
+                            mediaItem.mediaMetadata.artworkUri.toString()));
+                }
+            }
             return true;
         } catch (Exception e) {
             gj.sc("失败的错误 " + e);
@@ -160,23 +170,27 @@ public class playlist extends Thread {
         return false;
     }
 
-    public static boolean hq_hc(List<MP3> list) {
+    public static void hq_listHistory(List<MP3> list) {
         try {
-            String dqwb = wj.dqwb(wj.gd + "mp3_hc.json");
-            if (dqwb == null) {
-                return false;
+            String dqwb = wj.dqwb(wj.gd + "mp3_listHistory.json");
+            Gson gson = new GsonBuilder()
+                    .registerTypeAdapter(MediaItem.class, new MediaItemAdapter()) // 绑定适配器
+                    .create();
+            List<MediaItem> listHistory = gson.fromJson(dqwb, type);
+            if (listHistory != null) {
+                int size = listHistory.size();
+                for (int i = 0; i < size; i++) {
+                    MediaItem mediaItem = listHistory.get(i);
+                    if (mediaItem.mediaMetadata.title != null && mediaItem.mediaMetadata.artist != null && mediaItem.mediaMetadata.artworkUri != null) {
+                        list.add(new MP3(mediaItem.mediaId, mediaItem.mediaMetadata.title.toString(),
+                                mediaItem.mediaMetadata.artist.toString(),
+                                mediaItem.mediaMetadata.artworkUri.toString()));
+                    }
+                }
             }
-            Type type = new TypeToken<List<MP3>>() {
-            }.getType();
-            Gson gson = new Gson();
-            list.clear();
-            list.addAll(gson.fromJson(dqwb, type));
-            return true;
         } catch (Exception e) {
-            gj.sc("失败的错误 " + e);
-            wj.sc(wj.gd + "mp3_hc.json");
+            gj.sc(e);
         }
-        return false;
     }
 
 

@@ -116,7 +116,7 @@ public class FloatingLyricsService extends Service {
             } else {
                 setup = new SETUP();
             }
-            if (setup.i == 0) {
+            if (setup != null && setup.i == 0) {
                 //在Service中关闭自己
                 stopSelf();
                 return;

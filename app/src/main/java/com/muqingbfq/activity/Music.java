@@ -56,6 +56,8 @@ import com.muqingbfq.mq.AppCompatActivity;
 import com.muqingbfq.mq.MusicViewModel;
 import com.muqingbfq.mq.gj;
 
+import java.util.Objects;
+
 
 public class Music extends AppCompatActivity<ActivityMusicBinding> implements GestureDetector.OnGestureListener {
 
@@ -239,6 +241,34 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
         //播放列表
         binding.bfqListMp3.setOnClickListener(v -> com.muqingbfq.fragment.bflb_db.start(v.getContext()));
 
+        binding.like.setOnClickListener(v -> {
+            MediaItem currentMediaItem = player.getCurrentMediaItem();
+            boolean islike = bfq_an.islike(Objects.requireNonNull(currentMediaItem).mediaId);
+            gj.sc(islike);
+            if (islike) {
+                if (bfq_an.DelLike(currentMediaItem)) {
+                    binding.like.setImageResource(R.drawable.like);
+                }
+            }else{
+                if (bfq_an.AddLike(currentMediaItem)) {
+                    binding.like.setImageResource(R.drawable.like_yes);
+                }
+            }
+        });
+        binding.image2.setOnClickListener(v -> {
+            MediaItem currentMediaItem = player.getCurrentMediaItem();
+            if (currentMediaItem != null){
+                String stringBuilder = "标题：" + currentMediaItem.mediaMetadata.title + System.lineSeparator() +
+                        "歌手:" + currentMediaItem.mediaMetadata.artist + System.lineSeparator() +
+                        "歌曲链接：" + "https://music.163.com/#/song?id=" + currentMediaItem.mediaId;
+
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.setType("text/plain");
+                intent.putExtra(Intent.EXTRA_TEXT, stringBuilder);
+                startActivity(Intent.createChooser(intent, "分享到"));
+            }
+
+        });
     }
 
     //是否拖动
@@ -276,7 +306,7 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
         player.removeListener(Listener);
     }
 
-    private Player.Listener Listener = new Player.Listener() {
+    private final Player.Listener Listener = new Player.Listener() {
         @Override
         public void onEvents(@NonNull Player player, @NonNull Player.Events events) {
             // 监听播放状态变化
@@ -311,7 +341,9 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
                         if (player.getPlayWhenReady()) {
                             if (bfqkz.lrc != null) {
                                 String[] strings = Media.loadLyric();
-                                binding.lrcView.loadLyric(strings[0], strings[1]);
+                                if (strings != null) {
+                                    binding.lrcView.loadLyric(strings[0], strings[1]);
+                                }
                             }
 
                             gj.sc("播放开始");
@@ -362,7 +394,12 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
             binding.zz.setText(artist);
             SetBackGround(metadata.artworkUri);
         }
-
+        boolean islike = bfq_an.islike(Objects.requireNonNull(player.getCurrentMediaItem()).mediaId);
+        if (islike) {
+            binding.like.setImageResource(R.drawable.like_yes);
+        } else {
+            binding.like.setImageResource(R.drawable.like);
+        }
     }
 
 
@@ -400,7 +437,7 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
         Palette.Builder builder = new Palette.Builder(bitmap);
         builder.generate(palette -> {
 //                    获取图片中柔和的亮色
-            int lightMutedColor = palette.getLightMutedColor(Color.GRAY);
+            int lightMutedColor = Objects.requireNonNull(palette).getLightMutedColor(Color.GRAY);
             Palette.Swatch vibrantSwatch = palette.getLightVibrantSwatch();
             if (vibrantSwatch != null) {
                 int bodyTextColor = vibrantSwatch.getBodyTextColor();
