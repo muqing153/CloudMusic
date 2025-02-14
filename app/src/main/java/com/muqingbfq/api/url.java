@@ -49,8 +49,11 @@ public class url extends Thread {
             if (wiFiConnected) {
                 level = "exhigh";
             }
-            String hq = wl.hq(api + "?id=" + mp3.id + "&level=" +
-                    level + "&cookie=" + wl.Cookie);
+            String hq = wl.hq(api,
+                    new String[][]{
+                            {"id", mp3.id},
+                            {"level", level}
+                    });
             if (hq == null) {
                 return null;
             }
@@ -87,22 +90,30 @@ public class url extends Thread {
                     com.muqingbfq.bfqkz.lrc = id3v2Tag.getLyrics();
                 }
                 if (com.muqingbfq.bfqkz.lrc == null) {
-                    com.muqingbfq.bfqkz.lrc = wl.hq("/lyric?id=" + id);
+                    com.muqingbfq.bfqkz.lrc = wl.hq("/lyric",new String[][]{
+                            {"id", id}
+                    });
                 }
             } catch (Exception e) {
                 gj.sc("url getlrc:" + e);
             }
         } else {
-            com.muqingbfq.bfqkz.lrc = wl.hq("/lyric?id=" + id);
+            com.muqingbfq.bfqkz.lrc = wl.hq("/lyric",new String[][]{
+                    {"id", id}
+            });
         }
     }
 
     public static String Lrc(String id) {
-        return wl.hq("/lyric?id=" + id);
+        return wl.hq("/lyric",new String[][]{
+                {"id", id}
+        });
     }
 
     public static String picurl(String id) {
-        String hq = wl.hq("/song/detail?ids=" + id);
+        String hq = wl.hq("/song/detail",new String[][]{
+                {"ids", id}
+        });
         try {
             return new JSONObject(hq).getJSONArray("songs").getJSONObject(0)
                     .getJSONObject("al").getString("picUrl");

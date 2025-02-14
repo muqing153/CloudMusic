@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class PlaybackService extends MediaSessionService {
-    public static MediaSession mediaSession = null;
+    public static MediaSession mediaSession;
     public static List<MP3> list = new ArrayList<>();
 
 
@@ -80,7 +80,8 @@ public class PlaybackService extends MediaSessionService {
                         Gson gson = new GsonBuilder()
                                 .registerTypeAdapter(MediaItem.class, new MediaItemAdapter()) // 绑定适配器
                                 .create();
-                        List<MediaItem> listHistory = gson.fromJson(dqwb, new TypeToken<List<MediaItem>>(){}.getType());
+                        List<MediaItem> listHistory = gson.fromJson(dqwb, new TypeToken<List<MediaItem>>() {
+                        }.getType());
                         if (listHistory != null) {
                             listHistory.removeIf(mediaItem1 -> mediaItem1.mediaId.equals(mediaItem.mediaId));
                             listHistory.add(0, mediaItem);

@@ -65,7 +65,7 @@ import jp.wasabeef.glide.transformations.BlurTransformation;
 public class mp3 extends FragmentActivity<ActivityMp3Binding> {
     private final List<MP3> list = new ArrayList<>();
     private List<MP3> list_ys = new ArrayList<>();
-    public Adapter adapter;
+    public AdapterMp3 adapter;
 
     public static void start(Activity context, String[] str, View view) {
         ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(context,
@@ -136,7 +136,7 @@ public class mp3 extends FragmentActivity<ActivityMp3Binding> {
         Intent intent = getIntent();
         binding.title.setText(intent.getStringExtra("name"));
         String id = intent.getStringExtra("id");
-        adapter = new Adapter(list);
+        adapter = new AdapterMp3(list);
         binding.lb.setLayoutManager(new LinearLayoutManager(this));
         binding.lb.setAdapter(adapter);
         new start(id);
@@ -304,58 +304,6 @@ public class mp3 extends FragmentActivity<ActivityMp3Binding> {
         }
     }
 
-    public static class Adapter extends AdapterMp3 implements Filterable {
-
-        private final List<MP3> list_ys;
-
-        public Adapter(List<MP3> list) {
-            this.list = list;
-            list_ys = list;
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull VH<ListMp3ImageBinding> holder, int position) {
-            super.onBindViewHolder(holder, position);
-        }
-
-        @Override
-        public Filter getFilter() {
-            return new Filter() {
-                @Override
-                protected FilterResults performFiltering(CharSequence charSequence) {
-                    String charString = charSequence.toString();
-                    if (charString.isEmpty()) {
-                        //没有过滤的内容，则使用源数据
-                        list = list_ys;
-                    } else {
-                        List<MP3> filteredList = new ArrayList<>();
-                        for (int i = 0; i < list_ys.size(); i++) {
-                            MP3 mp3 = list_ys.get(i);
-                            if (mp3.name.contains(charString)
-                                    || mp3.zz.contains(charString)) {
-                                filteredList.add(list_ys.get(i));
-                            }
-                        }
-                        list = filteredList;
-                    }
-
-                    FilterResults filterResults = new FilterResults();
-                    filterResults.values = list;
-                    return filterResults;
-                }
-
-                @SuppressLint("NotifyDataSetChanged")
-                @SuppressWarnings("unchecked")
-                @Override
-                protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-                    list = (List<MP3>) filterResults.values;
-                    notifyDataSetChanged();
-                }
-            };
-        }
-    }
-
-
     public static void startactivity(Context context, String id) {
         context.startActivity(new Intent(context, mp3.class).putExtra("id", id));
     }
@@ -363,6 +311,11 @@ public class mp3 extends FragmentActivity<ActivityMp3Binding> {
     @Override
     public void finish() {
         super.finish();
-        adapter = null;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        binding.lb.setAdapter(null);
     }
 }

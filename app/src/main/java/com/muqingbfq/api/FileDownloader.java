@@ -50,7 +50,7 @@ public class FileDownloader {
     public void downloadFile(MP3 x) {
         Request request = new Request.Builder()
                 .url(main.api + url.api + "?id=" + x.id + "&level=" +
-                        "standard" + "&cookie=" + wl.Cookie)
+                        "standard")
                 .build();
         client.newCall(request).enqueue(new Callback() {
             @Override

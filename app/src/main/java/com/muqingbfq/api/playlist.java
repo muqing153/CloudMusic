@@ -28,15 +28,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class playlist extends Thread {
-    public static final String api = "/playlist/track/all?id=";
+    public static final String api = "/playlist/track/all";
 
     public static String gethq(String uid) {
-        if (wj.cz(wj.filesdri + "user.mq")) {
-            return wl.hq(api + uid + "&limit=100" + "&cookie=" + wl.Cookie);
-//            gj.sc(hq);
-        } else {
-            return wl.hq(api + uid + "&limit=100");
-        }
+        return wl.hq(api,new String[][]{
+                {"id", uid},
+                {"limit", "100"}
+        });
     }
 
     public static boolean hq(List<MP3> list, String uid) {

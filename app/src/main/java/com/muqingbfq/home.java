@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.FrameLayout;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
@@ -22,7 +21,6 @@ import androidx.fragment.app.Fragment;
 import androidx.media3.session.MediaController;
 import androidx.media3.session.SessionToken;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
-import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.flexbox.AlignItems;
 import com.google.android.flexbox.FlexDirection;
@@ -41,7 +39,6 @@ import com.muqingbfq.fragment.sz;
 import com.muqingbfq.fragment.wode;
 import com.muqingbfq.mq.AppCompatActivity;
 import com.muqingbfq.mq.gj;
-import com.muqingbfq.mq.wl;
 import com.muqingbfq.view.Edit;
 
 import org.json.JSONArray;
@@ -69,14 +66,7 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
         controllerFuture.addListener(() -> {
 
         }, MoreExecutors.directExecutor());
-        if (Strings.isNullOrEmpty(main.api) || Strings.isNullOrEmpty(wl.Cookie)) {
-            new HomeSteer(this) {
-                @Override
-                public void Yes() {
-                    UI();
-                }
-            };
-        } else UI();
+        new HomeSteer(this, this::UI);
     }
 
     @Override
@@ -97,7 +87,7 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
 //            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             v.setPadding(systemBars.left, 0, systemBars.right, 0);
-            binding.chb.setPadding(0, systemBars.top, 0, 0);
+            binding.chb.setPadding(0, systemBars.top, 0, systemBars.bottom);
             return insets;
         });
 //        viewTop=binding.
@@ -184,17 +174,19 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
 
     public boolean issearchclicklist = false;//是否点击了列表项目
     //搜索建议列表
-    private List<String> searchList = new ArrayList<>();
+    private final List<String> searchList = new ArrayList<>();
 
     private activity_search.SearchRecordAdapter searchRecordAdapter;
 
     public void SearchUI() {
+        search search = new search(this, binding.searchTablayout, binding.searchViewPager);
         binding.searchview
                 .getEditText()
                 .setOnEditorActionListener(
                         (v, actionId, event) -> {
 //                            binding.searchview.hide();
-                            searchStart(binding.toolbar.getText().toString());
+
+                            searchStart(search, binding.toolbar.getText().toString());
                             return false;
                         });
         binding.searchview.setOnMenuItemClickListener(
@@ -216,11 +208,6 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
                         // Handle search view opened.
                         gj.sc("SHOWING");
                         binding.tablayout.setVisibility(View.GONE);
-                        // 添加 Fragment
-                        getSupportFragmentManager()
-                                .beginTransaction()
-                                .replace(binding.searchFragment.getId(), new search())
-                                .commit();
                         searchRecordAdapter = new activity_search.SearchRecordAdapter(binding.searchview);
                         binding.listRecycler.setAdapter(searchRecordAdapter);
                     } else if (newState == SearchView.TransitionState.SHOWN) {
@@ -235,10 +222,7 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
                         binding.searchRecycler.setVisibility(View.GONE);
                         binding.xxbj1.setVisibility(View.VISIBLE);
                         // 移除当前显示的 Fragment
-                        getSupportFragmentManager().beginTransaction()
-                                .remove(getSupportFragmentManager()
-                                        .findFragmentById(binding.searchFragment.getId()))
-                                .commit();
+                        search.delete();
                     }
                 });
         final Object o = new Object();
@@ -256,7 +240,7 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
                         synchronized (o) {
                             searchList.clear();
                             String hq = com.muqingbfq.mq.wl.
-                                    hq("/search/suggest?keywords=" + var1.toString() + "&type=mobile");
+                                    hq("/search/suggest", "keywords=" + var1.toString() + "&type=mobile", false);
                             try {
                                 JSONArray jsonArray = new JSONObject(hq).getJSONObject("result")
                                         .getJSONArray("allMatch");
@@ -274,7 +258,7 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
                                     binding.xxbj1.setVisibility(View.GONE);
                                     binding.searchFragment.setVisibility(View.VISIBLE);
                                     binding.searchview.setText(string);
-                                    searchStart(string);
+                                    searchStart(search,string);
 //                                        binding.searchRecycler.set
                                 })));
                             } catch (Exception e) {
@@ -316,14 +300,13 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
 
     }
 
-    public void searchStart(String name) {
+    public void searchStart(search search, String name) {
         issearchclicklist = true;
         binding.toolbar.setText(binding.searchview.getText());
         if (!TextUtils.isEmpty(name)) {
-            search sea = (search) getSupportFragmentManager().findFragmentById(binding.searchFragment.getId());
             binding.searchFragment.setVisibility(View.VISIBLE);
             binding.searchRecycler.setVisibility(View.GONE);
-            sea.sx(name);
+            search.sx(name);
             activity_search.addSearchRecord(name, searchRecordAdapter.json_list, searchRecordAdapter);
         }
     }

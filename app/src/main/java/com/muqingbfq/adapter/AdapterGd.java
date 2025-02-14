@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
@@ -63,6 +64,7 @@ public class AdapterGd extends RecyclerView.Adapter<VH<ListGdBinding>> {
         Glide.with(holder.itemView.getContext())
                 .asBitmap()
                 .load(xm.picurl)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .addListener(new RequestListener<Bitmap>() {
                     @Override
                     public boolean onLoadFailed(@Nullable GlideException e, @Nullable Object model, @NonNull Target<Bitmap> target, boolean isFirstResource) {

@@ -2,36 +2,32 @@ package com.muqingbfq;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.text.Editable;
 import android.text.TextUtils;
-import android.view.View;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.muqingbfq.Dialog.DialogEditText;
-import com.muqingbfq.fragment.wode;
 import com.muqingbfq.login.user_logs;
-import com.muqingbfq.mq.EditViewDialog;
 import com.muqingbfq.mq.gj;
 import com.muqingbfq.mq.wl;
 import com.muqingbfq.view.Edit;
-
 import org.json.JSONObject;
-
 import java.util.Objects;
 
 public class HomeSteer {
     home home;
     ActivityResultLauncher<Intent> dlintent;
 
-    public HomeSteer(home home) {
+    Runnable runnable;
+
+    public HomeSteer(home home, Runnable runnable) {
+        this.runnable = runnable;
         this.home = home;
         dlintent = home.registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -41,7 +37,7 @@ public class HomeSteer {
                         Intent data = result.getData();
                         boolean bool = Objects.requireNonNull(data).getBooleanExtra("bool", false);
                         if (bool) {
-                            Yes();
+                            runnable.run();
                             return;
                         }
                     }
@@ -64,11 +60,11 @@ public class HomeSteer {
                         public void run() {
                             super.run();
                             //获取游客Cookie
-                            String hq = wl.hq("/register/anonimous");
+                            String hq = wl.hq("/register/anonimous", null);
                             try {
                                 JSONObject jsonObject = new JSONObject(hq);
                                 wl.setcookie(jsonObject.getString("cookie"));
-                                home.runOnUiThread(() -> Yes());
+                                home.runOnUiThread(runnable);
                             } catch (Exception e) {
                                 home.runOnUiThread(() -> Toast.makeText(home, "游客登陆失败:" + e.getMessage(), Toast.LENGTH_SHORT).show());
                                 gj.sc(e);
@@ -80,14 +76,11 @@ public class HomeSteer {
                 }
             });
             materialAlertDialogBuilder.show();
-        }else{
-            Yes();
+        } else {
+            runnable.run();
         }
     }
 
-    public void Yes() {
-
-    }
 
     String[] stringIp = new String[]{"https://ncm.nekogan.com", "https://api.csm.sayqz.com"};
 
@@ -100,7 +93,6 @@ public class HomeSteer {
         if (TextUtils.isEmpty(main.api)) {
 
             DialogEditText dialogEditText = getDialogEditText(nickname);
-
             dialogEditText.binding.edittext.addTextChangedListener(new Edit.TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence var1, int var2, int var3, int var4) {

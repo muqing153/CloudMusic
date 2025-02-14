@@ -108,17 +108,17 @@
             android:theme="@null"
             android:thumb="@null"
             app:layout_constraintBottom_toTopOf="@id/time_a"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
             android:id="@+id/time_a"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_marginStart="10dp"
+            android:paddingStart="6dp"
             android:text="@string/_00_00"
             android:textColor="@color/tint_image"
-            android:paddingStart="6dp"
             app:layout_constraintBottom_toTopOf="@id/linearLayout3"
             app:layout_constraintStart_toStartOf="parent"
             tools:ignore="RtlSymmetry" />
@@ -128,10 +128,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="10dp"
+            android:paddingEnd="6dp"
             android:text="@string/_00_00"
             android:textColor="@color/tint_image"
             app:layout_constraintBottom_toTopOf="@id/linearLayout3"
-            android:paddingEnd="6dp"
             app:layout_constraintEnd_toEndOf="parent"
             tools:ignore="RtlSymmetry" />
 
@@ -151,7 +151,7 @@
                 android:id="@+id/control"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
-                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:background="?android:attr/actionBarItemBackground"
                 android:src="@drawable/mt_sx"
                 app:tint="@color/tint_image"
                 tools:ignore="ContentDescription" />
@@ -160,7 +160,7 @@
                 android:id="@+id/syq"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
-                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:background="?android:attr/actionBarItemBackground"
                 android:src="@drawable/syq"
                 app:tint="@color/tint_image"
                 tools:ignore="ContentDescription" />
@@ -169,7 +169,7 @@
                 android:id="@+id/kg"
                 android:layout_width="66dp"
                 android:layout_height="66dp"
-                android:background="?selectableItemBackgroundBorderless"
+                android:background="?android:attr/actionBarItemBackground"
                 android:src="@drawable/zt"
                 app:tint="@color/tint_image"
 
@@ -179,7 +179,7 @@
                 android:id="@+id/xyq"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
-                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:background="?android:attr/actionBarItemBackground"
                 android:src="@drawable/xyq"
                 app:tint="@color/tint_image"
                 tools:ignore="ContentDescription" />
@@ -188,7 +188,7 @@
                 android:id="@+id/bfq_list_mp3"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
-                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:background="?android:attr/actionBarItemBackground"
                 android:src="@drawable/gd"
                 app:tint="@color/tint_image"
                 tools:ignore="ContentDescription" />
@@ -207,18 +207,18 @@
 
             <ImageView
                 android:id="@+id/download"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:background="?android:attr/actionBarItemBackground"
                 android:src="@drawable/download"
                 app:tint="@color/tint_image"
                 tools:ignore="ContentDescription" />
 
             <ImageView
                 android:id="@+id/like"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:background="?android:attr/actionBarItemBackground"
                 android:src="@drawable/like"
                 app:tint="@color/tint_image"
                 tools:ignore="ContentDescription" />

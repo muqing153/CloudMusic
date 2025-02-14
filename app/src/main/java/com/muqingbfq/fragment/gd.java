@@ -91,7 +91,7 @@ public class gd extends FragmentActivity<ActivityGdBinding> {
 
         binding.fragmentDb.post(() -> {
             int height = binding.fragmentDb.getHeight();
-            binding.lb.setPadding(0,0,0,height);
+            binding.lb.setPadding(0, 0, 0, height);
         });
         new start(id);
     }
@@ -117,7 +117,14 @@ public class gd extends FragmentActivity<ActivityGdBinding> {
             if (id.equals("排行榜")) {
                 resource.leaderboard(adapter.list);
             } else {
-                String hq = wl.hq("/search?keywords=" + id + "&limit=" + (k * 3) + "&type=1000");
+
+                String hq = wl.hq("/search", new String[][]{
+                                {"keywords", id},
+                                {"limit", String.valueOf((k * 3))},
+                                {"type", "1000"}
+                        }
+                );
+//                "keywords=" + id + "&limit=" + (k * 3) + "&type=1000"
                 try {
                     JSONArray jsonArray = new JSONObject(hq).getJSONObject("result")
                             .getJSONArray("playlists");

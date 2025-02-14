@@ -1,23 +1,19 @@
 package com.muqingbfq.mq;
 
 
-import android.content.Context;
-
-import androidx.annotation.OptIn;
-import androidx.media3.common.MediaItem;
-import androidx.media3.common.util.UnstableApi;
-import androidx.media3.database.DatabaseProvider;
-import androidx.media3.database.StandaloneDatabaseProvider;
-import androidx.media3.datasource.DataSource;
-import androidx.media3.datasource.cache.Cache;
-import androidx.media3.datasource.cache.CacheDataSource;
-import androidx.media3.datasource.cache.LeastRecentlyUsedCacheEvictor;
-import androidx.media3.datasource.cache.SimpleCache;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.muqingbfq.main;
 
-import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
+import okhttp3.Cookie;
+import okhttp3.CookieJar;
+import okhttp3.HttpUrl;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -31,16 +27,43 @@ public class wl {
         main.edit.putString("Cookie", cookie);
         main.edit.commit();
     }
-    public static void getCookie(){
+
+    public static void getCookie() {
         Cookie = main.sp.getString("Cookie", "");
     }
 
-    public static String hq(String url) {
+    public static final ConcurrentHashMap<String, List<Cookie>> cookieStore = new ConcurrentHashMap<>();
+
+
+    // 自定义 CookieJar 实现
+    private static class CustomCookieJar implements CookieJar {
+        @Override
+        public void saveFromResponse(HttpUrl url, @NonNull List<Cookie> cookies) {
+            cookieStore.put(url.host(), cookies);
+        }
+
+        @NonNull
+        @Override
+        public List<Cookie> loadForRequest(HttpUrl url) {
+            return Objects.requireNonNull(cookieStore.getOrDefault(url.host(), new ArrayList<>()));
+        }
+    }
+
+    public final static OkHttpClient client = new OkHttpClient();
+
+    public static String hq(String url, String[][] strings) {
         try {
-            OkHttpClient client = new OkHttpClient();
+            StringBuilder stringBuffer = new StringBuilder();
+            if (strings != null) {
+                for (String[] b : strings) {
+                    stringBuffer.append(b[0]).append("=").append(b[1]).append("&");
+                }
+            }
+            stringBuffer.append("cookie").append("=").append(Cookie);
             Request request = new Request.Builder()
-                    .url(main.api + url)
+                    .url(main.api + url + "?" + stringBuffer)
                     .build();
+
             Response response = client.newCall(request).execute();
             if (response.body() != null) {
                 return response.body().string();
@@ -51,6 +74,24 @@ public class wl {
         return null;
     }
 
+    @Nullable
+    public static String hq(String url, String strings, boolean bool) {
+        try {
+            Request request = new Request.Builder()
+                    .url(main.api + url + "?" + strings)
+                    .build();
+
+            Response response = client.newCall(request).execute();
+            if (response.body() != null) {
+                return response.body().string();
+            }
+        } catch (Exception e) {
+            gj.sc("wl hq(Strnig)  " + e);
+        }
+        return null;
+    }
+
+
     public static String post(String str, String[][] a) {
         OkHttpClient client = new OkHttpClient().newBuilder()
                 .build();
@@ -59,7 +100,7 @@ public class wl {
         for (String[] b : a) {
             builder.addFormDataPart(b[0], b[1]);
         }
-        builder.addFormDataPart("cookie", Cookie);
+//        builder.addFormDataPart("cookie", Cookie);
 
         Request request = new Request.Builder()
                 .url(main.api + str)
@@ -94,28 +135,6 @@ public class wl {
             gj.sc("wl get(Strnig)  " + e);
         }
         return null;
-    }
-
-
-    @OptIn(markerClass = UnstableApi.class)
-    public static DataSource.Factory DownMp3() {
-        Context context = main.application;
-
-        DatabaseProvider databaseProvider = new StandaloneDatabaseProvider(context);
-        // 创建一个 File 对象来指定缓存目录
-        File downloadDirectory = new File(wj.mp3);
-        // 如果缓存目录不存在，则创建它
-        if (!downloadDirectory.exists()) {
-            downloadDirectory.mkdirs();
-        }
-        Cache cache =
-                new SimpleCache(
-                        downloadDirectory, new LeastRecentlyUsedCacheEvictor(100 * 1024 * 1024), databaseProvider);
-
-        CacheDataSource.Factory httpDataSourceFactory = new CacheDataSource.Factory();
-        return new CacheDataSource.Factory()
-                        .setCache(cache)
-                        .setUpstreamDataSourceFactory(httpDataSourceFactory);
     }
 
 }

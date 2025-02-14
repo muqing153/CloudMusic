@@ -1,6 +1,7 @@
 package com.muqingbfq.fragment;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,9 +10,13 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.ViewPager2;
 
+import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.muqingbfq.MP3;
 import com.muqingbfq.XM;
@@ -30,29 +35,27 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-public class search extends Fragment {
-    public FragmentSearchBinding binding;
+public class search {
     public String string;
-    List<Fragment> fragments=new ArrayList<>();
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
-        binding = FragmentSearchBinding.inflate(inflater, container, false);
-        binding.viewPager.setSaveEnabled(false);
-        adapter = new FragmentStateAdapter(this) {
-            @NonNull
-            @Override
-            public Fragment createFragment(int position) {
-                return fragments.get(position);
-            }
+    List<Fragment> fragments = new ArrayList<>();
+    TabLayout tablayout;
+    ViewPager2 viewPager2;
+    FragmentActivity activity;
 
-            @Override
-            public int getItemCount() {
-                return fragments.size();
+    public search(FragmentActivity activity, TabLayout tabLayout, ViewPager2 viewPager2) {
+        this.tablayout = tabLayout;
+        this.viewPager2 = viewPager2;
+        this.activity = activity;
+        tabLayoutMediator = new TabLayoutMediator(tablayout, viewPager2, (tab, position) -> {
+            switch (position) {
+                case 0:
+                    tab.setText("歌曲");
+                    break;
+                case 1:
+                    tab.setText("歌单");
+                    break;
             }
-        };
-        return binding.getRoot();
+        });
     }
 
     public static class mp3 extends Fragment {
@@ -63,16 +66,19 @@ public class search extends Fragment {
             fragment.setArguments(args);
             return fragment;
         }
+
+        RecyclerVBinding binding;
+
         @Nullable
         @Override
         public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                                  @Nullable Bundle savedInstanceState) {
-            List<MP3> list = new ArrayList<>();
             String string = getArguments().getString("string");
-            RecyclerVBinding binding = RecyclerVBinding.inflate(inflater, container, false);
+            binding = RecyclerVBinding.inflate(inflater, container, false);
             binding.recycleview.setLayoutManager(new LinearLayoutManager(getContext()));
-            binding.recycleview.setAdapter(new AdapterMp3(list));
-            list.clear();
+            AdapterMp3 adapterMp3 = new AdapterMp3();
+            binding.recycleview.setAdapter(adapterMp3);
+            adapterMp3.list.clear();
             binding.recyclerviewBar.setVisibility(View.VISIBLE);
             binding.recyclerviewText.setVisibility(View.GONE);
             new Thread() {
@@ -80,10 +86,10 @@ public class search extends Fragment {
                 @Override
                 public void run() {
                     super.run();
-                    mp3(list, string);
+                    mp3(adapterMp3.list, string);
                     main.handler.post(() -> {
                         binding.recyclerviewBar.setVisibility(View.GONE);
-                        if (list.isEmpty()) {
+                        if (adapterMp3.list.isEmpty()) {
                             binding.recyclerviewText.setVisibility(View.VISIBLE);
                         } else {
                             binding.recyclerviewText.setVisibility(View.GONE);
@@ -94,7 +100,14 @@ public class search extends Fragment {
             }.start();
             return binding.getRoot();
         }
+
+        @Override
+        public void onDestroyView() {
+            super.onDestroyView();
+            binding.recycleview.setAdapter(null);
+        }
     }
+
     public static class gd extends Fragment {
         public static gd newInstance(String string) {
             gd fragment = new gd();
@@ -103,6 +116,7 @@ public class search extends Fragment {
             fragment.setArguments(args);
             return fragment;
         }
+
         @Nullable
         @Override
         public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -135,19 +149,41 @@ public class search extends Fragment {
             return binding.getRoot();
         }
     }
-    private FragmentStateAdapter adapter;
+
+    TabLayoutMediator tabLayoutMediator;
+
     @SuppressLint("NotifyDataSetChanged")
     public void sx(String string) {
         this.string = string;
-        fragments.clear();
-        fragments.add(mp3.newInstance(string));
-        fragments.add(gd.newInstance(string));
-        binding.viewPager.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
-        String[] strtab = new String[]{"歌曲", "歌单"};
-        //将tabbView绑定到tab
-        new TabLayoutMediator(binding.tablayout, binding.viewPager, (tab, position) ->
-                tab.setText(strtab[position])).attach();
+        delete();
+//        viewPager2.setAdapter(null);
+        viewPager2.setAdapter(new FragmentStateAdapter(activity) {
+            @NonNull
+            @Override
+            public Fragment createFragment(int position) {
+                switch (position) {
+                    case 0:
+                        return mp3.newInstance(string);
+                    case 1:
+                        return gd.newInstance(string);
+                }
+                return null;
+            }
+
+            @Override
+            public int getItemCount() {
+                return 2;
+            }
+        });
+// 确保只有一个 TabLayoutMediator 被附加
+        if (!tabLayoutMediator.isAttached()) {
+            tabLayoutMediator.attach();  // 仅在没有附加时才附加
+        }
+    }
+
+    public void delete() {
+        tabLayoutMediator.detach();
+        viewPager2.setAdapter(null);
     }
 
     private static void mp3(List<MP3> list, String str) {
@@ -158,7 +194,7 @@ public class search extends Fragment {
         } catch (NumberFormatException e) {
             gj.sc(e);
         }
-        String hq = wl.hq("/search?keywords=" + str + "&type=1");
+        String hq = wl.hq("/search", "keywords=" + str + "&type=1", false);
         try {
             JSONArray jsonArray = new JSONObject(hq).getJSONObject("result")
                     .getJSONArray("songs");
@@ -189,7 +225,7 @@ public class search extends Fragment {
     private static void gd(List<XM> list, String str) {
         try {
             Long.parseLong(str);
-            String hq = wl.hq("/playlist/detail?id=" + str);
+            String hq = wl.hq("/playlist/detail", "id=" + str, false);
             JSONObject js = new JSONObject(hq).getJSONObject("playlist");
             String id = js.getString("id");
             String name = js.getString("name");
@@ -201,7 +237,7 @@ public class search extends Fragment {
             gj.sc(e);
         }
         try {
-            String hq = wl.hq("/search?keywords=" + str + "&type=1000");
+            String hq = wl.hq("/search", "keywords=" + str + "&type=1000", false);
             JSONArray jsonArray = new JSONObject(hq).getJSONObject("result")
                     .getJSONArray("playlists");
             int length = jsonArray.length();

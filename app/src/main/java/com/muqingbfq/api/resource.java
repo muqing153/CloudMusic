@@ -21,7 +21,7 @@ public class resource {
         try {
             list.clear();
             JSONObject json;
-            String hq = wl.hq("/recommend/resource?cookie=" + wl.Cookie);
+            String hq = wl.hq("/recommend/resource",null);
             if (hq == null) {
                 hq = wj.dqwb(wj.gd_json);
                 if (hq != null) {
@@ -81,7 +81,7 @@ public class resource {
             if (wj.cz(wj.gd_phb)) {
                 hq = wj.dqwb(wj.gd_phb);
             } else {
-                hq = wl.hq("/toplist");
+                hq = wl.hq("/toplist", null);
                 if (hq == null) {
                     return;
                 }

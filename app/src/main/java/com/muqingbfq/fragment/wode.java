@@ -26,7 +26,6 @@ import com.muqingbfq.api.playlist;
 import com.muqingbfq.api.resource;
 import com.muqingbfq.databinding.FragmentWdBinding;
 import com.muqingbfq.login.user_logs;
-import com.muqingbfq.login.visitor;
 import com.muqingbfq.main;
 import com.muqingbfq.mq.EditViewDialog;
 import com.muqingbfq.mq.Fragment;
@@ -94,13 +93,13 @@ public class wode extends Fragment<FragmentWdBinding> {
                             Intent a = new Intent(getContext(), com.muqingbfq.fragment.mp3.class);
                             a.putExtra("id", data);
                             a.putExtra("name", s);
-                            getContext().startActivity(a);
+                            requireContext().startActivity(a);
                             break;
                         case "排行榜":
                             gd.start(getActivity(), new String[]{data, s});
                             break;
                         case "API":
-                            EditViewDialog editViewDialog = new EditViewDialog(getContext(), "更换接口API")
+                            EditViewDialog editViewDialog = new EditViewDialog(requireContext(), "更换接口API")
                                     .setMessage("当前接口：\n" + main.api);
                             editViewDialog.setPositive(view1 -> {
                                 String str = editViewDialog.getEditText();
@@ -116,7 +115,7 @@ public class wode extends Fragment<FragmentWdBinding> {
                             }).show();
                             break;
                         case "gd":
-                            EditViewDialog editViewDialog1 = new EditViewDialog(getContext(),
+                            EditViewDialog editViewDialog1 = new EditViewDialog(requireContext(),
                                     "导入歌单")
                                     .setMessage("请用网易云https链接来进行导入或者歌单id");
                             editViewDialog1.setPositive(view1 -> {
@@ -180,12 +179,12 @@ public class wode extends Fragment<FragmentWdBinding> {
                 if (result.getResultCode() == Activity.RESULT_OK) {
                     // 处理返回结果
                     Intent data = result.getData();
-                    boolean bool = data.getBooleanExtra("bool", false);
-                    if (bool) {
-//                        gj.sc("dl");
-                        new threadLogin().start();
+                    if (data != null) {
+                        boolean bool = data.getBooleanExtra("bool", false);
+                        if (bool) {
+                            new threadLogin().start();
+                        }
                     }
-                    // ...
                 }
             });
 
@@ -195,7 +194,7 @@ public class wode extends Fragment<FragmentWdBinding> {
             File file = new File(wj.filesdri, "user.mq");
             if (file.exists()) {
                 String[] a = new String[]{"退出登录"};
-                new MaterialAlertDialogBuilder(getContext())
+                new MaterialAlertDialogBuilder(requireContext())
                         .setItems(a, (dialogInterface, i) -> {
                             boolean delete = file.delete();
                             if (delete) {
@@ -203,7 +202,6 @@ public class wode extends Fragment<FragmentWdBinding> {
                                 binding.text1.setText(getString(R.string.app_name));
                                 binding.text2.setText(getString(R.string.app_name));
                                 imageView.setImageResource(R.drawable.ic_launcher_foreground);
-                                new visitor();//游客模式
                                 wj.sc(wj.filesdri + "user.mq");
 //                                new com.muqingbfq.login.user_message();
                             }
@@ -215,7 +213,7 @@ public class wode extends Fragment<FragmentWdBinding> {
     }
 
 
-    class VH extends RecyclerView.ViewHolder {
+    private static class VH extends RecyclerView.ViewHolder {
         public ImageView imageView;
         public TextView textView;
 
@@ -230,7 +228,7 @@ public class wode extends Fragment<FragmentWdBinding> {
     class threadLogin extends Thread {
 
         public void run() {
-            String hq = wl.hq("/user/account?cookie=" + wl.Cookie);
+            String hq = wl.hq("/user/account", null);
             if (hq != null) {
                 try {
                     JSONObject jsonObject = new JSONObject(hq);
@@ -243,7 +241,7 @@ public class wode extends Fragment<FragmentWdBinding> {
                         requireActivity().runOnUiThread(() -> {
                             binding.text1.setText(nickname);
                             binding.text2.setText(signature);
-                            Glide.with(getContext())
+                            Glide.with(requireContext())
                                     .load(avatarUrl)
                                     .error(R.drawable.ic_launcher_foreground)
                                     .into(binding.imageView);
@@ -262,7 +260,7 @@ public class wode extends Fragment<FragmentWdBinding> {
                 requireActivity().runOnUiThread(() -> {
                     binding.text1.setText(user.name);
                     binding.text2.setText(user.qianming);
-                    Glide.with(getContext())
+                    Glide.with(requireContext())
                             .load(user.picUrl)
                             .error(R.drawable.ic_launcher_foreground)
                             .into(binding.imageView);

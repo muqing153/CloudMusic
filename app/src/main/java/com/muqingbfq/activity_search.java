@@ -42,7 +42,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class activity_search extends FragmentActivity<ActivitySearchBinding> {
-//    private List<String> json_list = new ArrayList<>();
+    //    private List<String> json_list = new ArrayList<>();
     private final List<String> list = new ArrayList<>();
 
     public static void start(Activity context, View view) {
@@ -105,7 +105,11 @@ public class activity_search extends FragmentActivity<ActivitySearchBinding> {
                         synchronized (o) {
                             list.clear();
                             String hq = com.muqingbfq.mq.wl.
-                                    hq("/search/suggest?keywords=" + s + "&type=mobile");
+                                    hq("/search/suggest",
+                                            new String[][]{
+                                                    {"keywords", s.toString()},
+                                                    {"type", "mobile"}
+                                            });
                             try {
                                 JSONArray jsonArray = new JSONObject(hq).getJSONObject("result")
                                         .getJSONArray("allMatch");
@@ -205,7 +209,7 @@ public class activity_search extends FragmentActivity<ActivitySearchBinding> {
         binding.searchview.hide();
     }
 
-    public static void addSearchRecord(String name,List<String> json_list,SearchRecordAdapter adapter) {
+    public static void addSearchRecord(String name, List<String> json_list, SearchRecordAdapter adapter) {
         try {
             int existingIndex = json_list.indexOf(name);
             if (existingIndex != -1) {
@@ -248,9 +252,9 @@ public class activity_search extends FragmentActivity<ActivitySearchBinding> {
     public void start(String name) {
         dismiss();
         if (!TextUtils.isEmpty(name)) {
-            search sea = (search) getSupportFragmentManager().findFragmentById(R.id.search_fragment);
-            binding.searchFragment.setVisibility(View.VISIBLE);
-            sea.sx(name);
+//            search sea = (search) getSupportFragmentManager().findFragmentById(R.id.search_fragment);
+//            binding.searchFragment.setVisibility(View.VISIBLE);
+//            sea.sx(name);
 //            addSearchRecordd(name);
         }
     }

@@ -31,7 +31,6 @@ import androidx.annotation.Nullable;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.MediaMetadata;
 import androidx.media3.common.Player;
@@ -53,7 +52,6 @@ import com.muqingbfq.databinding.ActivityMusicBinding;
 import com.muqingbfq.fragment.Media;
 import com.muqingbfq.main;
 import com.muqingbfq.mq.AppCompatActivity;
-import com.muqingbfq.mq.MusicViewModel;
 import com.muqingbfq.mq.gj;
 
 import java.util.Objects;
@@ -61,7 +59,7 @@ import java.util.Objects;
 
 public class Music extends AppCompatActivity<ActivityMusicBinding> implements GestureDetector.OnGestureListener {
 
-    private Player player = PlaybackService.mediaSession.getPlayer();
+    private final Player player = PlaybackService.mediaSession.getPlayer();
     private int TdtHeight = 15;
     public static Bitmap backgroundbitmap=null;
 
@@ -261,7 +259,6 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
                 String stringBuilder = "标题：" + currentMediaItem.mediaMetadata.title + System.lineSeparator() +
                         "歌手:" + currentMediaItem.mediaMetadata.artist + System.lineSeparator() +
                         "歌曲链接：" + "https://music.163.com/#/song?id=" + currentMediaItem.mediaId;
-
                 Intent intent = new Intent(Intent.ACTION_SEND);
                 intent.setType("text/plain");
                 intent.putExtra(Intent.EXTRA_TEXT, stringBuilder);
@@ -280,7 +277,7 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
     Runnable runnable = new Runnable() {
         @Override
         public void run() {
-            if (player != null && !isDrag) {
+            if (!isDrag) {
                 // 获取当前进度和持续时间
                 long currentPosition = player.getCurrentPosition();
                 long duration = player.getDuration();

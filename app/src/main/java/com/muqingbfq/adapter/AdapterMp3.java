@@ -1,11 +1,16 @@
 package com.muqingbfq.adapter;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.Player;
@@ -26,15 +31,58 @@ import com.muqingbfq.mq.gj;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AdapterMp3 extends RecyclerView.Adapter<VH<ListMp3ImageBinding>> {
+public class AdapterMp3 extends RecyclerView.Adapter<VH<ListMp3ImageBinding>> implements Filterable {
     public List<MP3> list = new ArrayList<>();
+    private List<MP3> list_ys;
+    private Activity activity;
 
     public AdapterMp3() {
 
     }
 
+    public AdapterMp3(Activity activity) {
+        this.activity = activity;
+    }
+
     public AdapterMp3(List<MP3> list) {
         this.list = list;
+        list_ys = list;
+    }
+
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence charSequence) {
+                String charString = charSequence.toString();
+                if (charString.isEmpty()) {
+                    //没有过滤的内容，则使用源数据
+                    list = list_ys;
+                } else {
+                    List<MP3> filteredList = new ArrayList<>();
+                    for (int i = 0; i < list_ys.size(); i++) {
+                        MP3 mp3 = list_ys.get(i);
+                        if (mp3.name.contains(charString)
+                                || mp3.zz.contains(charString)) {
+                            filteredList.add(list_ys.get(i));
+                        }
+                    }
+                    list = filteredList;
+                }
+
+                FilterResults filterResults = new FilterResults();
+                filterResults.values = list;
+                return filterResults;
+            }
+
+            @SuppressLint("NotifyDataSetChanged")
+            @SuppressWarnings("unchecked")
+            @Override
+            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+                list = (List<MP3>) filterResults.values;
+                notifyDataSetChanged();
+            }
+        };
     }
 
     @NonNull
@@ -43,6 +91,38 @@ public class AdapterMp3 extends RecyclerView.Adapter<VH<ListMp3ImageBinding>> {
         return new VH<>(ListMp3ImageBinding.inflate(
                 LayoutInflater.from(parent.getContext()), parent, false));
     }
+
+    // 定义全局监听器
+    private final Player.Listener playerListener = new Player.Listener() {
+        @SuppressLint("NotifyDataSetChanged")
+        @Override
+        public void onMediaItemTransition(@Nullable MediaItem mediaItem, int reason) {
+            if (mediaItem != null) {
+                notifyDataSetChanged();
+                Log.d("RecyclerView", "切换到新音乐: " + mediaItem.mediaId);
+            }
+        }
+    };
+
+    @Override
+    public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+        if (activity == null && PlaybackService.mediaSession != null) {
+
+            PlaybackService.mediaSession.getPlayer().addListener(playerListener);
+        }
+        Log.d("RecyclerView", "Adapter 绑定到 RecyclerView");
+    }
+
+    @Override
+    public void onDetachedFromRecyclerView(@NonNull RecyclerView recyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView);
+        if (activity == null && PlaybackService.mediaSession != null) {
+            PlaybackService.mediaSession.getPlayer().removeListener(playerListener);
+        }
+        Log.d("RecyclerView", "Adapter 从 RecyclerView 解绑");
+    }
+
 
     @SuppressLint("NotifyDataSetChanged")
     @Override
@@ -69,7 +149,7 @@ public class AdapterMp3 extends RecyclerView.Adapter<VH<ListMp3ImageBinding>> {
             holder.binding.text1.setText(String.valueOf(position + 1));
             holder.binding.imageView.setVisibility(ViewGroup.GONE);
             holder.binding.linsum.setVisibility(View.VISIBLE);
-        }else{
+        } else {
             Glide.with(holder.itemView.getContext()).load(list.get(position).picurl)
                     .apply(new RequestOptions().placeholder(R.drawable.ic_launcher_foreground))
                     .error(R.drawable.ic_launcher_foreground)
@@ -92,7 +172,7 @@ public class AdapterMp3 extends RecyclerView.Adapter<VH<ListMp3ImageBinding>> {
                             MediaItem currentItem = player.getMediaItemAt(i);
                             if (currentItem.mediaId.equals(hq.id)) {
                                 gj.sc("存在播放:" + currentItem.mediaId + "==" + hq.id + " i=" + i);
-                                player.seekTo(i,0);
+                                player.seekTo(i, 0);
                                 player.prepare();
                                 player.play();
                                 notifyDataSetChanged();
@@ -103,8 +183,8 @@ public class AdapterMp3 extends RecyclerView.Adapter<VH<ListMp3ImageBinding>> {
                         PlaybackService.list.add(hq);
                         PlaybackService.ListSave();
                         MediaItem mediaItem = PlaybackService.GetMp3(hq);
-                        player.addMediaItem(0,mediaItem);
-                        player.seekTo(0,0);
+                        player.addMediaItem(0, mediaItem);
+                        player.seekTo(0, 0);
                         player.prepare();
                         player.play();
                         notifyDataSetChanged();

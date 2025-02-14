@@ -57,11 +57,11 @@ public class user_logs extends AppCompatActivity<ActivityUserLogsBinding> {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         binding.login.setOnClickListener(view1 -> {
             if (!TextUtils.isEmpty(binding.editUser.getText())) {
-                wl.setcookie(binding.editUser.getText().toString());
+//                wl.setcookie(binding.editUser.getText().toString());
             }
             new Thread(() -> {
-                gj.sc(wl.Cookie);
-                String hq = wl.hq("/login/status?cookie=" + wl.Cookie);
+//                gj.sc(wl.Cookie);
+                String hq = wl.hq("/login/status", null);
                 try {
                     JSONObject jsonObject = new JSONObject(hq);
                     JSONObject data = jsonObject.getJSONObject("data");
@@ -138,7 +138,7 @@ public class user_logs extends AppCompatActivity<ActivityUserLogsBinding> {
             }
             user_logs.this.account = binding.editUser.getText().toString();
             gj.xcts(user_logs.this, "设置成功");
-            wl.setcookie(account);
+//            wl.setcookie(account);
             finish();
 //            start();
         }
@@ -147,7 +147,7 @@ public class user_logs extends AppCompatActivity<ActivityUserLogsBinding> {
         public void run() {
             super.run();
             try {
-                String hq = wl.hq("/login/cellphone?phone=" + account + "&password=" + password);
+                String hq = wl.hq("/login/cellphone", "phone=" + account + "&password=" + password, false);
                 if (TextUtils.isEmpty(hq)) {
                     return;
                 }
@@ -189,7 +189,7 @@ public class user_logs extends AppCompatActivity<ActivityUserLogsBinding> {
             while (code != 0 && !Thread.currentThread().isInterrupted()) {
                 gj.sc(code);
                 try {
-                    hq = wl.hq("/login/qr/check?key=" + unikey + Time());
+                    hq = wl.hq("/login/qr/check", "key=" + unikey + Time(), false);
                     if (hq != null) {
                         JSONObject json = new JSONObject(hq);
                         code = json.getInt("code");
@@ -207,7 +207,7 @@ public class user_logs extends AppCompatActivity<ActivityUserLogsBinding> {
                                 break;
                             case 803:
                                 setwb("登录成功");
-                                wl.setcookie(json.getString("cookie"));
+//                                wl.setcookie(json.getString("cookie"));
                                 code = 0;
                                 user_logs.this.finish(true);
                                 break;
@@ -226,11 +226,11 @@ public class user_logs extends AppCompatActivity<ActivityUserLogsBinding> {
         }
 
         private void hqkey() throws Exception {
-            unikey = new JSONObject(Objects.requireNonNull(wl.hq("/login/qr/key"))).
+            unikey = new JSONObject(Objects.requireNonNull(wl.hq("/login/qr/key", null, false))).
                     getJSONObject("data").getString("unikey");
-            JSONObject jsonObject = new JSONObject(Objects.requireNonNull(wl.hq("/login/qr/create?key=" +
+            JSONObject jsonObject = new JSONObject(Objects.requireNonNull(wl.hq("/login/qr/create", "key=" +
                     unikey +
-                    "&qrimg=base64")));
+                    "&qrimg=base64", false)));
             qrimg = jsonObject.getJSONObject("data").getString("qrimg");
             main.handler.post(() -> binding.image.setImageBitmap(user_logs.stringToBitmap(qrimg)));
         }

@@ -62,21 +62,21 @@ public class main extends Application {
             bj = true;
             com.muqingbfq.bfqkz.ms = 1;
         }
-        try {
-            wl.Cookie = sp.getString("Cookie", "");
-        } catch (Exception e) {
-            edit.putString("Cookie", "");
-            wl.Cookie = "";
-            bj = true;
-        }
-        if (bj) {
-            edit.commit();
-        }
-
-        wl.Cookie = main.sp.getString("Cookie", "");
-        if (wl.Cookie.isEmpty()) {
-            new visitor();
-        }
+//        try {
+//            wl.Cookie = sp.getString("Cookie", "");
+//        } catch (Exception e) {
+//            edit.putString("Cookie", "");
+//            wl.Cookie = "";
+//            bj = true;
+//        }
+//        if (bj) {
+//            edit.commit();
+//        }
+//
+//        wl.Cookie = main.sp.getString("Cookie", "");
+//        if (wl.Cookie.isEmpty()) {
+//            new visitor();
+//        }
         SharedPreferences theme = getSharedPreferences("theme", MODE_PRIVATE);
         @SuppressLint("CommitPrefEdits") SharedPreferences.Editor edit = theme.edit();
         int i = theme.getInt("theme", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);

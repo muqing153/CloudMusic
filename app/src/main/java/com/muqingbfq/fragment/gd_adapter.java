@@ -35,39 +35,33 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class gd_adapter extends Fragment<FragmentGdBinding> {
-    List<XM> list = new ArrayList<>();
-    AdapterMp3 adapterMp3 = new AdapterMp3();
-
-
-
+    AdapterMp3 adapterMp3;
     @Override
     protected FragmentGdBinding inflateViewBinding(LayoutInflater inflater, ViewGroup container) {
         return FragmentGdBinding.inflate(inflater, container, false);
     }
 
-    AdapterGd adapterGd = new AdapterGd();
+    AdapterGd adapterGd;
     @Override
     public void setUI(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false);
-        binding.recyclerview1.setHasFixedSize(true);
-        binding.recyclerview1.setNestedScrollingEnabled(false);
         binding.recyclerview1.setLayoutManager(linearLayoutManager);
-        adapterGd.list = list;
+        adapterGd = new AdapterGd();
         binding.recyclerview1.setAdapter(adapterGd);
         new Thread() {
             @Override
             public void run() {
                 super.run();
-                resource.recommend(list);
+                resource.recommend(adapterGd.list);
                 main.handler.post(new sx());
             }
         }.start();
 
-        mp3list();
+        adapterMp3 = new AdapterMp3();
         binding.recyclerview2.setLayoutManager(new LinearLayoutManager(getContext()));
-        binding.recyclerview2.setNestedScrollingEnabled(false);
         binding.recyclerview2.setAdapter(adapterMp3);
+        mp3list();
 //        requireActivity().findViewById(R.id.linearLayout4).post(new Runnable() {
 //            @Override
 //            public void run() {
@@ -91,7 +85,7 @@ public class gd_adapter extends Fragment<FragmentGdBinding> {
             @Override
             public void run() {
                 super.run();
-                String hq = wl.hq("/recommend/songs" + "?cookie=" + wl.Cookie);
+                String hq = wl.hq("/recommend/songs", null);
                 if (hq == null) {
                     hq = wj.dqwb(wj.filesdri + "songs.json");
                 }
@@ -126,5 +120,11 @@ public class gd_adapter extends Fragment<FragmentGdBinding> {
 
     public void Gdlist() {
 
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding.recyclerview2.setAdapter(null);
     }
 }
