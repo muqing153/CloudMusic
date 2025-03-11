@@ -7,6 +7,7 @@ import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -46,8 +47,8 @@ import com.bumptech.glide.request.target.Target;
 import com.muqingbfq.MP3;
 import com.muqingbfq.PlaybackService;
 import com.muqingbfq.R;
+import com.muqingbfq.api.FileDownloader;
 import com.muqingbfq.bfq_an;
-import com.muqingbfq.bfqkz;
 import com.muqingbfq.databinding.ActivityMusicBinding;
 import com.muqingbfq.fragment.Media;
 import com.muqingbfq.main;
@@ -61,7 +62,7 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
 
     private final Player player = PlaybackService.mediaSession.getPlayer();
     private int TdtHeight = 15;
-    public static Bitmap backgroundbitmap=null;
+    public static Bitmap backgroundbitmap = null;
 
     public static void startActivity(Context context, MP3 mp3) {
         Intent intent = new Intent(context, Music.class);
@@ -247,7 +248,7 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
                 if (bfq_an.DelLike(currentMediaItem)) {
                     binding.like.setImageResource(R.drawable.like);
                 }
-            }else{
+            } else {
                 if (bfq_an.AddLike(currentMediaItem)) {
                     binding.like.setImageResource(R.drawable.like_yes);
                 }
@@ -255,7 +256,7 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
         });
         binding.image2.setOnClickListener(v -> {
             MediaItem currentMediaItem = player.getCurrentMediaItem();
-            if (currentMediaItem != null){
+            if (currentMediaItem != null) {
                 String stringBuilder = "标题：" + currentMediaItem.mediaMetadata.title + System.lineSeparator() +
                         "歌手:" + currentMediaItem.mediaMetadata.artist + System.lineSeparator() +
                         "歌曲链接：" + "https://music.163.com/#/song?id=" + currentMediaItem.mediaId;
@@ -267,9 +268,12 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
 
         });
 
-        binding.download.setOnClickListener(v -> {
+        binding.download.setOnClickListener(v ->
+                new FileDownloader(Music.this).downloadFile(player.getCurrentMediaItem().localConfiguration.uri.toString(), player.getCurrentMediaItem()));
+        SharedPreferences sharedPreferences = getSharedPreferences("Set_up", MODE_PRIVATE);
 
-        });
+        setPlayMode(sharedPreferences.getInt("ms", 1));
+        binding.control.setOnClickListener(v -> setPlayMode());
     }
 
     //是否拖动
@@ -340,13 +344,10 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
                 switch (playbackState) {
                     case Player.STATE_READY:
                         if (player.getPlayWhenReady()) {
-                            if (bfqkz.lrc != null) {
-                                String[] strings = Media.loadLyric();
-                                if (strings != null) {
-                                    binding.lrcView.loadLyric(strings[0], strings[1]);
-                                }
+                            String[] strings = Media.loadLyric(bfqkz.lrc);
+                            if (strings != null) {
+                                binding.lrcView.loadLyric(strings[0], strings[1]);
                             }
-
                             gj.sc("播放开始");
                         }
                         break;
@@ -404,7 +405,7 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
     }
 
 
-    private void SetBackGround(Uri artworkUri){
+    private void SetBackGround(Uri artworkUri) {
         Glide.with(this)
                 .asBitmap()
                 .load(artworkUri)
@@ -500,9 +501,43 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
         background.setColorFilter(Color.GRAY, PorterDuff.Mode.SRC_IN);
     }
 
-    //触摸
-//    public boolean onTouchEvent(MotionEvent event)
-
+    /**
+     * 设置播放模式
+     */
+    private void setPlayMode(int ms) {
+        switch (ms) {
+            case 0:
+                player.setRepeatMode(Player.REPEAT_MODE_ONE);
+                binding.control.setImageResource(R.drawable.mt_xh);
+                player.setShuffleModeEnabled(/* shuffleModeEnabled= */ false);
+                break;
+            case 1:
+                player.setRepeatMode(Player.REPEAT_MODE_OFF);
+                binding.control.setImageResource(R.drawable.mt_sx);
+                player.setShuffleModeEnabled(/* shuffleModeEnabled= */ false);
+                break;
+            case 2:
+                // Set a custom shuffle order for the 5 items currently in the playlist:
+//                player.setShuffleOrder(new DefaultShuffleOrder(new int[] {3, 1, 0, 4, 2}, randomSeed));
+// Enable shuffle mode.
+                player.setShuffleModeEnabled(/* shuffleModeEnabled= */ true);
+                binding.control.setImageResource(R.drawable.mt_sj);
+                break;
+        }
+    }
+    private void setPlayMode(){
+        SharedPreferences sharedPreferences = getSharedPreferences("Set_up", Context.MODE_PRIVATE);
+        int ms = sharedPreferences.getInt("ms", 1);
+        if (ms == 2) {
+            ms = 0;
+        } else {
+            ms++;
+        }
+        setPlayMode(ms);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt("ms", ms);
+        editor.apply();
+    }
 
     @Override
     public boolean onDown(@NonNull MotionEvent e) {

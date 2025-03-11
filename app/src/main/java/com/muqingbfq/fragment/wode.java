@@ -20,10 +20,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.muqingbfq.R;
 import com.muqingbfq.XM;
-import com.muqingbfq.api.playlist;
-import com.muqingbfq.api.resource;
+import com.muqingbfq.adapter.AdapterGd;
+import com.muqingbfq.adapter.AdapterGdH;
 import com.muqingbfq.databinding.FragmentWdBinding;
 import com.muqingbfq.login.user_logs;
 import com.muqingbfq.main;
@@ -33,10 +34,10 @@ import com.muqingbfq.mq.gj;
 import com.muqingbfq.mq.wj;
 import com.muqingbfq.mq.wl;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -51,7 +52,7 @@ public class wode extends Fragment<FragmentWdBinding> {
             {R.drawable.api, "更换接口", "API"},
             {R.drawable.gd, "导入歌单", "gd"},
             {R.drawable.paihangbang, "排行榜", "排行榜"},
-            {R.drawable.ic_launcher_foreground, "开发中", ""}
+            {R.drawable.menu, "开发中", ""}
     };
 
     @Override
@@ -119,6 +120,7 @@ public class wode extends Fragment<FragmentWdBinding> {
                                     "导入歌单")
                                     .setMessage("请用网易云https链接来进行导入或者歌单id");
                             editViewDialog1.setPositive(view1 -> {
+                                view1.setEnabled(false);
                                 String str = editViewDialog1.getEditText();
                                 // 使用正则表达式提取链接
                                 Pattern pattern = Pattern.compile("https?://[\\w./?=&]+");
@@ -131,28 +133,15 @@ public class wode extends Fragment<FragmentWdBinding> {
                                 }
                                 String finalStr = str;
                                 gj.ts(getContext(), "导入中");
-                                new Thread() {
+                                new AdapterGd.baocun(finalStr){
                                     @Override
-                                    public void run() {
-                                        super.run();
-                                        String hq = playlist.gethq(finalStr);
-                                        if (hq != null) {
-                                            try {
-                                                XM fh = resource.Playlist_content(finalStr);
-                                                JSONObject json = new JSONObject(hq);
-                                                json.put("name", fh.name);
-                                                json.put("picUrl", fh.picurl);
-                                                json.put("message", fh.message);
-//                                                        json.put(fh.id, json);
-                                                wj.xrwb(wj.gd + finalStr, json.toString());
-//                                                addlist(fh);
-                                            } catch (JSONException e) {
-                                                gj.sc("list gd onclick thear " + e);
-                                            }
-                                        }
+                                    public void Yes() {
+                                        requireActivity().runOnUiThread(() -> {
+                                            gj.ts(getContext(), "导入成功");
+                                            editViewDialog1.dismiss();
+                                        });
                                     }
-                                }.start();
-                                editViewDialog1.dismiss();
+                                };
                             }).show();
                             break;
                     }
@@ -167,12 +156,12 @@ public class wode extends Fragment<FragmentWdBinding> {
 
         binding.recyclerview2.setNestedScrollingEnabled(false);
         binding.recyclerview2.setLayoutManager(new LinearLayoutManager(getContext()));
-//        adaper = new baseadapter();
-//        binding.recyclerview2.setAdapter(adaper);
-//        sx();
+        load = new Load(this);
+        LoadPlaylists();
         new threadLogin().start();
     }
 
+    public static Load load;
     ActivityResultLauncher<Intent> dlintent = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
@@ -267,5 +256,40 @@ public class wode extends Fragment<FragmentWdBinding> {
                 });
             }
         }
+    }
+
+
+    public static class Load{
+        private final wode wode;
+        public Load(wode wode) {
+            this.wode = wode;
+        }
+        public void run(){
+            wode.LoadPlaylists();
+        }
+    }
+    public void LoadPlaylists() {
+        File file = new File(wj.gd_xz);
+        if (file.exists()) {
+            String dqwb = wj.dqwb(wj.gd_xz);
+            Gson gson = new Gson();
+            TypeToken<List<XM>> typeToken = new TypeToken<List<XM>>() {
+            };
+            AdapterGdH adapterGdH = new AdapterGdH();
+            adapterGdH.list = gson.fromJson(dqwb, typeToken.getType());
+            requireActivity().runOnUiThread(() -> {
+                binding.recyclerview2.setAdapter(adapterGdH);
+                binding.recyclerview2Text.setVisibility(adapterGdH.list.isEmpty() ? View.VISIBLE : View.GONE);
+            });
+        }else{
+            requireActivity().runOnUiThread(() -> binding.recyclerview2Text.setVisibility(View.VISIBLE));
+        }
+    }
+
+    //在每次可见的时候加载
+    @Override
+    public void onResume() {
+        super.onResume();
+//        LoadPlaylists();
     }
 }

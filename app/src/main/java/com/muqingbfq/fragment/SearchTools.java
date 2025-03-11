@@ -1,7 +1,6 @@
 package com.muqingbfq.fragment;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,7 +11,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -22,7 +20,6 @@ import com.muqingbfq.MP3;
 import com.muqingbfq.XM;
 import com.muqingbfq.adapter.AdapterGdH;
 import com.muqingbfq.adapter.AdapterMp3;
-import com.muqingbfq.databinding.FragmentSearchBinding;
 import com.muqingbfq.databinding.RecyclerVBinding;
 import com.muqingbfq.main;
 import com.muqingbfq.mq.gj;
@@ -35,17 +32,17 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-public class search {
+public class SearchTools {
     public String string;
-    List<Fragment> fragments = new ArrayList<>();
     TabLayout tablayout;
     ViewPager2 viewPager2;
     FragmentActivity activity;
 
-    public search(FragmentActivity activity, TabLayout tabLayout, ViewPager2 viewPager2) {
+    public SearchTools(FragmentActivity activity, TabLayout tabLayout, ViewPager2 viewPager2) {
         this.tablayout = tabLayout;
         this.viewPager2 = viewPager2;
         this.activity = activity;
+        gj.sc("SearchTools:" + tabLayout + " " + viewPager2 + activity);
         tabLayoutMediator = new TabLayoutMediator(tablayout, viewPager2, (tab, position) -> {
             switch (position) {
                 case 0:
@@ -77,8 +74,6 @@ public class search {
             binding = RecyclerVBinding.inflate(inflater, container, false);
             binding.recycleview.setLayoutManager(new LinearLayoutManager(getContext()));
             AdapterMp3 adapterMp3 = new AdapterMp3();
-            binding.recycleview.setAdapter(adapterMp3);
-            adapterMp3.list.clear();
             binding.recyclerviewBar.setVisibility(View.VISIBLE);
             binding.recyclerviewText.setVisibility(View.GONE);
             new Thread() {
@@ -94,7 +89,7 @@ public class search {
                         } else {
                             binding.recyclerviewText.setVisibility(View.GONE);
                         }
-                        binding.recycleview.getAdapter().notifyDataSetChanged();
+                        binding.recycleview.setAdapter(adapterMp3);
                     });
                 }
             }.start();
@@ -125,8 +120,6 @@ public class search {
             String string = getArguments().getString("string");
             RecyclerVBinding binding = RecyclerVBinding.inflate(inflater, container, false);
             binding.recycleview.setLayoutManager(new LinearLayoutManager(getContext()));
-            binding.recycleview.setAdapter(new AdapterGdH(list));
-            list.clear();
             binding.recyclerviewBar.setVisibility(View.VISIBLE);
             binding.recyclerviewText.setVisibility(View.GONE);
             new Thread() {
@@ -142,7 +135,7 @@ public class search {
                         } else {
                             binding.recyclerviewText.setVisibility(View.GONE);
                         }
-                        binding.recycleview.getAdapter().notifyDataSetChanged();
+                        binding.recycleview.setAdapter(new AdapterGdH(list));
                     });
                 }
             }.start();
@@ -152,38 +145,44 @@ public class search {
 
     TabLayoutMediator tabLayoutMediator;
 
-    @SuppressLint("NotifyDataSetChanged")
     public void sx(String string) {
         this.string = string;
-        delete();
-//        viewPager2.setAdapter(null);
-        viewPager2.setAdapter(new FragmentStateAdapter(activity) {
-            @NonNull
-            @Override
-            public Fragment createFragment(int position) {
-                switch (position) {
-                    case 0:
-                        return mp3.newInstance(string);
-                    case 1:
-                        return gd.newInstance(string);
-                }
-                return null;
-            }
+        activity.runOnUiThread(() -> {
+            delete();
+            if (viewPager2 != null) {
+                viewPager2.setAdapter(new FragmentStateAdapter(activity) {
+                    @NonNull
+                    @Override
+                    public Fragment createFragment(int position) {
+                        switch (position) {
+                            case 0:
+                                return mp3.newInstance(string);
+                            case 1:
+                                return gd.newInstance(string);
+                        }
+                        return null;
+                    }
 
-            @Override
-            public int getItemCount() {
-                return 2;
+                    @Override
+                    public int getItemCount() {
+                        return 2;
+                    }
+                });
+            }
+// 确保只有一个 TabLayoutMediator 被附加
+            if (!tabLayoutMediator.isAttached()) {
+                tabLayoutMediator.attach();  // 仅在没有附加时才附加
             }
         });
-// 确保只有一个 TabLayoutMediator 被附加
-        if (!tabLayoutMediator.isAttached()) {
-            tabLayoutMediator.attach();  // 仅在没有附加时才附加
-        }
     }
 
     public void delete() {
-        tabLayoutMediator.detach();
-        viewPager2.setAdapter(null);
+        if (tabLayoutMediator != null && tabLayoutMediator.isAttached()) {
+            tabLayoutMediator.detach();
+        }
+        if (viewPager2 != null) {
+            viewPager2.setAdapter(null);
+        }
     }
 
     private static void mp3(List<MP3> list, String str) {

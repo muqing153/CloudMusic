@@ -33,28 +33,22 @@
             android:id="@+id/searchview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="51dp"
             android:hint="@string/search"
             app:layout_anchor="@id/toolbar">
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:transitionName="edit"
-                app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
-
+                android:layout_height="match_parent">
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/search_recycler"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
-
                 <LinearLayout
                     android:id="@+id/xxbj1"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginHorizontal="9dp"
+                    android:layout_margin="13dp"
                     android:orientation="vertical">
 
                     <LinearLayout
@@ -87,12 +81,36 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent" />
                 </LinearLayout>
-
-                <androidx.fragment.app.FragmentContainerView
+                <LinearLayout
                     android:id="@+id/search_fragment"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:visibility="gone" />
+                    android:orientation="vertical">
+
+                    <com.google.android.material.tabs.TabLayout
+                        android:id="@+id/search_tablayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="#0000FFFF">
+
+                        <com.google.android.material.tabs.TabItem
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="歌曲"
+                            tools:ignore="HardcodedText" />
+
+                        <com.google.android.material.tabs.TabItem
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="歌单"
+                            tools:ignore="HardcodedText" />
+                    </com.google.android.material.tabs.TabLayout>
+
+                    <androidx.viewpager2.widget.ViewPager2
+                        android:id="@+id/search_viewPager"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                </LinearLayout>
             </RelativeLayout>
         </com.google.android.material.search.SearchView>
 
@@ -137,10 +155,9 @@
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/chb"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="?android:colorBackground"
         app:headerLayout="@layout/fragment_sz"
         app:menu="@menu/sz" />
 </androidx.drawerlayout.widget.DrawerLayout>

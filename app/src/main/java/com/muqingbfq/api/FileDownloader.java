@@ -2,23 +2,17 @@ package com.muqingbfq.api;
 
 
 import android.annotation.SuppressLint;
-import android.content.Context;
+import android.app.Activity;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-
+import androidx.media3.common.MediaItem;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.mpatric.mp3agic.ID3v2;
 import com.mpatric.mp3agic.Mp3File;
-import com.muqingbfq.MP3;
 import com.muqingbfq.main;
 import com.muqingbfq.mq.gj;
 import com.muqingbfq.mq.wj;
-import com.muqingbfq.mq.wl;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -36,49 +30,29 @@ public class FileDownloader {
     OkHttpClient client = new OkHttpClient();
     AlertDialog dialog;
     TextView textView;
-    Context context;
-    public FileDownloader(Context context) {
+    Activity context;
+
+    public FileDownloader(Activity context) {
         this.context = context;
-        main.handler.post(() -> {
-            textView = new TextView(context);
-            dialog = new MaterialAlertDialogBuilder(context)
-                    .setTitle("下载中...")
-                    .setView(textView)
-                    .show();
-        });
-    }
-    public void downloadFile(MP3 x) {
-        Request request = new Request.Builder()
-                .url(main.api + url.api + "?id=" + x.id + "&level=" +
-                        "standard")
-                .build();
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                e.printStackTrace();
-                // 下载失败处理
-            }
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) {
-                if (!response.isSuccessful()) {
-                    // 下载失败处理
-                    return;
-                }
-                try {
-                    JSONObject json = new JSONObject(response.body().string());
-                    JSONArray data = json.getJSONArray("data");
-                    JSONObject jsonObject = data.getJSONObject(0);
-                    String url = jsonObject.getString("url");
-                    downloadFile(url, x);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+        textView = new TextView(context);
+        dialog = new MaterialAlertDialogBuilder(context)
+                .setTitle("下载音乐")
+                .setView(textView)
+                .show();
     }
 
     long fileSizeDownloaded = 0;
-    public void downloadFile(String url, MP3 x) {
+
+    public void downloadFile(String url, MediaItem x) {
+        if (wj.cz(new File(wj.mp3, x.mediaId).toString())) {
+            dialog.dismiss();
+            dialog = new MaterialAlertDialogBuilder(context)
+                    .setTitle("下载音乐").setMessage("已存在")
+                    .setPositiveButton("确定", null)
+                    .show();
+            return;
+        }
+
         Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -87,10 +61,11 @@ public class FileDownloader {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                e.printStackTrace();
+                gj.sc("下载失败 ：" + e);
                 // 下载失败处理
             }
 
+            /** @noinspection ResultOfMethodCallIgnored*/
             @SuppressLint("SetTextI18n")
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
@@ -98,7 +73,7 @@ public class FileDownloader {
                     // 下载失败处理
                     return;
                 }
-                File outputFile = new File(wj.mp3, x.id + ".mp3");
+                File outputFile = new File(wj.mp3, x.mediaId + ".mp3");
                 File parentFile = outputFile.getParentFile();
                 if (!parentFile.isDirectory()) {
                     parentFile.mkdirs();
@@ -106,6 +81,8 @@ public class FileDownloader {
                 InputStream inputStream = null;
                 FileOutputStream outputStream = null;
                 try {
+                    CharSequence title = x.mediaMetadata.title;
+                    CharSequence artist = x.mediaMetadata.artist;
                     byte[] buffer = new byte[4096];
                     long fileSize = response.body().contentLength();
                     inputStream = response.body().byteStream();
@@ -120,7 +97,7 @@ public class FileDownloader {
 //                        updateNotificationProgress(context, fileSize, fileSizeDownloaded);
                         if (textView != null) {
                             main.handler.post(() ->
-                                    textView.setText(x.name + ":" +
+                                    textView.setText(title + ":" +
                                             (int) ((fileSizeDownloaded * 100) / fileSize)));
                         }
                     }
@@ -129,23 +106,22 @@ public class FileDownloader {
                         if (mp3file.hasId3v2Tag()) {
                             ID3v2 id3v2Tag = mp3file.getId3v2Tag();
                             // 设置新的ID值
-                            gj.sc(x.name);
-                            id3v2Tag.setTitle(x.name);
-                            id3v2Tag.setArtist(x.zz);
-                            id3v2Tag.setAlbum(x.zz);
-                            id3v2Tag.setLyrics(com.muqingbfq.api.url.Lrc(x.id));
+//                            gj.sc(x.name);
+                            id3v2Tag.setTitle(title.toString());
+                            id3v2Tag.setArtist(artist.toString());
+                            id3v2Tag.setAlbum(artist.toString());
+                            id3v2Tag.setLyrics(com.muqingbfq.api.url.Lrc(x.mediaId));
                             ByteArrayOutputStream o = new ByteArrayOutputStream();
-                            if (x.picurl instanceof String) {
-                                Request build = new Request.Builder().url(x.picurl)
-                                        .build();
-                                Response execute = client.newCall(build).execute();
-                                if (execute.isSuccessful()) {
-                                    id3v2Tag.setAlbumImage(execute.body().bytes()
-                                            , "image/jpeg");
-                                }
+                            String artworkUri = x.mediaMetadata.artworkUri.toString();
+                            Request build = new Request.Builder().url(artworkUri)
+                                    .build();
+                            Response execute = client.newCall(build).execute();
+                            if (execute.isSuccessful()) {
+                                id3v2Tag.setAlbumImage(execute.body().bytes()
+                                        , "image/jpeg");
                             }
                             o.close();
-                            mp3file.save(wj.mp3 + x.id);
+                            mp3file.save(wj.mp3 + x.mediaId);
                             outputFile.delete();
                         }
                         // 保存修改后的音乐文件，删除原来的文件
@@ -156,7 +132,7 @@ public class FileDownloader {
                     dismiss();
                     // 下载完成处理
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    gj.sc("下载处理失败：" + e);
                     // 下载失败处理
                 } finally {
                     if (inputStream != null) {
@@ -175,7 +151,6 @@ public class FileDownloader {
         if (dialog == null) {
             return;
         }
-
-        main.handler.post(() -> dialog.dismiss());
+        context.runOnUiThread(() -> dialog.dismiss());
     }
 }

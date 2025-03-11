@@ -14,7 +14,6 @@ import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
-import androidx.core.view.WindowCompat;
 
 import com.google.gson.Gson;
 import com.muqingbfq.databinding.ActivityUserLogsBinding;
@@ -57,7 +56,7 @@ public class user_logs extends AppCompatActivity<ActivityUserLogsBinding> {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         binding.login.setOnClickListener(view1 -> {
             if (!TextUtils.isEmpty(binding.editUser.getText())) {
-//                wl.setcookie(binding.editUser.getText().toString());
+                wl.setcookie(binding.editUser.getText().toString());
             }
             new Thread(() -> {
 //                gj.sc(wl.Cookie);
@@ -122,7 +121,7 @@ public class user_logs extends AppCompatActivity<ActivityUserLogsBinding> {
             byte[] bitmapArray = Base64.decode(string.split(",")[1], Base64.DEFAULT);
             bitmap = BitmapFactory.decodeByteArray(bitmapArray, 0, bitmapArray.length);
         } catch (Exception e) {
-            e.printStackTrace();
+            gj.sc(e);
         }
         return bitmap;
     }
@@ -138,7 +137,7 @@ public class user_logs extends AppCompatActivity<ActivityUserLogsBinding> {
             }
             user_logs.this.account = binding.editUser.getText().toString();
             gj.xcts(user_logs.this, "设置成功");
-//            wl.setcookie(account);
+            wl.setcookie(account);
             finish();
 //            start();
         }

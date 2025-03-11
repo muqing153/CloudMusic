@@ -1,7 +1,9 @@
 package com.muqingbfq;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.ComponentName;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -12,13 +14,17 @@ import android.view.View;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.core.graphics.Insets;
 import androidx.core.view.GravityCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
+import androidx.media3.exoplayer.ExoPlayer;
 import androidx.media3.session.MediaController;
+import androidx.media3.session.MediaSession;
 import androidx.media3.session.SessionToken;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
@@ -33,8 +39,8 @@ import com.google.common.base.Strings;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.muqingbfq.databinding.ActivityHomeBinding;
+import com.muqingbfq.fragment.SearchTools;
 import com.muqingbfq.fragment.gd_adapter;
-import com.muqingbfq.fragment.search;
 import com.muqingbfq.fragment.sz;
 import com.muqingbfq.fragment.wode;
 import com.muqingbfq.mq.AppCompatActivity;
@@ -46,6 +52,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class home extends AppCompatActivity<ActivityHomeBinding> {
 
@@ -59,14 +66,18 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
         setTheme(R.style.Theme_muqing);
         EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
+
+        HomeSteer homeSteer = new HomeSteer(this, this::UI);
         SessionToken sessionToken =
                 new SessionToken(this, new ComponentName(this, PlaybackService.class));
         ListenableFuture<MediaController> controllerFuture =
                 new MediaController.Builder(this, sessionToken).buildAsync();
+        //加载完成
         controllerFuture.addListener(() -> {
 
+            gj.sc("加载完成");
+            homeSteer.SetIP();
         }, MoreExecutors.directExecutor());
-        new HomeSteer(this, this::UI);
     }
 
     @Override
@@ -132,6 +143,7 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
         binding.fragmentDb.post(() -> {
             int height = binding.fragmentDb.getHeight();
             binding.searchview.setPadding(0, 0, 0, height);
+
         });
         binding.tablayout.addView("推荐", R.drawable.zhuye).setOnClickListener(v -> {
             for (int i = 0; i < binding.tablayout.sizeView; i++) {
@@ -179,13 +191,12 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
     private activity_search.SearchRecordAdapter searchRecordAdapter;
 
     public void SearchUI() {
-        search search = new search(this, binding.searchTablayout, binding.searchViewPager);
+        SearchTools search = new SearchTools(this, binding.searchTablayout, binding.searchViewPager);
         binding.searchview
                 .getEditText()
                 .setOnEditorActionListener(
                         (v, actionId, event) -> {
 //                            binding.searchview.hide();
-
                             searchStart(search, binding.toolbar.getText().toString());
                             return false;
                         });
@@ -207,15 +218,13 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
                     if (newState == SearchView.TransitionState.SHOWING) {
                         // Handle search view opened.
                         gj.sc("SHOWING");
-                        binding.tablayout.setVisibility(View.GONE);
+//                        binding.tablayout.setVisibility(View.GONE);
                         searchRecordAdapter = new activity_search.SearchRecordAdapter(binding.searchview);
                         binding.listRecycler.setAdapter(searchRecordAdapter);
                     } else if (newState == SearchView.TransitionState.SHOWN) {
                         gj.sc("SHOWN");
                     } else if (newState == SearchView.TransitionState.HIDING) {
-                        if (!gj.isTablet(this)) {
-                            binding.tablayout.setVisibility(View.VISIBLE);
-                        }
+                        binding.tablayout.setVisibility(View.VISIBLE);
                         searchRecordAdapter = null;
                         binding.listRecycler.setAdapter(null);
                         binding.searchFragment.setVisibility(View.GONE);
@@ -258,7 +267,7 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
                                     binding.xxbj1.setVisibility(View.GONE);
                                     binding.searchFragment.setVisibility(View.VISIBLE);
                                     binding.searchview.setText(string);
-                                    searchStart(search,string);
+                                    searchStart(search, string);
 //                                        binding.searchRecycler.set
                                 })));
                             } catch (Exception e) {
@@ -300,7 +309,7 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
 
     }
 
-    public void searchStart(search search, String name) {
+    public void searchStart(SearchTools search, String name) {
         issearchclicklist = true;
         binding.toolbar.setText(binding.searchview.getText());
         if (!TextUtils.isEmpty(name)) {

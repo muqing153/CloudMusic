@@ -117,7 +117,6 @@ public class gd extends FragmentActivity<ActivityGdBinding> {
             if (id.equals("排行榜")) {
                 resource.leaderboard(adapter.list);
             } else {
-
                 String hq = wl.hq("/search", new String[][]{
                                 {"keywords", id},
                                 {"limit", String.valueOf((k * 3))},

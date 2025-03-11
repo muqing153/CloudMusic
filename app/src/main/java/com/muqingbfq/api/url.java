@@ -4,8 +4,6 @@ import com.mpatric.mp3agic.ID3v2;
 import com.mpatric.mp3agic.Mp3File;
 import com.muqingbfq.MP3;
 import com.muqingbfq.fragment.Media;
-import com.muqingbfq.home;
-import com.muqingbfq.main;
 import com.muqingbfq.mq.gj;
 import com.muqingbfq.mq.wj;
 import com.muqingbfq.mq.wl;
@@ -32,7 +30,7 @@ public class url extends Thread {
         mp3.zz = x.zz;
         mp3.url = x.url;
         getLrc(x.id);
-        Media.loadLyric();
+        Media.loadLyric(bfqkz.lrc);
         try {
             if (wj.cz(mp3.id)) {
                 mp3.url = mp3.id;

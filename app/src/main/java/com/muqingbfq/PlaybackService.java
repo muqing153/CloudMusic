@@ -37,9 +37,8 @@ public class PlaybackService extends MediaSessionService {
 
 
     public static void ListSave() {
-        new Thread(() -> wj.xrwb(wj.filesdri + "list.json", new Gson().toJson(list))).start();
+//        new Thread(() -> wj.xrwb(wj.filesdri + "list.json", new Gson().toJson(list))).start();
     }
-
 
     public Player.Listener PlayerListener = new Player.Listener() {
         @Override
@@ -58,6 +57,8 @@ public class PlaybackService extends MediaSessionService {
                     player.seekTo(0, 0);
                     player.play();
                 }
+            } else if (playbackState == Player.STATE_READY) {
+                AddMediaItem(mediaSession.getPlayer().getCurrentMediaItem());
             }
 
         }
@@ -67,35 +68,36 @@ public class PlaybackService extends MediaSessionService {
             // 处理位置不连续变化
         }
 
+        private void AddMediaItem(MediaItem mediaItem) {
+            new Thread(() -> {
+                gj.sc("onPlaybackStateChanged");
+                try {
+                    Gson gson = new GsonBuilder()
+                            .registerTypeAdapter(MediaItem.class, new MediaItemAdapter()) // 绑定适配器
+                            .create();
+                    String dqwb = wj.dqwb(wj.gd + "mp3_listHistory.json");
+                    List<MediaItem> listHistory;
+                    if (Strings.isNullOrEmpty(dqwb)) {
+                        listHistory = new ArrayList<>();
+                    } else {
+                        listHistory = gson.fromJson(dqwb, MediaItemAdapter.type);
+                    }
+                    listHistory.removeIf(mediaItem1 -> mediaItem1.mediaId.equals(mediaItem.mediaId));
+                    listHistory.add(0, mediaItem);
+                    String json = gson.toJson(listHistory);
+                    wj.xrwb(wj.gd + "mp3_listHistory.json", json);
+                } catch (Exception e) {
+                    wj.sc(wj.gd + "mp3_listHistory.json");
+                    gj.sc(e);
+                }
+            }).start();
+        }
+
+        /**
+         * 切换歌曲
+         */
         @Override
         public void onMediaItemTransition(@Nullable MediaItem mediaItem, @Player.MediaItemTransitionReason int reason) {
-            if (mediaItem != null) {
-                // 输出当前的 MediaItem 信息
-                String title = mediaItem.mediaMetadata.title != null ? mediaItem.mediaMetadata.title.toString() : "未知标题";
-                String artist = mediaItem.mediaMetadata.artist != null ? mediaItem.mediaMetadata.artist.toString() : "未知艺术家";
-//                gj.sc(title + " - " + artist);
-                new Thread(() -> {
-                    try {
-                        String dqwb = wj.dqwb(wj.gd + "mp3_listHistory.json");
-                        Gson gson = new GsonBuilder()
-                                .registerTypeAdapter(MediaItem.class, new MediaItemAdapter()) // 绑定适配器
-                                .create();
-                        List<MediaItem> listHistory = gson.fromJson(dqwb, new TypeToken<List<MediaItem>>() {
-                        }.getType());
-                        if (listHistory != null) {
-                            listHistory.removeIf(mediaItem1 -> mediaItem1.mediaId.equals(mediaItem.mediaId));
-                            listHistory.add(0, mediaItem);
-                        }
-                        String json = gson.toJson(listHistory);
-                        wj.xrwb(wj.gd + "mp3_listHistory.json", json);
-                    } catch (Exception e) {
-                        gj.sc(e);
-                    }
-                }).start();
-//                bfqkz.lishi_list.removeIf(mp3 -> mp3.id.equals(mediaItem.mediaId));
-//                bfqkz.lishi_list.add(0, new MP3(mediaItem.mediaId, title, artist, mediaItem.mediaMetadata.artworkUri.toString()));
-//                new Thread(() -> wj.xrwb(wj.gd + "mp3_hc.json", new Gson().toJson(bfqkz.lishi_list))).start();
-            }
         }
 
         @Override
@@ -145,11 +147,10 @@ public class PlaybackService extends MediaSessionService {
 
     @UnstableApi
     public void onCreate() {
-        super.onCreate();
-        ExoPlayer player = new ExoPlayer.Builder(this)
-                .build();
-        mediaSession = new MediaSession.Builder(this, player).build();
-
+        super.onCreate();if (PlaybackService.mediaSession == null) {
+            PlaybackService.mediaSession = new MediaSession.Builder(this, new ExoPlayer.Builder(this)
+                    .build()).build();
+        }
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.setComponent(new ComponentName(this, home.class));//用ComponentName得到class对象
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
@@ -160,41 +161,41 @@ public class PlaybackService extends MediaSessionService {
         mediaSession.setSessionActivity(pendingIntent);
 // 添加 ExoPlayer 监听器
 
-
-        String nickname = wj.dqwb(wj.filesdri + "list.json");
-        if (!Strings.isNullOrEmpty(nickname)) {
-            try {
-                list = new Gson().fromJson(nickname, new com.google.gson.reflect.TypeToken<List<MP3>>() {
-                }.getType());
-                for (MP3 mediaItem : list) {
-                    player.addMediaItem(PlaybackService.GetMp3(mediaItem));
-                }
-            } catch (Exception e) {
-                gj.sc(e);
-                list = new ArrayList<>();
-                wj.sc(wj.filesdri + "list.json");
-            }
-        }
-
-//        String mp3_listHistory = wj.dqwb(wj.gd + "mp3_listHistory.json");
-//        if (!Strings.isNullOrEmpty(mp3_listHistory)) {
+//
+//        String nickname = wj.dqwb(wj.filesdri + "list.json");
+//        if (!Strings.isNullOrEmpty(nickname)) {
 //            try {
-//                Gson gson = new GsonBuilder()
-//                        .registerTypeAdapter(MediaItem.class, new MediaItemAdapter()) // 绑定适配器
-//                        .create();
-////                序列化 List<MediaItem>（转换成 JSON）
-////                String json = gson.toJson(listHistory);
-////                System.out.println("JSON 数据: " + json);
-////                反序列化 JSON（恢复 List<MediaItem>）
-//                listHistory.addAll(gson.fromJson(mp3_listHistory, new com.google.gson.reflect.TypeToken<List<MediaItem>>() {
-//                }.getType()));
-//                gj.sc("listHistory:" + listHistory.size());
+//                list = new Gson().fromJson(nickname, new com.google.gson.reflect.TypeToken<List<MP3>>() {
+//                }.getType());
+//                for (MP3 mediaItem : list) {
+//                    player.addMediaItem(PlaybackService.GetMp3(mediaItem));
+//                }
 //            } catch (Exception e) {
-//                gj.sc("listHistory:" + e);
+//                gj.sc(e);
+//                list = new ArrayList<>();
+//                wj.sc(wj.filesdri + "list.json");
 //            }
 //        }
 
-        player.addListener(PlayerListener);
+        String mp3_listHistory = wj.dqwb(wj.gd + "mp3_listHistory.json");
+        if (!Strings.isNullOrEmpty(mp3_listHistory)) {
+            try {
+                Gson gson = new GsonBuilder()
+                        .registerTypeAdapter(MediaItem.class, new MediaItemAdapter()) // 绑定适配器
+                        .create();
+//                序列化 List<MediaItem>（转换成 JSON）
+//                String json = gson.toJson(listHistory);
+//                System.out.println("JSON 数据: " + json);
+//                反序列化 JSON（恢复 List<MediaItem>）
+                List<MediaItem> list = gson.fromJson(mp3_listHistory, MediaItemAdapter.type);
+                mediaSession.getPlayer().addMediaItems(list);
+//                gj.sc("listHistory:" + listHistory.size());
+            } catch (Exception e) {
+                gj.sc("listHistory:" + e);
+            }
+        }
+
+        mediaSession.getPlayer().addListener(PlayerListener);
     }
 
     @Nullable
@@ -247,8 +248,5 @@ public class PlaybackService extends MediaSessionService {
                 });
             }).start();
         }
-
     }
-
-
 }

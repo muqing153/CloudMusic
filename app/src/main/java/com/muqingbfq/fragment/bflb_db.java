@@ -1,18 +1,15 @@
 package com.muqingbfq.fragment;
 
-import static android.content.Context.WINDOW_SERVICE;
-
 import android.annotation.SuppressLint;
-import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.Player;
@@ -24,23 +21,30 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.muqingbfq.PlaybackService;
 import com.muqingbfq.R;
-import com.muqingbfq.bfqkz;
 import com.muqingbfq.databinding.FragmentBflbDbBinding;
 import com.muqingbfq.databinding.ListMp3ABinding;
-import com.muqingbfq.list.MyViewHoder;
 import com.muqingbfq.main;
+import com.muqingbfq.mq.VH;
 import com.muqingbfq.yc;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class bflb_db extends BottomSheetDialog {
-    public static RecyclerView.Adapter<MyViewHoder> adapter;
+    public RecyclerView.Adapter<VH<ListMp3ABinding>> adapter;
     FragmentBflbDbBinding binding;
-
+    // 定义全局监听器
+    private final Player.Listener playerListener = new Player.Listener() {
+        @SuppressLint("NotifyDataSetChanged")
+        @Override
+        public void onMediaItemTransition(@Nullable MediaItem mediaItem, int reason) {
+            if (mediaItem != null) {
+                adapter.notifyDataSetChanged();
+                Log.d("RecyclerView", "切换到新音乐: " + mediaItem.mediaId);
+            }
+        }
+    };
     private void ingList() {
-
         if (PlaybackService.mediaSession == null) {
             return;
         }
@@ -75,7 +79,7 @@ public class bflb_db extends BottomSheetDialog {
             binding.sc.setOnClickListener(view -> new MaterialAlertDialogBuilder(getContext())
                     .setTitle("清空播放列表")
                     .setPositiveButton("确定", (dialogInterface, i) -> {
-                        bfqkz.list.clear();
+//                        bfqkz.list.clear();
                         dismiss();
                     })
                     .setNegativeButton("取消", null)
@@ -137,36 +141,37 @@ public class bflb_db extends BottomSheetDialog {
         dialog.show();
     }
 
-    private class spq extends RecyclerView.Adapter<MyViewHoder> {
+    private class spq extends RecyclerView.Adapter<VH<ListMp3ABinding>> {
         List<MediaItem> list;
 
         public spq(List<MediaItem> list) {
             this.list = list;
             adapter = this;
+            PlaybackService.mediaSession.getPlayer().addListener(playerListener);
         }
 
         @NonNull
         @Override
-        public MyViewHoder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            return new MyViewHoder(ListMp3ABinding.
+        public VH<ListMp3ABinding> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            return new VH<>(ListMp3ABinding.
                     inflate(getLayoutInflater(), parent, false));
         }
 
         @SuppressLint("NotifyDataSetChanged")
         @Override
-        public void onBindViewHolder(@NonNull MyViewHoder holder, int position) {
+        public void onBindViewHolder(@NonNull VH<ListMp3ABinding> holder, int position) {
             MediaItem mediaItem = list.get(position);
-            holder.bindingA.name.setText(mediaItem.mediaMetadata.title);
-            holder.bindingA.zz.setText(String.format(" · %s", mediaItem.mediaMetadata.artist));
-            int color = ContextCompat.getColor(holder.getContext(), R.color.text);
+            holder.binding.name.setText(mediaItem.mediaMetadata.title);
+            holder.binding.zz.setText(String.format(" · %s", mediaItem.mediaMetadata.artist));
+            int color = ContextCompat.getColor(holder.itemView.getContext(), R.color.text);
             //获取当前播放的项目
             if (PlaybackService.mediaSession != null) {
                 if (mediaItem.mediaId.equals(PlaybackService.mediaSession.getPlayer().getCurrentMediaItem().mediaId)) {
-                    color = ContextCompat.getColor(holder.getContext(), R.color.text_cz);
+                    color = ContextCompat.getColor(holder.itemView.getContext(), R.color.text_cz);
                 }
             }
-            holder.bindingA.name.setTextColor(color);
-            holder.bindingA.zz.setTextColor(color);
+            holder.binding.name.setTextColor(color);
+            holder.binding.zz.setTextColor(color);
             holder.itemView.setOnClickListener(view -> {
                 if (PlaybackService.mediaSession != null) {
                     new Thread() {
@@ -183,13 +188,12 @@ public class bflb_db extends BottomSheetDialog {
 //                                player.replaceMediaItem(absoluteAdapterPosition, PlaybackService.GetMp3(hq));
                                 player.prepare();
                                 player.play();
-                                notifyDataSetChanged();
                             });
                         }
                     }.start();
                 }
             });
-            holder.bindingA.delete.setOnClickListener(v -> {
+            holder.binding.delete.setOnClickListener(v -> {
                 list.remove(holder.getAbsoluteAdapterPosition());
                 PlaybackService.ListSave();
                 PlaybackService.list.removeIf(mp3 -> mp3.id.equals(mediaItem.mediaId));
@@ -208,5 +212,6 @@ public class bflb_db extends BottomSheetDialog {
     public void dismiss() {
         super.dismiss();
         adapter = null;
+        PlaybackService.mediaSession.getPlayer().removeListener(playerListener);
     }
 }

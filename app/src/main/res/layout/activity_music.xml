@@ -40,7 +40,6 @@
                 android:layout_height="36dp"
                 android:layout_marginTop="3dp"
                 android:src="@drawable/end"
-                app:tint="@color/tint_image"
                 tools:ignore="ContentDescription" />
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -62,7 +61,7 @@
         android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:paddingBottom="10dp"
+        android:paddingBottom="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -83,7 +82,6 @@
                 android:layout_height="wrap_content"
                 android:singleLine="true"
                 android:text="@string/name"
-                android:textColor="@color/tint_image"
                 android:textSize="26sp"
                 android:textStyle="bold" />
 
@@ -93,7 +91,6 @@
                 android:layout_height="wrap_content"
                 android:singleLine="true"
                 android:text="@string/zz"
-                android:textColor="@color/tint_image"
                 android:textSize="20sp" />
         </LinearLayout>
 
@@ -118,7 +115,6 @@
             android:layout_marginStart="10dp"
             android:paddingStart="6dp"
             android:text="@string/_00_00"
-            android:textColor="@color/tint_image"
             app:layout_constraintBottom_toTopOf="@id/linearLayout3"
             app:layout_constraintStart_toStartOf="parent"
             tools:ignore="RtlSymmetry" />
@@ -130,7 +126,6 @@
             android:layout_marginEnd="10dp"
             android:paddingEnd="6dp"
             android:text="@string/_00_00"
-            android:textColor="@color/tint_image"
             app:layout_constraintBottom_toTopOf="@id/linearLayout3"
             app:layout_constraintEnd_toEndOf="parent"
             tools:ignore="RtlSymmetry" />
@@ -153,7 +148,6 @@
                 android:layout_height="36dp"
                 android:background="?android:attr/actionBarItemBackground"
                 android:src="@drawable/mt_sx"
-                app:tint="@color/tint_image"
                 tools:ignore="ContentDescription" />
 
             <ImageView
@@ -162,7 +156,6 @@
                 android:layout_height="36dp"
                 android:background="?android:attr/actionBarItemBackground"
                 android:src="@drawable/syq"
-                app:tint="@color/tint_image"
                 tools:ignore="ContentDescription" />
 
             <ImageView
@@ -171,8 +164,6 @@
                 android:layout_height="66dp"
                 android:background="?android:attr/actionBarItemBackground"
                 android:src="@drawable/zt"
-                app:tint="@color/tint_image"
-
                 tools:ignore="ContentDescription" />
 
             <ImageView
@@ -181,7 +172,6 @@
                 android:layout_height="36dp"
                 android:background="?android:attr/actionBarItemBackground"
                 android:src="@drawable/xyq"
-                app:tint="@color/tint_image"
                 tools:ignore="ContentDescription" />
 
             <ImageView
@@ -190,7 +180,6 @@
                 android:layout_height="36dp"
                 android:background="?android:attr/actionBarItemBackground"
                 android:src="@drawable/gd"
-                app:tint="@color/tint_image"
                 tools:ignore="ContentDescription" />
         </com.google.android.flexbox.FlexboxLayout>
 
@@ -211,7 +200,6 @@
                 android:layout_height="26dp"
                 android:background="?android:attr/actionBarItemBackground"
                 android:src="@drawable/download"
-                app:tint="@color/tint_image"
                 tools:ignore="ContentDescription" />
 
             <ImageView
@@ -220,7 +208,6 @@
                 android:layout_height="26dp"
                 android:background="?android:attr/actionBarItemBackground"
                 android:src="@drawable/like"
-                app:tint="@color/tint_image"
                 tools:ignore="ContentDescription" />
 
             <ImageView
@@ -229,7 +216,6 @@
                 android:layout_height="26dp"
                 android:layout_marginTop="3dp"
                 android:src="@drawable/abc_ic_menu_share_mtrl_alpha"
-                app:tint="@color/tint_image"
                 tools:ignore="ContentDescription" />
 
         </com.google.android.flexbox.FlexboxLayout>

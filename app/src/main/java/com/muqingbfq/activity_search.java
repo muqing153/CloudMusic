@@ -28,7 +28,6 @@ import com.google.gson.reflect.TypeToken;
 import com.muqingbfq.databinding.ActivitySearchBinding;
 import com.muqingbfq.databinding.ListTextBinding;
 import com.muqingbfq.databinding.ViewSearchItemBinding;
-import com.muqingbfq.fragment.search;
 import com.muqingbfq.mq.FragmentActivity;
 import com.muqingbfq.mq.VH;
 import com.muqingbfq.mq.gj;

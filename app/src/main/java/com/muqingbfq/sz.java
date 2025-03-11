@@ -1,5 +1,7 @@
 package com.muqingbfq;
 
+import static com.muqingbfq.mq.FloatingLyricsService.setup;
+
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -22,7 +24,6 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.fragment.app.Fragment;
 import androidx.media3.common.Player;
 
 import com.colorpicker.ColorPickerView;
@@ -36,6 +37,7 @@ import com.muqingbfq.databinding.ActivitySzBinding;
 import com.muqingbfq.databinding.ActivitySzSetlrcBinding;
 import com.muqingbfq.mq.AppCompatActivity;
 import com.muqingbfq.mq.FloatingLyricsService;
+import com.muqingbfq.mq.Fragment;
 import com.muqingbfq.mq.gj;
 import com.muqingbfq.mq.wj;
 
@@ -105,8 +107,7 @@ public class sz extends AppCompatActivity<ActivitySzBinding> {
         return super.onOptionsItemSelected(item);
     }
 
-    public static class setlrc extends Fragment implements Slider.OnSliderTouchListener, Slider.OnChangeListener {
-        ActivitySzSetlrcBinding binding;
+    public static class setlrc extends Fragment<ActivitySzSetlrcBinding> implements Slider.OnSliderTouchListener, Slider.OnChangeListener {
         ActivityResultLauncher<Intent> LyricsService = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
             if (Settings.canDrawOverlays(getContext())) {
 //                getContext().startService(new Intent(getContext(), FloatingLyricsService.class));
@@ -116,13 +117,10 @@ public class sz extends AppCompatActivity<ActivitySzBinding> {
                 binding.switchA3.setChecked(false);
                 binding.slide1.setEnabled(false);
             }
-            UI();
+            setUI(getLayoutInflater(), null, null);
         });
-        FloatingLyricsService.SETUP setup;
-
         Handler handler = new Handler();
-
-        private Runnable ThreadLrc = new Runnable() {
+        private final Runnable ThreadLrc = new Runnable() {
             @Override
             public void run() {
                 if (PlaybackService.mediaSession == null) {
@@ -153,15 +151,13 @@ public class sz extends AppCompatActivity<ActivitySzBinding> {
             }
         };
 
-        @Nullable
         @Override
-        public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-            binding = ActivitySzSetlrcBinding.inflate(inflater, container, false);
-            UI();
-            return binding.getRoot();
+        protected ActivitySzSetlrcBinding inflateViewBinding(LayoutInflater inflater, ViewGroup container) {
+            return ActivitySzSetlrcBinding.inflate(inflater, container, false);
         }
 
-        private void UI() {
+        @Override
+        public void setUI(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
             File file = new File(wj.filesdri + "FloatingLyricsService.json");
             if (file.exists() && file.isFile()) {
                 String dqwb = wj.dqwb(file.toString());
@@ -183,14 +179,12 @@ public class sz extends AppCompatActivity<ActivitySzBinding> {
                     setup.Color = String.format("#%08X", selectedColor);
                     binding.lrcView.setTextColor(selectedColor);
                     binding.lrcViewMessage.setTextColor(selectedColor);
-                    FloatingLyricsService.baocun(setup);
+                    FloatingLyricsService.baocun();
                 }).setNegativeButton("取消", null).build().show());
                 binding.textSlide1.setText(String.valueOf(setup.size));
                 if (setup.i != 0) {
                     binding.switchA3.setChecked(true);
                 }
-                binding.lock.setVisibility(View.VISIBLE);
-                binding.lock.setImageResource(setup.i == 2 ? R.drawable.lock : R.drawable.lock_open);
                 handler.post(ThreadLrc);
             } else {
                 binding.lock.setVisibility(View.GONE);
@@ -213,7 +207,7 @@ public class sz extends AppCompatActivity<ActivitySzBinding> {
                     }
                     main.application.stopService(new Intent(main.application, FloatingLyricsService.class));
                 }
-                FloatingLyricsService.baocun(setup);
+                FloatingLyricsService.baocun();
             });
             //强制跳转到权限界面
             binding.switchA3.setOnLongClickListener(v -> {
@@ -233,8 +227,16 @@ public class sz extends AppCompatActivity<ActivitySzBinding> {
                     setup.i = 1;
                     binding.lock.setImageResource(R.drawable.lock_open);
                 }
-                FloatingLyricsService.baocun(setup);
+                FloatingLyricsService.baocun();
             });
+        }
+
+        @Override
+        public void onResume() {
+            super.onResume();
+            if (setup != null) {
+                binding.lock.setImageResource(setup.i == 2 ? R.drawable.lock : R.drawable.lock_open);
+            }
         }
 
         @Override
@@ -253,7 +255,7 @@ public class sz extends AppCompatActivity<ActivitySzBinding> {
             if (setup == null) {
                 return;
             }
-            FloatingLyricsService.baocun(setup);
+            FloatingLyricsService.baocun();
         }
 
         @Override

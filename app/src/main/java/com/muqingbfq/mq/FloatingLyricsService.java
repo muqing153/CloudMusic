@@ -21,7 +21,6 @@ import com.dirror.lyricviewx.LyricViewX;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.muqingbfq.PlaybackService;
-import com.muqingbfq.bfqkz;
 import com.muqingbfq.databinding.FloatLrcviewBinding;
 
 import java.io.File;
@@ -34,8 +33,9 @@ public class FloatingLyricsService extends Service {
     public Runnable updateSeekBar = new Runnable() {
         @Override
         public void run() {
-
             if (PlaybackService.mediaSession == null || LyricViewX.lyricEntryList.isEmpty()) {
+                binding.lrcView.setText("暂无歌词");
+                binding.lrcViewMessage.setText("");
                 handler.postDelayed(this, 1000);
                 return;
             }
@@ -60,8 +60,7 @@ public class FloatingLyricsService extends Service {
             handler.postDelayed(this, 1000); // 每秒更新一次进度
         }
     };
-    @SuppressLint("StaticFieldLeak")
-    public static FloatingLyricsService lei;
+    public static SETUP setup = new SETUP();
 
     public static boolean get() {
         File file = new File(wj.filesdri + "FloatingLyricsService.json");
@@ -88,7 +87,6 @@ public class FloatingLyricsService extends Service {
         public int Y = 0;
     }
 
-    public SETUP setup = new SETUP();
 
     public int lock() {
         if (setup != null && setup.i == 2) {
@@ -104,7 +102,7 @@ public class FloatingLyricsService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        lei = this;
+        isRunning = true;
         try {
             File file = new File(wj.filesdri + "FloatingLyricsService.json");
             if (file.exists() && file.isFile()) {
@@ -173,7 +171,7 @@ public class FloatingLyricsService extends Service {
             windowManager.removeView(binding.getRoot());
             handler.removeCallbacks(updateSeekBar); // 在播放开始时启动更新进度
         }
-        lei = null;
+        isRunning = false;
     }
 
 
@@ -183,19 +181,13 @@ public class FloatingLyricsService extends Service {
         return null;
     }
 
-    public void baocun() {
+    public static void baocun() {
         wj.xrwb(new File(wj.filesdri + "FloatingLyricsService.json").toString(),
                 new Gson().toJson(setup));
     }
 
-    public static void baocun(SETUP setup) {
-        if (setup == null) {
-            return;
-        }
+    public static boolean isRunning = false;
 
-        wj.xrwb(new File(wj.filesdri + "FloatingLyricsService.json").toString(),
-                new Gson().toJson(setup));
-    }
 
     @SuppressLint("ClickableViewAccessibility")
     public void setyc() {

@@ -1,4 +1,5 @@
 package com.dirror.lyricviewx
+
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
@@ -36,6 +37,7 @@ import java.io.File
 import kotlin.concurrent.thread
 import kotlin.math.abs
 import kotlin.math.max
+
 open class LyricViewX : EaseView, LyricViewXInterface {
     constructor(context: Context) : super(context) {
         init(null)
@@ -46,7 +48,6 @@ open class LyricViewX : EaseView, LyricViewXInterface {
     }
 
     companion object {
-        private const val TAG = "LyricViewX"
         // 时间线持续时间
         private const val TIMELINE_KEEP_TIME = 3 * DateUtils.SECOND_IN_MILLIS
 
@@ -1005,7 +1006,8 @@ open class LyricViewX : EaseView, LyricViewXInterface {
     override fun setDraggable(draggable: Boolean, onPlayClickListener: OnPlayClickListener?) {
         this.onPlayClickListener = if (draggable) {
             requireNotNull(onPlayClickListener) {
-                "if draggable == true, onPlayClickListener must not be null" }
+                "if draggable == true, onPlayClickListener must not be null"
+            }
             onPlayClickListener
         } else {
             null

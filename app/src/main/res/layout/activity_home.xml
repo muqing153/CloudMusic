@@ -40,7 +40,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:hint="@string/search"
-            tools:visibility="visible"
             app:layout_anchor="@id/toolbar">
 
             <RelativeLayout
@@ -154,7 +153,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="?android:colorBackground"
         app:headerLayout="@layout/fragment_sz"
         app:menu="@menu/sz" />
 </androidx.drawerlayout.widget.DrawerLayout>

@@ -1,6 +1,8 @@
 package com.muqingbfq.fragment;
 
 import android.annotation.SuppressLint;
+import android.graphics.Canvas;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.muqingbfq.MP3;
+import com.muqingbfq.PlaybackService;
 import com.muqingbfq.R;
 import com.muqingbfq.XM;
 import com.muqingbfq.activity_search;
@@ -36,19 +39,33 @@ import java.util.List;
 
 public class gd_adapter extends Fragment<FragmentGdBinding> {
     AdapterMp3 adapterMp3;
+
     @Override
     protected FragmentGdBinding inflateViewBinding(LayoutInflater inflater, ViewGroup container) {
         return FragmentGdBinding.inflate(inflater, container, false);
     }
 
     AdapterGd adapterGd;
+
     @Override
     public void setUI(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false);
+                      @Nullable Bundle savedInstanceState) {
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         binding.recyclerview1.setLayoutManager(linearLayoutManager);
         adapterGd = new AdapterGd();
         binding.recyclerview1.setAdapter(adapterGd);
+        binding.recyclerview1.addItemDecoration(new RecyclerView.ItemDecoration() {
+            @Override
+            public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+                super.getItemOffsets(outRect, view, parent, state);
+                // 只在第一个 Item
+                if (parent.getChildAdapterPosition(view) == 0) {
+                    outRect.left = gj.dp2px(getContext(), 9);
+                } else if (parent.getChildAdapterPosition(view) == parent.getAdapter().getItemCount() - 1) {
+                    outRect.right = gj.dp2px(getContext(), 9);
+                }
+            }
+        });
         new Thread() {
             @Override
             public void run() {
@@ -58,10 +75,11 @@ public class gd_adapter extends Fragment<FragmentGdBinding> {
             }
         }.start();
 
-        adapterMp3 = new AdapterMp3();
+        adapterMp3 = new AdapterMp3(this.requireActivity());
         binding.recyclerview2.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.recyclerview2.setAdapter(adapterMp3);
         mp3list();
+        onResume();
 //        requireActivity().findViewById(R.id.linearLayout4).post(new Runnable() {
 //            @Override
 //            public void run() {
@@ -70,6 +88,7 @@ public class gd_adapter extends Fragment<FragmentGdBinding> {
 //            }
 //        });
     }
+
     private class sx implements Runnable {
         @SuppressLint("NotifyDataSetChanged")
         @Override
@@ -122,9 +141,31 @@ public class gd_adapter extends Fragment<FragmentGdBinding> {
 
     }
 
+    @SuppressLint("NotifyDataSetChanged")
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (adapterMp3 != null && PlaybackService.mediaSession != null) {
+            PlaybackService.mediaSession.getPlayer().addListener(adapterMp3.playerListener);
+            adapterMp3.notifyDataSetChanged();
+            gj.sc("Fragment 可见");
+        } else {
+            gj.sc("mediaSession==null");
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (PlaybackService.mediaSession != null) {
+            PlaybackService.mediaSession.getPlayer().removeListener(adapterMp3.playerListener);
+            gj.sc("Fragment 不可见");
+        }
+    }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        binding.recyclerview2.setAdapter(null);
+//        binding.recyclerview2.setAdapter(null);
     }
 }

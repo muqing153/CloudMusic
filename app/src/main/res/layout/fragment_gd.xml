@@ -5,37 +5,29 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginHorizontal="16dp"
         android:orientation="vertical">
 
         <TextView
             style="@style/TextAppearance.Material3.TitleMedium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
             android:text="每日趣荐" />
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <com.google.android.material.card.MaterialCardView
-                style="@style/Widget.Material3.CardView.Elevated"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerview1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="3dp"
-                app:cardElevation="0dp"
-                app:cardUseCompatPadding="true">
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recyclerview1"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:nestedScrollingEnabled="false"
-                    tools:itemCount="6" />
-            </com.google.android.material.card.MaterialCardView>
+                android:nestedScrollingEnabled="false"
+                tools:itemCount="6" />
 
             <ProgressBar
                 android:id="@+id/recyclerview1_bar"
@@ -57,6 +49,7 @@
             style="@style/TextAppearance.Material3.TitleMedium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
             android:layout_marginTop="6dp"
             android:text="每日一首"
             android:textSize="16sp" />
@@ -84,7 +77,7 @@
                 android:id="@+id/recyclerview2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false"/>
+                android:nestedScrollingEnabled="false" />
         </RelativeLayout>
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

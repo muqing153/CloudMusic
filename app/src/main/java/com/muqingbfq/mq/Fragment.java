@@ -18,7 +18,7 @@ public abstract class Fragment<Binding extends ViewBinding> extends androidx.fra
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        binding=inflateViewBinding(inflater,container);
+        binding = inflateViewBinding(inflater, container);
         setUI(inflater, container, savedInstanceState);
         return binding.getRoot();
     }

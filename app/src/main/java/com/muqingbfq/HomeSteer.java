@@ -11,13 +11,16 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.muqingbfq.Dialog.DialogEditText;
 import com.muqingbfq.login.user_logs;
 import com.muqingbfq.mq.gj;
 import com.muqingbfq.mq.wl;
 import com.muqingbfq.view.Edit;
+
 import org.json.JSONObject;
+
 import java.util.Objects;
 
 public class HomeSteer {
@@ -29,21 +32,20 @@ public class HomeSteer {
     public HomeSteer(home home, Runnable runnable) {
         this.runnable = runnable;
         this.home = home;
-        dlintent = home.registerForActivityResult(
+        this.dlintent = home.registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
                     if (result.getResultCode() == Activity.RESULT_OK) {
-                        // 处理返回结果
                         Intent data = result.getData();
-                        boolean bool = Objects.requireNonNull(data).getBooleanExtra("bool", false);
-                        if (bool) {
+                        if (data != null && data.getBooleanExtra("bool", false)) {
                             runnable.run();
                             return;
                         }
                     }
                     One();
-                });
-        SetIP();
+                }
+        );
+//        SetIP();
 //        One();
 
     }

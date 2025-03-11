@@ -4,36 +4,31 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
-<!--    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_margin="13dp"-->
-<!--        android:text="播放全部"-->
-<!--        app:icon="@drawable/play"-->
-<!--        app:layout_anchor="@id/appbar"-->
-<!--        app:layout_anchorGravity="bottom" />-->
-
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
-            style="?attr/collapsingToolbarLayoutLargeStyle"
+            android:id="@+id/CollapsingToolbarLayout"
             android:layout_width="match_parent"
             android:layout_height="210dp"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed">
+            app:contentScrim="#00FFFFFF"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:statusBarScrim="#00FFFFFF">
+
             <ImageView
                 android:id="@+id/toolbarimage"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:importantForAccessibility="no"
-                android:scaleType="fitXY" />
+                android:scaleType="fitXY"/>
+
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
+                app:title="歌单"
                 app:layout_collapseMode="pin">
 
                 <LinearLayout
@@ -70,7 +65,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <ProgressBar
             android:id="@+id/recyclerview1_bar"
@@ -111,7 +106,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="10dp"
-        app:layout_anchor="@id/appbar"
+        android:importantForAccessibility="no"
         android:src="@drawable/play"
+        app:layout_anchor="@id/appbar"
         app:layout_anchorGravity="end|bottom|right" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

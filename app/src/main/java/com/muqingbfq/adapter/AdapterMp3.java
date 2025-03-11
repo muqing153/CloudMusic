@@ -42,6 +42,7 @@ public class AdapterMp3 extends RecyclerView.Adapter<VH<ListMp3ImageBinding>> im
 
     public AdapterMp3(Activity activity) {
         this.activity = activity;
+//        activity.onResume
     }
 
     public AdapterMp3(List<MP3> list) {
@@ -93,13 +94,13 @@ public class AdapterMp3 extends RecyclerView.Adapter<VH<ListMp3ImageBinding>> im
     }
 
     // 定义全局监听器
-    private final Player.Listener playerListener = new Player.Listener() {
+    public final Player.Listener playerListener = new Player.Listener() {
         @SuppressLint("NotifyDataSetChanged")
         @Override
         public void onMediaItemTransition(@Nullable MediaItem mediaItem, int reason) {
             if (mediaItem != null) {
                 notifyDataSetChanged();
-                Log.d("RecyclerView", "切换到新音乐: " + mediaItem.mediaId);
+                gj.sc("切换到新音乐: " + mediaItem.mediaId);
             }
         }
     };
@@ -108,10 +109,9 @@ public class AdapterMp3 extends RecyclerView.Adapter<VH<ListMp3ImageBinding>> im
     public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
         if (activity == null && PlaybackService.mediaSession != null) {
-
             PlaybackService.mediaSession.getPlayer().addListener(playerListener);
+            gj.sc("Adapter 绑定到 RecyclerView");
         }
-        Log.d("RecyclerView", "Adapter 绑定到 RecyclerView");
     }
 
     @Override
@@ -119,8 +119,8 @@ public class AdapterMp3 extends RecyclerView.Adapter<VH<ListMp3ImageBinding>> im
         super.onDetachedFromRecyclerView(recyclerView);
         if (activity == null && PlaybackService.mediaSession != null) {
             PlaybackService.mediaSession.getPlayer().removeListener(playerListener);
+            gj.sc("Adapter 从 RecyclerView 解绑");
         }
-        Log.d("RecyclerView", "Adapter 从 RecyclerView 解绑");
     }
 
 
@@ -171,11 +171,10 @@ public class AdapterMp3 extends RecyclerView.Adapter<VH<ListMp3ImageBinding>> im
                         for (int i = 0; i < player.getMediaItemCount(); i++) {
                             MediaItem currentItem = player.getMediaItemAt(i);
                             if (currentItem.mediaId.equals(hq.id)) {
-                                gj.sc("存在播放:" + currentItem.mediaId + "==" + hq.id + " i=" + i);
+//                                gj.sc("存在播放:" + currentItem.mediaId + "==" + hq.id + " i=" + i);
                                 player.seekTo(i, 0);
                                 player.prepare();
                                 player.play();
-                                notifyDataSetChanged();
                                 return;
                             }
                         }

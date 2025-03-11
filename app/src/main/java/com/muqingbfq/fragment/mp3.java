@@ -17,12 +17,8 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Filter;
-import android.widget.Filterable;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -46,13 +42,9 @@ import com.muqingbfq.PlaybackService;
 import com.muqingbfq.R;
 import com.muqingbfq.adapter.AdapterMp3;
 import com.muqingbfq.api.playlist;
-import com.muqingbfq.api.url;
-import com.muqingbfq.bfqkz;
 import com.muqingbfq.databinding.ActivityMp3Binding;
-import com.muqingbfq.databinding.ListMp3ImageBinding;
 import com.muqingbfq.main;
 import com.muqingbfq.mq.FragmentActivity;
-import com.muqingbfq.mq.VH;
 import com.muqingbfq.mq.gj;
 
 import java.util.ArrayList;
@@ -94,7 +86,6 @@ public class mp3 extends FragmentActivity<ActivityMp3Binding> {
         getTheme().resolveAttribute(android.R.attr.windowBackground, typedValue, true);
         ; // 获取当前主题的背景颜色
         if (drawable != null) {
-
 // 4. 设置到 ImageView 上
             ImageView imageView = findViewById(R.id.toolbarimage);
             Glide.with(this)
@@ -114,7 +105,6 @@ public class mp3 extends FragmentActivity<ActivityMp3Binding> {
                             GradientDrawable gradient = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP,
                                     new int[]{typedValue.data, Color.TRANSPARENT});
                             gradient.setShape(GradientDrawable.RECTANGLE);
-
 // 3. 使用 LayerDrawable 来组合模糊图像和渐变效果
                             LayerDrawable layerDrawable = new LayerDrawable(new Drawable[]{resource, gradient});
                             imageView.setImageDrawable(layerDrawable);

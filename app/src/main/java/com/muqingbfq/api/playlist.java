@@ -9,11 +9,9 @@ import androidx.media3.common.MediaItem;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 import com.mpatric.mp3agic.ID3v2;
 import com.mpatric.mp3agic.Mp3File;
 import com.muqingbfq.MP3;
-import com.muqingbfq.PlaybackService;
 import com.muqingbfq.mq.MediaItemAdapter;
 import com.muqingbfq.mq.gj;
 import com.muqingbfq.mq.wj;
@@ -23,7 +21,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -151,7 +148,7 @@ public class playlist extends Thread {
 
     public static boolean hq_xz(List<MP3> list) {
         try {
-            File file = new File(wj.filesdri + "mp3");
+            File file = new File(wj.mp3);
             File[] files = file.listFiles();
             list.clear();
             for (File value : files) {
@@ -159,7 +156,15 @@ public class playlist extends Thread {
                 String id = value.getName();
                 String name = mp3File.getTitle();
                 String zz = mp3File.getArtist();
-                list.add(new MP3(id, name, zz, value.toString()));
+//                Bitmap bitmap = null;
+//                // 获取专辑封面图像的二进制数据
+//                byte[] imageData = mp3File.getAlbumImage();
+//                if (imageData != null) {
+////                    Log.d("ImageData", "专辑封面图像大小: " + imageData.length + " 字节");
+//                    // 将二进制数据保存为文件或显示
+//                    bitmap = BitmapFactory.decodeByteArray(imageData, 0, imageData.length);
+//                }
+                list.add(new MP3(id, name, zz, null));
             }
             return true;
         } catch (Exception e) {
