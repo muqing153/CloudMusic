@@ -125,7 +125,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:alpha="0.9"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent">
 
@@ -136,14 +135,13 @@
                 android:layout_height="wrap_content"
                 tools:layout="@layout/fragment_bfq_db" />
 
-            <com.muqingbfq.view.TabLayout
+            <com.google.android.material.bottomnavigation.BottomNavigationView
                 android:id="@+id/tablayout"
-                style="@style/Widget.Material3.CardView.Filled"
+                style="@style/Widget.Material3.BottomNavigationView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                app:cardCornerRadius="0dp"
-                app:strokeWidth="0dp" />
+                app:menu="@menu/bottom_gd"/>
 
         </LinearLayout>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

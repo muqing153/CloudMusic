@@ -23,6 +23,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.muqing.gj;
 import com.muqingbfq.R;
 import com.muqingbfq.databinding.ActivityLlqBinding;
 import com.muqingbfq.databinding.ViewDownloadBinding;

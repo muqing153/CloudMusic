@@ -16,13 +16,13 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
+import com.muqing.gj;
 import com.muqingbfq.MP3;
 import com.muqingbfq.XM;
 import com.muqingbfq.adapter.AdapterGdH;
 import com.muqingbfq.adapter.AdapterMp3;
 import com.muqingbfq.databinding.RecyclerVBinding;
 import com.muqingbfq.main;
-import com.muqingbfq.mq.gj;
 import com.muqingbfq.mq.wl;
 
 import org.json.JSONArray;

@@ -20,6 +20,7 @@ import com.dirror.lyricviewx.LyricEntry;
 import com.dirror.lyricviewx.LyricViewX;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.muqing.gj;
 import com.muqingbfq.PlaybackService;
 import com.muqingbfq.databinding.FloatLrcviewBinding;
 
@@ -63,9 +64,9 @@ public class FloatingLyricsService extends Service {
     public static SETUP setup = new SETUP();
 
     public static boolean get() {
-        File file = new File(wj.filesdri + "FloatingLyricsService.json");
+        File file = new File(FilePath.filesdri + "FloatingLyricsService.json");
         if (file.exists() && file.isFile()) {
-            String dqwb = wj.dqwb(file.toString());
+            String dqwb = FilePath.dqwb(file.toString());
             Gson gson = new Gson();
             Type type = new TypeToken<SETUP>() {
             }.getType();
@@ -104,9 +105,9 @@ public class FloatingLyricsService extends Service {
         super.onCreate();
         isRunning = true;
         try {
-            File file = new File(wj.filesdri + "FloatingLyricsService.json");
+            File file = new File(FilePath.filesdri + "FloatingLyricsService.json");
             if (file.exists() && file.isFile()) {
-                String dqwb = wj.dqwb(file.toString());
+                String dqwb = FilePath.dqwb(file.toString());
                 Gson gson = new Gson();
                 Type type = new TypeToken<SETUP>() {
                 }.getType();
@@ -157,7 +158,7 @@ public class FloatingLyricsService extends Service {
             handler.post(updateSeekBar); // 在播放开始时启动更新进度
 
         } catch (Exception e) {
-            wj.sc(wj.filesdri + "FloatingLyricsService.json");
+            FilePath.sc(FilePath.filesdri + "FloatingLyricsService.json");
             gj.sc(getClass() + ":" + e);
         }
     }
@@ -182,7 +183,7 @@ public class FloatingLyricsService extends Service {
     }
 
     public static void baocun() {
-        wj.xrwb(new File(wj.filesdri + "FloatingLyricsService.json").toString(),
+        FilePath.xrwb(new File(FilePath.filesdri + "FloatingLyricsService.json").toString(),
                 new Gson().toJson(setup));
     }
 

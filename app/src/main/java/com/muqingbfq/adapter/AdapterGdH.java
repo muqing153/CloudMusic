@@ -15,11 +15,11 @@ import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.muqing.gj;
 import com.muqingbfq.XM;
 import com.muqingbfq.databinding.ListGdBBinding;
 import com.muqingbfq.fragment.mp3;
 import com.muqingbfq.mq.VH;
-import com.muqingbfq.mq.gj;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +45,7 @@ public class AdapterGdH extends RecyclerView.Adapter<VH<ListGdBBinding>> {
         XM xm = list.get(position);
         holder.binding.text1.setText(xm.name);
         holder.binding.text2.setText(xm.message);
-        gj.sc(xm.picurl);
+//        gj.sc(xm.picurl);
         Glide.with(holder.itemView.getContext())
                 .asBitmap()
                 .load(xm.picurl)

@@ -10,9 +10,9 @@ import androidx.media3.common.MediaItem;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.mpatric.mp3agic.ID3v2;
 import com.mpatric.mp3agic.Mp3File;
+import com.muqing.gj;
 import com.muqingbfq.main;
-import com.muqingbfq.mq.gj;
-import com.muqingbfq.mq.wj;
+import com.muqingbfq.mq.FilePath;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -44,7 +44,7 @@ public class FileDownloader {
     long fileSizeDownloaded = 0;
 
     public void downloadFile(String url, MediaItem x) {
-        if (wj.cz(new File(wj.mp3, x.mediaId).toString())) {
+        if (FilePath.cz(new File(FilePath.mp3, x.mediaId).toString())) {
             dialog.dismiss();
             dialog = new MaterialAlertDialogBuilder(context)
                     .setTitle("下载音乐").setMessage("已存在")
@@ -73,7 +73,7 @@ public class FileDownloader {
                     // 下载失败处理
                     return;
                 }
-                File outputFile = new File(wj.mp3, x.mediaId + ".mp3");
+                File outputFile = new File(FilePath.mp3, x.mediaId + ".mp3");
                 File parentFile = outputFile.getParentFile();
                 if (!parentFile.isDirectory()) {
                     parentFile.mkdirs();
@@ -121,7 +121,7 @@ public class FileDownloader {
                                         , "image/jpeg");
                             }
                             o.close();
-                            mp3file.save(wj.mp3 + x.mediaId);
+                            mp3file.save(FilePath.mp3 + x.mediaId);
                             outputFile.delete();
                         }
                         // 保存修改后的音乐文件，删除原来的文件

@@ -13,15 +13,13 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.muqing.gj;
 import com.muqingbfq.Dialog.DialogEditText;
 import com.muqingbfq.login.user_logs;
-import com.muqingbfq.mq.gj;
 import com.muqingbfq.mq.wl;
 import com.muqingbfq.view.Edit;
 
 import org.json.JSONObject;
-
-import java.util.Objects;
 
 public class HomeSteer {
     home home;

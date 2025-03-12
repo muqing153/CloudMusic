@@ -44,6 +44,7 @@ public class bflb_db extends BottomSheetDialog {
             }
         }
     };
+
     private void ingList() {
         if (PlaybackService.mediaSession == null) {
             return;
@@ -64,17 +65,12 @@ public class bflb_db extends BottomSheetDialog {
         binding = FragmentBflbDbBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-
 // 设置固定的高度（例如 500dp）
         try {
             ingList();
-            if (bfqkz.xm != null) {
-                binding.lb.smoothScrollToPosition(getI());
-            }
+            binding.lb.smoothScrollToPosition(getI());
             binding.textView.setOnClickListener(v -> {
-                if (bfqkz.xm != null) {
-                    binding.lb.smoothScrollToPosition(getI());
-                }
+                binding.lb.smoothScrollToPosition(getI());
             });
             binding.sc.setOnClickListener(view -> new MaterialAlertDialogBuilder(getContext())
                     .setTitle("清空播放列表")
@@ -134,12 +130,18 @@ public class bflb_db extends BottomSheetDialog {
             FrameLayout bottomSheet = d.findViewById(com.google.android.material.R.id.design_bottom_sheet);
             if (bottomSheet != null) {
                 BottomSheetBehavior<View> behavior = BottomSheetBehavior.from(bottomSheet);
-                behavior.setState(BottomSheetBehavior.STATE_EXPANDED); // 默认展开
-                behavior.setSkipCollapsed(true); // 禁止折叠
+                behavior.setSkipCollapsed(false); // 禁止折叠
+                behavior.setPeekHeight((int) (context.getResources().getDisplayMetrics().heightPixels / 1.5f));
+                behavior.setMaxHeight((int) (context.getResources().getDisplayMetrics().heightPixels / 1.5f));
+//                ViewGroup.LayoutParams layoutParams = bottomSheet.getLayoutParams();
+////                获取屏幕的高度的一半
+//                layoutParams.height =;
+//                bottomSheet.setLayoutParams(layoutParams);
             }
         });
         dialog.show();
     }
+
 
     private class spq extends RecyclerView.Adapter<VH<ListMp3ABinding>> {
         List<MediaItem> list;

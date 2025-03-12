@@ -2,10 +2,11 @@ package com.muqingbfq.api;
 
 import com.mpatric.mp3agic.ID3v2;
 import com.mpatric.mp3agic.Mp3File;
+import com.muqing.gj;
 import com.muqingbfq.MP3;
+import com.muqingbfq.PlaybackService;
 import com.muqingbfq.fragment.Media;
-import com.muqingbfq.mq.gj;
-import com.muqingbfq.mq.wj;
+import com.muqingbfq.mq.FilePath;
 import com.muqingbfq.mq.wl;
 
 import org.json.JSONArray;
@@ -30,16 +31,16 @@ public class url extends Thread {
         mp3.zz = x.zz;
         mp3.url = x.url;
         getLrc(x.id);
-        Media.loadLyric(bfqkz.lrc);
+        Media.loadLyric(PlaybackService.lrc);
         try {
-            if (wj.cz(mp3.id)) {
+            if (FilePath.cz(mp3.id)) {
                 mp3.url = mp3.id;
                 return mp3;
-            } else if (wj.cz(wj.mp3 + mp3.id)) {
-                mp3.url = wj.mp3 + mp3.id;
+            } else if (FilePath.cz(FilePath.mp3 + mp3.id)) {
+                mp3.url = FilePath.mp3 + mp3.id;
                 return mp3;
-            } else if (wj.cz(wj.filesdri + "hc/" + mp3.id)) {
-                mp3.url = wj.filesdri + "hc/" + mp3.id;
+            } else if (FilePath.cz(FilePath.filesdri + "hc/" + mp3.id)) {
+                mp3.url = FilePath.filesdri + "hc/" + mp3.id;
                 return mp3;
             }
             String level = "standard";
@@ -75,20 +76,20 @@ public class url extends Thread {
     }
 
     public static void getLrc(String id) {
-        String file = wj.mp3 + id;
-        boolean cz = wj.cz(id);
+        String file = FilePath.mp3 + id;
+        boolean cz = FilePath.cz(id);
         if (cz) {
             file = id;
         }
-        if (cz || wj.cz(file)) {
+        if (cz || FilePath.cz(file)) {
             try {
                 Mp3File mp3file = new Mp3File(file);
                 if (mp3file.hasId3v2Tag()) {
                     ID3v2 id3v2Tag = mp3file.getId3v2Tag();
-                    com.muqingbfq.bfqkz.lrc = id3v2Tag.getLyrics();
+                    PlaybackService.lrc = id3v2Tag.getLyrics();
                 }
-                if (com.muqingbfq.bfqkz.lrc == null) {
-                    com.muqingbfq.bfqkz.lrc = wl.hq("/lyric",new String[][]{
+                if (PlaybackService.lrc == null) {
+                    PlaybackService.lrc = wl.hq("/lyric",new String[][]{
                             {"id", id}
                     });
                 }
@@ -96,7 +97,7 @@ public class url extends Thread {
                 gj.sc("url getlrc:" + e);
             }
         } else {
-            com.muqingbfq.bfqkz.lrc = wl.hq("/lyric",new String[][]{
+            PlaybackService.lrc = wl.hq("/lyric",new String[][]{
                     {"id", id}
             });
         }

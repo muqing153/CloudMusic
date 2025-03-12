@@ -26,6 +26,7 @@ import com.bumptech.glide.request.target.Target;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
+import com.muqing.gj;
 import com.muqingbfq.MP3;
 import com.muqingbfq.PlaybackService;
 import com.muqingbfq.R;
@@ -37,8 +38,7 @@ import com.muqingbfq.fragment.mp3;
 import com.muqingbfq.fragment.wode;
 import com.muqingbfq.main;
 import com.muqingbfq.mq.VH;
-import com.muqingbfq.mq.gj;
-import com.muqingbfq.mq.wj;
+import com.muqingbfq.mq.FilePath;
 
 import org.json.JSONException;
 
@@ -99,9 +99,9 @@ public class AdapterGd extends RecyclerView.Adapter<VH<ListGdBinding>> {
                     public void run() {
                         super.run();
                         List<MP3> an = playlist.hq(xm.id);
-                        if (bfqkz.ms == 2) {
-//                            Collections.shuffle(bfqkz.list);
-                        }
+//                        if (bfqkz.ms == 2) {
+////                            Collections.shuffle(bfqkz.list);
+//                        }
 
                         main.handler.post(() -> {
                             if (PlaybackService.mediaSession == null) {
@@ -143,7 +143,7 @@ public class AdapterGd extends RecyclerView.Adapter<VH<ListGdBinding>> {
     public static void setOnLongClickListener(Context context, XM xm) {
         List<String> ls = new ArrayList<>();
         ls.add("下载歌单");
-        if (wj.cz(wj.gd + xm.id)) {
+        if (FilePath.cz(FilePath.gd + xm.id)) {
             ls.add("删除歌单");
         }
         new MaterialAlertDialogBuilder(context)
@@ -153,7 +153,7 @@ public class AdapterGd extends RecyclerView.Adapter<VH<ListGdBinding>> {
                         new baocun(xm.id);
                     }else if (which == 1) {
                         Gson gson = new Gson();
-                        String dqwb = wj.dqwb(wj.gd_xz);
+                        String dqwb = FilePath.dqwb(FilePath.gd_xz);
                         List<XM> xms = new ArrayList<>();
                         if (dqwb != null) {
                             xms = gson.fromJson(dqwb,
@@ -162,7 +162,7 @@ public class AdapterGd extends RecyclerView.Adapter<VH<ListGdBinding>> {
                         }
                         try {
                             xms.removeIf(xm1 -> xm1.id.equals(xm.id));
-                            wj.xrwb(wj.gd_xz, gson.toJson(xms));
+                            FilePath.xrwb(FilePath.gd_xz, gson.toJson(xms));
                             wode.load.run();
                         } catch (Exception e) {
                             gj.sc(e);
@@ -185,7 +185,7 @@ public class AdapterGd extends RecyclerView.Adapter<VH<ListGdBinding>> {
             String gethq = playlist.gethq(Id);
             if (gethq != null) {
                 Gson gson = new Gson();
-                String dqwb = wj.dqwb(wj.gd_xz);
+                String dqwb = FilePath.dqwb(FilePath.gd_xz);
                 List<XM> xms = new ArrayList<>();
                 if (dqwb != null) {
                     xms = gson.fromJson(dqwb,
@@ -196,8 +196,8 @@ public class AdapterGd extends RecyclerView.Adapter<VH<ListGdBinding>> {
                     xms.removeIf(xm1 -> xm1.id.equals(Id));
                     XM playlistContent = resource.Playlist_content(Id);
                     xms.add(0, playlistContent);
-                    wj.xrwb(wj.gd_xz, gson.toJson(xms));
-                    wj.xrwb(wj.gd + Id, gethq);
+                    FilePath.xrwb(FilePath.gd_xz, gson.toJson(xms));
+                    FilePath.xrwb(FilePath.gd + Id, gethq);
                     wode.load.run();
                     Yes();
                 } catch (JSONException e) {

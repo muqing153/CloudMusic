@@ -15,11 +15,11 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.muqing.gj;
 import com.muqingbfq.R;
 import com.muqingbfq.databinding.ActivityCleanBinding;
 import com.muqingbfq.mq.FragmentActivity;
-import com.muqingbfq.mq.gj;
-import com.muqingbfq.mq.wj;
+import com.muqingbfq.mq.FilePath;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -38,9 +38,9 @@ public class fragment_clean extends FragmentActivity<ActivityCleanBinding> {
 
     private void UI() {
         list.clear();
-        list.add(new String[]{"下载的音乐", wj.mp3});
-        list.add(new String[]{"下载的歌单",wj.gd});
-        list.add(new String[]{"缓存的音乐",wj.filesdri+"hc"});
+        list.add(new String[]{"下载的音乐", FilePath.mp3});
+        list.add(new String[]{"下载的歌单", FilePath.gd});
+        list.add(new String[]{"缓存的音乐", FilePath.filesdri+"hc"});
         list.add(new String[]{"内部缓存", getCacheDir().toString()});
         String s = Objects.requireNonNull(Glide.getPhotoCacheDir(this)).toString();
         list.add(new String[]{"Glide缓存", s});
@@ -122,7 +122,7 @@ public class fragment_clean extends FragmentActivity<ActivityCleanBinding> {
         } else if (item == menu_deleat) {
             for (int i = 0; i < list_box.size(); i++) {
                 File s= new File(list_box.get(i));
-                wj.sc(s);
+                FilePath.sc(s);
             }
             list_box.clear();
             menu_deleat.setVisible(false);

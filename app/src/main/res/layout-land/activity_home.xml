@@ -10,6 +10,12 @@
     tools:context=".home">
 
 
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="&#xA;                style=&quot;@style/Widget.Material3.BottomNavigationView&quot;" />
+
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -39,11 +45,13 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
+
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/search_recycler"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
                 <LinearLayout
                     android:id="@+id/xxbj1"
                     android:layout_width="match_parent"
@@ -81,6 +89,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent" />
                 </LinearLayout>
+
                 <LinearLayout
                     android:id="@+id/search_fragment"
                     android:layout_width="match_parent"
@@ -126,14 +135,13 @@
                 android:layout_weight="1"
                 android:orientation="horizontal">
 
-                <com.muqingbfq.view.TabLayout
+                <com.google.android.material.navigationrail.NavigationRailView
                     android:id="@+id/tablayout"
+                    style="@style/Widget.Material3.BottomNavigationView"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    style="@style/Widget.Material3.CardView.Filled"
-                    app:cardCornerRadius="0dp"
-                    app:strokeWidth="0dp"
-                    android:orientation="vertical" />
+                    app:menu="@menu/bottom_gd"
+                    app:paddingTopSystemWindowInsets="false" />
 
                 <androidx.viewpager2.widget.ViewPager2
                     android:id="@+id/viewPager"

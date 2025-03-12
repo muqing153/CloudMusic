@@ -25,13 +25,13 @@ import com.google.android.flexbox.FlexboxLayoutManager;
 import com.google.android.material.search.SearchView;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.muqing.gj;
 import com.muqingbfq.databinding.ActivitySearchBinding;
 import com.muqingbfq.databinding.ListTextBinding;
 import com.muqingbfq.databinding.ViewSearchItemBinding;
 import com.muqingbfq.mq.FragmentActivity;
 import com.muqingbfq.mq.VH;
-import com.muqingbfq.mq.gj;
-import com.muqingbfq.mq.wj;
+import com.muqingbfq.mq.FilePath;
 import com.muqingbfq.view.Edit;
 
 import org.json.JSONArray;
@@ -221,7 +221,7 @@ public class activity_search extends FragmentActivity<ActivitySearchBinding> {
                 json_list.add(0, name);
                 adapter.notifyItemInserted(0);
             }
-            wj.xrwb(wj.filesdri + wj.lishi_json, new Gson().toJson(json_list));
+            FilePath.xrwb(FilePath.filesdri + FilePath.lishi_json, new Gson().toJson(json_list));
         } catch (Exception e) {
             gj.sc(e);
         }
@@ -264,13 +264,13 @@ public class activity_search extends FragmentActivity<ActivitySearchBinding> {
 
         public SearchRecordAdapter(SearchView searchView) {
             this.searchView = searchView;
-            String dqwb = wj.dqwb(wj.filesdri + wj.lishi_json);
+            String dqwb = FilePath.dqwb(FilePath.filesdri + FilePath.lishi_json);
             if (dqwb != null) {
                 try {
                     json_list = new Gson().fromJson(dqwb, new TypeToken<List<String>>() {
                     }.getType());
                 } catch (Exception e) {
-                    wj.sc(wj.filesdri + wj.lishi_json);
+                    FilePath.sc(FilePath.filesdri + FilePath.lishi_json);
 //                    yc.start(activity_search.this, e);
                 }
             }
@@ -312,7 +312,7 @@ public class activity_search extends FragmentActivity<ActivitySearchBinding> {
             holder.binding.getRoot().setOnCloseIconClickListener(view -> {
                 json_list.remove(keyword);
                 notifyItemRemoved(holder.getBindingAdapterPosition());
-                wj.xrwb(wj.filesdri + wj.lishi_json, new Gson().toJson(json_list));
+                FilePath.xrwb(FilePath.filesdri + FilePath.lishi_json, new Gson().toJson(json_list));
             });
         }
 

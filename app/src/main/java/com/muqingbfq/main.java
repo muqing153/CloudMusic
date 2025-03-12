@@ -1,8 +1,6 @@
 package com.muqingbfq;
 
-import android.annotation.SuppressLint;
 import android.app.Application;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
@@ -15,13 +13,12 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ProcessLifecycleOwner;
-import com.google.gson.reflect.TypeToken;
+
+import com.muqing.gj;
 import com.muqingbfq.mq.FloatingLyricsService;
-import com.muqingbfq.mq.gj;
-import com.muqingbfq.mq.wj;
+import com.muqingbfq.mq.FilePath;
 import java.io.File;
-import java.lang.reflect.Type;
-import java.util.List;
+
 public class main extends Application {
     public static Application application;
     public static Handler handler = new Handler(Looper.getMainLooper());
@@ -33,19 +30,19 @@ public class main extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        if (wj.filesdri == null) {
-            new wj(this);
+        if (FilePath.filesdri == null) {
+            new FilePath(this);
         }
-        File file = new File(wj.filesdri + "API.mq");
+        File file = new File(FilePath.filesdri + "API.mq");
         if (file.exists() && file.isFile()) {
-            String dqwb = wj.dqwb(file.toString());
+            String dqwb = FilePath.dqwb(file.toString());
             if (!TextUtils.isEmpty(dqwb) && dqwb.startsWith("http")) {
                 api = dqwb;
             } else {
                 file.delete();
             }
         } else {
-            wj.xrwb(file.toString(), main.api);
+            FilePath.xrwb(file.toString(), main.api);
         }
         application = this;
         sp = getSharedPreferences("Set_up", MODE_PRIVATE);

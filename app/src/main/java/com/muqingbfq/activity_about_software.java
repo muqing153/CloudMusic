@@ -3,7 +3,6 @@ package com.muqingbfq;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.Html;
 import android.view.Gravity;
@@ -17,7 +16,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -26,10 +24,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDragHandleView;
 import com.muqingbfq.databinding.ActivityAboutSoftwareBinding;
 import com.muqingbfq.databinding.ListKaifazheBinding;
-import com.muqingbfq.mq.AppCompatActivity;
 import com.muqingbfq.mq.FragmentActivity;
-import com.muqingbfq.mq.gj;
-import com.muqingbfq.mq.wj;
 
 import java.io.BufferedReader;
 import java.io.IOException;

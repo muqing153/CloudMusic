@@ -1,8 +1,12 @@
 package com.muqingbfq;
 
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.media.AudioManager;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
@@ -21,11 +25,10 @@ import androidx.media3.session.MediaSessionService;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
+import com.muqing.gj;
 import com.muqingbfq.api.url;
 import com.muqingbfq.mq.MediaItemAdapter;
-import com.muqingbfq.mq.gj;
-import com.muqingbfq.mq.wj;
+import com.muqingbfq.mq.FilePath;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +37,17 @@ import java.util.Objects;
 public class PlaybackService extends MediaSessionService {
     public static MediaSession mediaSession;
     public static List<MP3> list = new ArrayList<>();
-
+    public static String lrc;
+    private final BroadcastReceiver noisyReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction())) {
+                if (mediaSession != null) {
+                    mediaSession.getPlayer().pause(); // 暂停播放
+                }
+            }
+        }
+    };
 
     public static void ListSave() {
 //        new Thread(() -> wj.xrwb(wj.filesdri + "list.json", new Gson().toJson(list))).start();
@@ -75,7 +88,7 @@ public class PlaybackService extends MediaSessionService {
                     Gson gson = new GsonBuilder()
                             .registerTypeAdapter(MediaItem.class, new MediaItemAdapter()) // 绑定适配器
                             .create();
-                    String dqwb = wj.dqwb(wj.gd + "mp3_listHistory.json");
+                    String dqwb = FilePath.dqwb(FilePath.gd + "mp3_listHistory.json");
                     List<MediaItem> listHistory;
                     if (Strings.isNullOrEmpty(dqwb)) {
                         listHistory = new ArrayList<>();
@@ -85,9 +98,9 @@ public class PlaybackService extends MediaSessionService {
                     listHistory.removeIf(mediaItem1 -> mediaItem1.mediaId.equals(mediaItem.mediaId));
                     listHistory.add(0, mediaItem);
                     String json = gson.toJson(listHistory);
-                    wj.xrwb(wj.gd + "mp3_listHistory.json", json);
+                    FilePath.xrwb(FilePath.gd + "mp3_listHistory.json", json);
                 } catch (Exception e) {
-                    wj.sc(wj.gd + "mp3_listHistory.json");
+                    FilePath.sc(FilePath.gd + "mp3_listHistory.json");
                     gj.sc(e);
                 }
             }).start();
@@ -177,7 +190,7 @@ public class PlaybackService extends MediaSessionService {
 //            }
 //        }
 
-        String mp3_listHistory = wj.dqwb(wj.gd + "mp3_listHistory.json");
+        String mp3_listHistory = FilePath.dqwb(FilePath.gd + "mp3_listHistory.json");
         if (!Strings.isNullOrEmpty(mp3_listHistory)) {
             try {
                 Gson gson = new GsonBuilder()
@@ -196,6 +209,9 @@ public class PlaybackService extends MediaSessionService {
         }
 
         mediaSession.getPlayer().addListener(PlayerListener);
+
+        IntentFilter filter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
+        registerReceiver(noisyReceiver, filter);
     }
 
     @Nullable
@@ -209,6 +225,7 @@ public class PlaybackService extends MediaSessionService {
         mediaSession.getPlayer().release();
         mediaSession.release();
         mediaSession = null;
+        unregisterReceiver(noisyReceiver);
         super.onDestroy();
     }
 

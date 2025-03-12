@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,16 +15,12 @@ import androidx.media3.common.MediaMetadata;
 import androidx.media3.common.Player;
 import androidx.media3.common.util.Util;
 
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.muqingbfq.PlaybackService;
 import com.muqingbfq.R;
 import com.muqingbfq.activity.Music;
-import com.muqingbfq.bfq_an;
 import com.muqingbfq.databinding.FragmentBfqDbBinding;
 import com.muqingbfq.main;
 import com.muqingbfq.mq.Fragment;
-import com.muqingbfq.mq.gj;
 
 public class bfq_db extends Fragment<FragmentBfqDbBinding> implements GestureDetector.OnGestureListener {
     private GestureDetector gestureDetector;

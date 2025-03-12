@@ -44,6 +44,7 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
+import com.muqing.gj;
 import com.muqingbfq.MP3;
 import com.muqingbfq.PlaybackService;
 import com.muqingbfq.R;
@@ -53,7 +54,6 @@ import com.muqingbfq.databinding.ActivityMusicBinding;
 import com.muqingbfq.fragment.Media;
 import com.muqingbfq.main;
 import com.muqingbfq.mq.AppCompatActivity;
-import com.muqingbfq.mq.gj;
 
 import java.util.Objects;
 
@@ -344,7 +344,7 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
                 switch (playbackState) {
                     case Player.STATE_READY:
                         if (player.getPlayWhenReady()) {
-                            String[] strings = Media.loadLyric(bfqkz.lrc);
+                            String[] strings = Media.loadLyric(PlaybackService.lrc);
                             if (strings != null) {
                                 binding.lrcView.loadLyric(strings[0], strings[1]);
                             }

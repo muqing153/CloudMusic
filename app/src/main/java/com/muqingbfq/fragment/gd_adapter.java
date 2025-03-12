@@ -1,7 +1,6 @@
 package com.muqingbfq.fragment;
 
 import android.annotation.SuppressLint;
-import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,32 +9,23 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.muqing.gj;
 import com.muqingbfq.MP3;
 import com.muqingbfq.PlaybackService;
-import com.muqingbfq.R;
-import com.muqingbfq.XM;
-import com.muqingbfq.activity_search;
 import com.muqingbfq.adapter.AdapterGd;
 import com.muqingbfq.adapter.AdapterMp3;
 import com.muqingbfq.api.resource;
 import com.muqingbfq.databinding.FragmentGdBinding;
-import com.muqingbfq.databinding.ListMp3ImageBinding;
 import com.muqingbfq.main;
 import com.muqingbfq.mq.Fragment;
-import com.muqingbfq.mq.gj;
-import com.muqingbfq.mq.wj;
+import com.muqingbfq.mq.FilePath;
 import com.muqingbfq.mq.wl;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class gd_adapter extends Fragment<FragmentGdBinding> {
     AdapterMp3 adapterMp3;
@@ -106,7 +96,7 @@ public class gd_adapter extends Fragment<FragmentGdBinding> {
                 super.run();
                 String hq = wl.hq("/recommend/songs", null);
                 if (hq == null) {
-                    hq = wj.dqwb(wj.filesdri + "songs.json");
+                    hq = FilePath.dqwb(FilePath.filesdri + "songs.json");
                 }
                 try {
                     JSONObject jsonObject = new JSONObject(hq);
@@ -125,7 +115,7 @@ public class gd_adapter extends Fragment<FragmentGdBinding> {
                         String picUrl = al.getString("picUrl");
                         adapterMp3.list.add(new MP3(id, name, zz.toString(), picUrl));
                     }
-                    wj.xrwb(wj.filesdri + "songs.json", hq);
+                    FilePath.xrwb(FilePath.filesdri + "songs.json", hq);
                     requireActivity().runOnUiThread(() -> {
                         adapterMp3.notifyDataSetChanged();
                         binding.recyclerview2Bar.setVisibility(View.GONE);

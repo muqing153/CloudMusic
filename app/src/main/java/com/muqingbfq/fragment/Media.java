@@ -1,7 +1,7 @@
 package com.muqingbfq.fragment;
 import com.dirror.lyricviewx.LyricViewX;
 import com.google.common.base.Strings;
-import com.muqingbfq.mq.gj;
+import com.muqing.gj;
 
 import org.json.JSONObject;
 public class Media {

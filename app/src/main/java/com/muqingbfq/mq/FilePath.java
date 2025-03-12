@@ -1,7 +1,5 @@
 package com.muqingbfq.mq;
 
-import static androidx.core.content.ContextCompat.startActivity;
-
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
@@ -15,8 +13,8 @@ import android.util.Log;
 import androidx.core.app.ActivityCompat;
 
 import com.google.gson.Gson;
+import com.muqing.gj;
 import com.muqingbfq.MP3;
-import com.muqingbfq.home;
 import com.muqingbfq.yc;
 
 import java.io.BufferedReader;
@@ -32,7 +30,7 @@ import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public class wj {
+public class FilePath {
     public static String filesdri;
     public static String mp3 = "mp3/";
     public static String lishi_json = "lishi.json";
@@ -41,9 +39,9 @@ public class wj {
     public static String gd_json = "gd.json", gd_xz = "gd_xz.json",
             gd_phb = "gd_phb.json", mp3_like = "mp3_like.json";
 
-    public wj(Context context) {
+    public FilePath(Context context) {
         try {
-            wj.filesdri = context.getExternalFilesDir("").getAbsolutePath() + "/";
+            FilePath.filesdri = context.getExternalFilesDir("").getAbsolutePath() + "/";
 //                context.getFilesDir().toString() + "/";
             gd_json = filesdri + gd_json;
             mp3 = filesdri + mp3;

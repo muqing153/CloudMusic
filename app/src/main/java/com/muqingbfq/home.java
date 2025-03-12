@@ -1,9 +1,7 @@
 package com.muqingbfq;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.ComponentName;
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -14,17 +12,13 @@ import android.view.View;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.core.graphics.Insets;
 import androidx.core.view.GravityCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
-import androidx.media3.exoplayer.ExoPlayer;
 import androidx.media3.session.MediaController;
-import androidx.media3.session.MediaSession;
 import androidx.media3.session.SessionToken;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
@@ -34,17 +28,19 @@ import com.google.android.flexbox.FlexWrap;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.search.SearchView;
 import com.google.common.base.Strings;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
+import com.muqing.gj;
 import com.muqingbfq.databinding.ActivityHomeBinding;
 import com.muqingbfq.fragment.SearchTools;
 import com.muqingbfq.fragment.gd_adapter;
 import com.muqingbfq.fragment.sz;
 import com.muqingbfq.fragment.wode;
 import com.muqingbfq.mq.AppCompatActivity;
-import com.muqingbfq.mq.gj;
+import com.muqingbfq.mq.FilePath;
 import com.muqingbfq.view.Edit;
 
 import org.json.JSONArray;
@@ -52,7 +48,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class home extends AppCompatActivity<ActivityHomeBinding> {
 
@@ -145,32 +140,6 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
             binding.searchview.setPadding(0, 0, 0, height);
 
         });
-        binding.tablayout.addView("推荐", R.drawable.zhuye).setOnClickListener(v -> {
-            for (int i = 0; i < binding.tablayout.sizeView; i++) {
-                MaterialCardView childAt = (MaterialCardView) binding.tablayout.linearLayout.getChildAt(i);
-                if (i == 0) {
-                    //背景高亮
-                    childAt.setCardBackgroundColor(gj.getThemeColor(v.getContext(), com.google.android.material.R.attr.colorPrimaryContainer));
-                } else {
-                    //背景恢复
-                    childAt.setCardBackgroundColor(gj.getThemeColor(v.getContext(), com.google.android.material.R.attr.colorSurface));
-                }
-            }
-            binding.viewPager.setCurrentItem(0, false);
-        });
-        binding.tablayout.addView("我的", R.drawable.user).setOnClickListener(v -> {
-            for (int i = 0; i < binding.tablayout.sizeView; i++) {
-                MaterialCardView childAt = (MaterialCardView) binding.tablayout.linearLayout.getChildAt(i);
-                if (i == 1) {
-                    //背景高亮
-                    childAt.setCardBackgroundColor(gj.getThemeColor(v.getContext(), com.google.android.material.R.attr.colorPrimaryContainer));
-                } else {
-                    //背景恢复
-                    childAt.setCardBackgroundColor(gj.getThemeColor(v.getContext(), com.google.android.material.R.attr.colorSurface));
-                }
-            }
-            binding.viewPager.setCurrentItem(1, false);
-        });
         toolbar();
         SearchUI();
 
@@ -216,9 +185,9 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
         binding.searchview.addTransitionListener(
                 (searchView, previousState, newState) -> {
                     if (newState == SearchView.TransitionState.SHOWING) {
-                        // Handle search view opened.
+                        // 搜索框正在显示
                         gj.sc("SHOWING");
-//                        binding.tablayout.setVisibility(View.GONE);
+                        binding.tablayout.setVisibility(View.GONE);
                         searchRecordAdapter = new activity_search.SearchRecordAdapter(binding.searchview);
                         binding.listRecycler.setAdapter(searchRecordAdapter);
                     } else if (newState == SearchView.TransitionState.SHOWN) {
@@ -302,10 +271,32 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
                 .setPositiveButton("确定", (dialogInterface, ii) -> {
                     searchRecordAdapter.json_list.clear();
                     binding.listRecycler.setAdapter(searchRecordAdapter);
-                    com.muqingbfq.mq.wj.sc(com.muqingbfq.mq.wj.filesdri +
-                            com.muqingbfq.mq.wj.lishi_json);
+                    FilePath.sc(FilePath.filesdri +
+                            FilePath.lishi_json);
                 })
                 .show());
+
+
+        // 监听 BottomNavigationView 点击，切换 ViewPager2
+        NavigationBarView viewById = findViewById(R.id.tablayout);
+        viewById.setOnItemSelectedListener(item -> {
+            if (item.getItemId() == R.id.a) {
+                binding.viewPager.setCurrentItem(0);
+            } else if (item.getItemId() == R.id.c) {
+                binding.viewPager.setCurrentItem(1);
+            }
+            return true;
+        });
+
+//        binding.tablayout.setOnItemSelectedListener(item -> {
+//            if (item.getItemId() == R.id.a) {
+//                binding.viewPager.setCurrentItem(0);
+//            } else if (item.getItemId() == R.id.c) {
+//                binding.viewPager.setCurrentItem(1);
+//            }
+//            return true;
+//        });
+
 
     }
 

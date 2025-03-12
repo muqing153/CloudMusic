@@ -20,6 +20,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.muqing.gj;
 import com.muqingbfq.R;
 import com.muqingbfq.XM;
 import com.muqingbfq.adapter.AdapterGdH;
@@ -28,7 +29,6 @@ import com.muqingbfq.databinding.ActivityGdBinding;
 import com.muqingbfq.databinding.ListGdBBinding;
 import com.muqingbfq.mq.FragmentActivity;
 import com.muqingbfq.mq.VH;
-import com.muqingbfq.mq.gj;
 import com.muqingbfq.mq.wl;
 
 import org.json.JSONArray;

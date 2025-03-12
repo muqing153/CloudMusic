@@ -11,10 +11,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mpatric.mp3agic.ID3v2;
 import com.mpatric.mp3agic.Mp3File;
+import com.muqing.gj;
 import com.muqingbfq.MP3;
 import com.muqingbfq.mq.MediaItemAdapter;
-import com.muqingbfq.mq.gj;
-import com.muqingbfq.mq.wj;
+import com.muqingbfq.mq.FilePath;
 import com.muqingbfq.mq.wl;
 
 import org.json.JSONArray;
@@ -43,7 +43,7 @@ public class playlist extends Thread {
         }
         list.clear();
         try {
-            String hq = wj.dqwb(wj.gd + uid);
+            String hq = FilePath.dqwb(FilePath.gd + uid);
             if (hq == null || hq.isEmpty()) {
                 hq = gethq(uid);
             }
@@ -85,7 +85,7 @@ public class playlist extends Thread {
     public static List<MP3> hq(String uid) {
         List<MP3> list = new ArrayList<>();
         try {
-            String hq = wj.dqwb(wj.gd + uid);
+            String hq = FilePath.dqwb(FilePath.gd + uid);
             if (hq == null || hq.isEmpty()) {
                 hq = gethq(uid);
             }
@@ -125,7 +125,7 @@ public class playlist extends Thread {
 
     public static boolean hq_like(List<MP3> list) {
         try {
-            String dqwb = wj.dqwb(wj.gd + "mp3_like.json");
+            String dqwb = FilePath.dqwb(FilePath.gd + "mp3_like.json");
             if (dqwb == null) {
                 return false;
             }
@@ -148,7 +148,7 @@ public class playlist extends Thread {
 
     public static boolean hq_xz(List<MP3> list) {
         try {
-            File file = new File(wj.mp3);
+            File file = new File(FilePath.mp3);
             File[] files = file.listFiles();
             list.clear();
             for (File value : files) {
@@ -175,7 +175,7 @@ public class playlist extends Thread {
 
     public static void hq_listHistory(List<MP3> list) {
         try {
-            String dqwb = wj.dqwb(wj.gd + "mp3_listHistory.json");
+            String dqwb = FilePath.dqwb(FilePath.gd + "mp3_listHistory.json");
             Gson gson = new GsonBuilder()
                     .registerTypeAdapter(MediaItem.class, new MediaItemAdapter()) // 绑定适配器
                     .create();
@@ -198,7 +198,7 @@ public class playlist extends Thread {
 
 
     public static void hq_cd(Activity context, List<MP3> list) {
-        boolean cd = wj.isCD(context);
+        boolean cd = FilePath.isCD(context);
         if (!cd) {
             return;
         }

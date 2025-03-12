@@ -16,11 +16,11 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 
 import com.google.gson.Gson;
+import com.muqing.gj;
 import com.muqingbfq.databinding.ActivityUserLogsBinding;
 import com.muqingbfq.main;
 import com.muqingbfq.mq.AppCompatActivity;
-import com.muqingbfq.mq.gj;
-import com.muqingbfq.mq.wj;
+import com.muqingbfq.mq.FilePath;
 import com.muqingbfq.mq.wl;
 
 import org.json.JSONException;
@@ -136,7 +136,7 @@ public class user_logs extends AppCompatActivity<ActivityUserLogsBinding> {
                 imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
             }
             user_logs.this.account = binding.editUser.getText().toString();
-            gj.xcts(user_logs.this, "设置成功");
+//            gj.xcts(user_logs.this, "设置成功");
             wl.setcookie(account);
             finish();
 //            start();
@@ -160,12 +160,13 @@ public class user_logs extends AppCompatActivity<ActivityUserLogsBinding> {
                     String cookie = jsonObject.getString("cookie");
 
                     String s = new Gson().toJson(new user_logs.USER(nickname, signature, avatarUrl));
-                    wj.xrwb(wj.filesdri + "user.mq", s);
+                    FilePath.xrwb(FilePath.filesdri + "user.mq", s);
                     user_logs.this.finish(true);
                 } else if (code == 502) {
-                    gj.xcts(user_logs.this, jsonObject.getString("message"));
+                    String nickname = jsonObject.getString("message");
+                    runOnUiThread(() -> gj.ts(user_logs.this, nickname));
                 } else {
-                    gj.xcts(user_logs.this, "找不到此账号");
+                    runOnUiThread(() -> gj.ts(user_logs.this, "找不到此账号"));
                 }
             } catch (Exception e) {
                 gj.sc(e);

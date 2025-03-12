@@ -1,21 +1,13 @@
 package com.muqingbfq;
 
-import android.view.View;
-import android.widget.ImageView;
-
 import androidx.media3.common.MediaItem;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
-import com.muqingbfq.api.url;
 import com.muqingbfq.mq.MediaItemAdapter;
-import com.muqingbfq.mq.gj;
-import com.muqingbfq.mq.wj;
+import com.muqingbfq.mq.FilePath;
 
-import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -28,7 +20,7 @@ public class bfq_an {
     }
 
     public static boolean islike(String id) {
-        String dqwb = wj.dqwb(wj.gd + "mp3_like.json");
+        String dqwb = FilePath.dqwb(FilePath.gd + "mp3_like.json");
         if (dqwb != null) {
             try {
                 Gson gson = new GsonBuilder().registerTypeAdapter(MediaItem.class, new MediaItemAdapter())
@@ -38,14 +30,14 @@ public class bfq_an {
                     return o.stream().anyMatch(mediaItem -> mediaItem.mediaId.equals(id));
                 }
             } catch (Exception e) {
-                wj.sc(wj.gd + "mp3_like.json");
+                FilePath.sc(FilePath.gd + "mp3_like.json");
             }
         }
         return false;
     }
 
     public static boolean AddLike(MediaItem xm) {
-        String dqwb = wj.dqwb(wj.gd + "mp3_like.json");
+        String dqwb = FilePath.dqwb(FilePath.gd + "mp3_like.json");
         if (dqwb == null) {
             dqwb = "[]";
         }
@@ -53,12 +45,12 @@ public class bfq_an {
                 .create();
         List<MediaItem> o = gson.fromJson(dqwb, MediaItemAdapter.type);
         boolean add = o.add(xm);
-        wj.xrwb(wj.gd + "mp3_like.json", gson.toJson(o));
+        FilePath.xrwb(FilePath.gd + "mp3_like.json", gson.toJson(o));
         return add;
     }
 
     public static boolean DelLike(MediaItem xm) {
-        String dqwb = wj.dqwb(wj.gd + "mp3_like.json");
+        String dqwb = FilePath.dqwb(FilePath.gd + "mp3_like.json");
         if (dqwb == null) {
             dqwb = "[]";
         }
@@ -66,7 +58,7 @@ public class bfq_an {
                 .create();
         List<MediaItem> o = gson.fromJson(dqwb, MediaItemAdapter.type);
         boolean b = o.removeIf(mediaItem -> mediaItem.mediaId.equals(xm.mediaId));
-        wj.xrwb(wj.gd + "mp3_like.json", gson.toJson(o));
+        FilePath.xrwb(FilePath.gd + "mp3_like.json", gson.toJson(o));
         return b;
     }
 }

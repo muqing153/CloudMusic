@@ -2,7 +2,6 @@ package com.muqingbfq.adapter;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +10,6 @@ import android.widget.Filterable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.Player;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.common.base.Strings;
+import com.muqing.gj;
 import com.muqingbfq.MP3;
 import com.muqingbfq.PlaybackService;
 import com.muqingbfq.R;
@@ -26,7 +25,6 @@ import com.muqingbfq.api.url;
 import com.muqingbfq.databinding.ListMp3ImageBinding;
 import com.muqingbfq.main;
 import com.muqingbfq.mq.VH;
-import com.muqingbfq.mq.gj;
 
 import java.util.ArrayList;
 import java.util.List;

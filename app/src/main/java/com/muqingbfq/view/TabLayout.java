@@ -2,28 +2,20 @@ package com.muqingbfq.view;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.res.TypedArray;
-import android.graphics.Color;
-import android.media.Image;
 import android.util.AttributeSet;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.view.ContextThemeWrapper;
-import androidx.appcompat.widget.LinearLayoutCompat;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
 
 import com.google.android.material.card.MaterialCardView;
+import com.muqing.gj;
 import com.muqingbfq.R;
-import com.muqingbfq.mq.gj;
 
 public class TabLayout extends MaterialCardView {
     public TabLayout(Context context) {

@@ -16,3 +16,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "Cloud_music"
 include ':app'
+include(':AndroidMuqing')
+project(':AndroidMuqing').projectDir = new File('../AndroidMuqing')

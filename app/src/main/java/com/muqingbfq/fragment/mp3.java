@@ -37,6 +37,7 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
+import com.muqing.gj;
 import com.muqingbfq.MP3;
 import com.muqingbfq.PlaybackService;
 import com.muqingbfq.R;
@@ -45,10 +46,8 @@ import com.muqingbfq.api.playlist;
 import com.muqingbfq.databinding.ActivityMp3Binding;
 import com.muqingbfq.main;
 import com.muqingbfq.mq.FragmentActivity;
-import com.muqingbfq.mq.gj;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -176,9 +175,9 @@ public class mp3 extends FragmentActivity<ActivityMp3Binding> {
             Player player = PlaybackService.mediaSession.getPlayer();
             player.clearMediaItems();
             List<MP3> aalist = new ArrayList<>(list);
-            if (bfqkz.ms == 2) {
-                Collections.shuffle(aalist);
-            }
+//            if (bfqkz.ms == 2) {
+//                Collections.shuffle(aalist);
+//            }
             for (int i = 0; i < aalist.size(); i++) {
                 MP3 mp3 = aalist.get(i);
 //                            mp3 = url.hq(mp3);

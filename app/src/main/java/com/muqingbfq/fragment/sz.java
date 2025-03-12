@@ -7,11 +7,12 @@ import android.content.Intent;
 import android.net.Uri;
 import android.widget.Toast;
 
+import com.muqing.gj;
 import com.muqingbfq.R;
 import com.muqingbfq.activity_about_software;
 import com.muqingbfq.clean.fragment_clean;
 import com.muqingbfq.main;
-import com.muqingbfq.mq.gj;
+import com.muqingbfq.mq.llq;
 
 import java.util.List;
 
@@ -19,7 +20,7 @@ public class sz {
     @SuppressLint("NonConstantResourceId")
     public static void switch_sz(Context context, int id) {
         if (id == R.id.a) {
-            gj.llq(context, "https://github.com/muqing153/CloudMusic");
+            gj.llq(context, "https://github.com/muqing153/CloudMusic", llq.class);
         } else if (id == R.id.b) {
             context.startActivity(new Intent(context, com.muqingbfq.sz.class));
 //                    设置中心

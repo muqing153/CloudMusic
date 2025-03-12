@@ -2,9 +2,9 @@ package com.muqingbfq.api;
 
 import android.text.TextUtils;
 
+import com.muqing.gj;
 import com.muqingbfq.main;
-import com.muqingbfq.mq.gj;
-import com.muqingbfq.mq.wj;
+import com.muqingbfq.mq.FilePath;
 import com.muqingbfq.mq.wl;
 import com.muqingbfq.XM;
 
@@ -23,11 +23,11 @@ public class resource {
             JSONObject json;
             String hq = wl.hq("/recommend/resource",null);
             if (hq == null) {
-                hq = wj.dqwb(wj.gd_json);
+                hq = FilePath.dqwb(FilePath.gd_json);
                 if (hq != null) {
                     json = new JSONObject(hq);
                     if (json.getInt("code") == 200) {
-                        wj.xrwb(wj.gd_json, hq);
+                        FilePath.xrwb(FilePath.gd_json, hq);
                         JSONArray recommend = json.getJSONArray("recommend");
                         int length = recommend.length();
                         for (int i = 0; i < length; i++) {
@@ -40,7 +40,7 @@ public class resource {
             }
             json = new JSONObject(hq);
             if (json.getInt("code") == 200) {
-                wj.xrwb(wj.gd_json, hq);
+                FilePath.xrwb(FilePath.gd_json, hq);
                 JSONArray recommend = json.getJSONArray("recommend");
                 int length = recommend.length();
                 for (int i = 0; i < length; i++) {
@@ -78,14 +78,14 @@ public class resource {
     public static void leaderboard(List<XM> list) {
         String hq;
         try {
-            if (wj.cz(wj.gd_phb)) {
-                hq = wj.dqwb(wj.gd_phb);
+            if (FilePath.cz(FilePath.gd_phb)) {
+                hq = FilePath.dqwb(FilePath.gd_phb);
             } else {
                 hq = wl.hq("/toplist", null);
                 if (hq == null) {
                     return;
                 }
-                wj.xrwb(wj.gd_phb, hq);
+                FilePath.xrwb(FilePath.gd_phb, hq);
             }
             JSONObject jsonObject = new JSONObject(hq);
             if (jsonObject.getInt("code") == 200) {

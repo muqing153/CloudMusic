@@ -38,8 +38,7 @@ import com.muqingbfq.databinding.ActivitySzSetlrcBinding;
 import com.muqingbfq.mq.AppCompatActivity;
 import com.muqingbfq.mq.FloatingLyricsService;
 import com.muqingbfq.mq.Fragment;
-import com.muqingbfq.mq.gj;
-import com.muqingbfq.mq.wj;
+import com.muqingbfq.mq.FilePath;
 
 import java.io.File;
 import java.lang.reflect.Type;
@@ -131,7 +130,7 @@ public class sz extends AppCompatActivity<ActivitySzBinding> {
                 int index = 0;
                 for (int i = 0; i < LyricViewX.lyricEntryList.size(); i++) {
                     LyricEntry lineLrc = LyricViewX.lyricEntryList.get(i);
-                    gj.sc(player.getCurrentPosition());
+//                    gj.sc(player.getCurrentPosition());
                     if (lineLrc.time <= player.getCurrentPosition()) {
                         index = i;
                     } else {
@@ -158,9 +157,9 @@ public class sz extends AppCompatActivity<ActivitySzBinding> {
 
         @Override
         public void setUI(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-            File file = new File(wj.filesdri + "FloatingLyricsService.json");
+            File file = new File(FilePath.filesdri + "FloatingLyricsService.json");
             if (file.exists() && file.isFile()) {
-                String dqwb = wj.dqwb(file.toString());
+                String dqwb = FilePath.dqwb(file.toString());
                 Gson gson = new Gson();
                 Type type = new TypeToken<FloatingLyricsService.SETUP>() {
                 }.getType();

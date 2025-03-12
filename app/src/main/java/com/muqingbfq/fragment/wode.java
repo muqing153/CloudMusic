@@ -21,6 +21,7 @@ import com.bumptech.glide.Glide;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.muqing.gj;
 import com.muqingbfq.R;
 import com.muqingbfq.XM;
 import com.muqingbfq.adapter.AdapterGd;
@@ -30,8 +31,7 @@ import com.muqingbfq.login.user_logs;
 import com.muqingbfq.main;
 import com.muqingbfq.mq.EditViewDialog;
 import com.muqingbfq.mq.Fragment;
-import com.muqingbfq.mq.gj;
-import com.muqingbfq.mq.wj;
+import com.muqingbfq.mq.FilePath;
 import com.muqingbfq.mq.wl;
 
 import org.json.JSONObject;
@@ -110,7 +110,7 @@ public class wode extends Fragment<FragmentWdBinding> {
                                 } else {
                                     gj.ts(getContext(), "更换成功");
                                     main.api = str;
-                                    wj.xrwb(wj.filesdri + "API.mq", main.api);
+                                    FilePath.xrwb(FilePath.filesdri + "API.mq", main.api);
                                     editViewDialog.dismiss();
                                 }
                             }).show();
@@ -180,18 +180,18 @@ public class wode extends Fragment<FragmentWdBinding> {
     class dl implements View.OnClickListener {
         @Override
         public void onClick(View v) {
-            File file = new File(wj.filesdri, "user.mq");
+            File file = new File(FilePath.filesdri, "user.mq");
             if (file.exists()) {
                 String[] a = new String[]{"退出登录"};
                 new MaterialAlertDialogBuilder(requireContext())
                         .setItems(a, (dialogInterface, i) -> {
                             boolean delete = file.delete();
                             if (delete) {
-                                wj.sc(wj.filesdri + "user.mq");
+                                FilePath.sc(FilePath.filesdri + "user.mq");
                                 binding.text1.setText(getString(R.string.app_name));
                                 binding.text2.setText(getString(R.string.app_name));
                                 imageView.setImageResource(R.drawable.ic_launcher_foreground);
-                                wj.sc(wj.filesdri + "user.mq");
+                                FilePath.sc(FilePath.filesdri + "user.mq");
 //                                new com.muqingbfq.login.user_message();
                             }
                         }).show();
@@ -235,16 +235,16 @@ public class wode extends Fragment<FragmentWdBinding> {
                                     .error(R.drawable.ic_launcher_foreground)
                                     .into(binding.imageView);
                         });
-                        wj.xrwb(wj.filesdri + "user.mq", new Gson().toJson(new user_logs.USER(nickname, signature, avatarUrl)));
+                        FilePath.xrwb(FilePath.filesdri + "user.mq", new Gson().toJson(new user_logs.USER(nickname, signature, avatarUrl)));
                     }
                 } catch (Exception e) {
                     gj.sc(e);
                 }
             } else {
-                if (!wj.cz(wj.filesdri + "user.mq")) {
+                if (!FilePath.cz(FilePath.filesdri + "user.mq")) {
                     return;
                 }
-                String dqwb = wj.dqwb(wj.filesdri + "user.mq");
+                String dqwb = FilePath.dqwb(FilePath.filesdri + "user.mq");
                 user_logs.USER user = new Gson().fromJson(dqwb, user_logs.USER.class);
                 requireActivity().runOnUiThread(() -> {
                     binding.text1.setText(user.name);
@@ -269,9 +269,9 @@ public class wode extends Fragment<FragmentWdBinding> {
         }
     }
     public void LoadPlaylists() {
-        File file = new File(wj.gd_xz);
+        File file = new File(FilePath.gd_xz);
         if (file.exists()) {
-            String dqwb = wj.dqwb(wj.gd_xz);
+            String dqwb = FilePath.dqwb(FilePath.gd_xz);
             Gson gson = new Gson();
             TypeToken<List<XM>> typeToken = new TypeToken<List<XM>>() {
             };
