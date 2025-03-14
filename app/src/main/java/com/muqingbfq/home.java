@@ -26,20 +26,19 @@ import com.google.android.flexbox.AlignItems;
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexWrap;
 import com.google.android.flexbox.FlexboxLayoutManager;
-import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.search.SearchView;
 import com.google.common.base.Strings;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
+import com.muqing.AppCompatActivity;
 import com.muqing.gj;
 import com.muqingbfq.databinding.ActivityHomeBinding;
 import com.muqingbfq.fragment.SearchTools;
 import com.muqingbfq.fragment.gd_adapter;
 import com.muqingbfq.fragment.sz;
 import com.muqingbfq.fragment.wode;
-import com.muqingbfq.mq.AppCompatActivity;
 import com.muqingbfq.mq.FilePath;
 import com.muqingbfq.view.Edit;
 
@@ -62,6 +61,7 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
         EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
 
+//        new androidx.compose.material3.SliderKt(this);
         HomeSteer homeSteer = new HomeSteer(this, this::UI);
         SessionToken sessionToken =
                 new SessionToken(this, new ComponentName(this, PlaybackService.class));
@@ -79,12 +79,6 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
     protected void onResume() {
         super.onResume();
     }
-
-
-    public void toolbar() {
-        setSupportActionBar(binding.toolbar);
-    }
-
     public void UI() {
         setContentView();
 //        禁止ViewPager2滑动
@@ -140,7 +134,8 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
             binding.searchview.setPadding(0, 0, 0, height);
 
         });
-        toolbar();
+        setSupportActionBar(binding.toolbar);
+
         SearchUI();
 
     }

@@ -12,13 +12,14 @@ import android.widget.CheckBox;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.graphics.Insets;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.muqing.AppCompatActivity;
 import com.muqing.gj;
 import com.muqingbfq.R;
 import com.muqingbfq.databinding.ActivityCleanBinding;
-import com.muqingbfq.mq.FragmentActivity;
 import com.muqingbfq.mq.FilePath;
 
 import java.io.File;
@@ -26,14 +27,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class fragment_clean extends FragmentActivity<ActivityCleanBinding> {
+public class fragment_clean extends AppCompatActivity<ActivityCleanBinding> {
     List<String[]> list = new ArrayList<>();
     List<String> list_box = new ArrayList<>();
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView();
+        setBackToolsBar(binding.toolbar);
         UI();
+    }
+
+    @Override
+    public void setOnApplyWindowInsetsListener(Insets systemBars, View v) {
+        v.setPadding(systemBars.left, 0, systemBars.right, systemBars.bottom);
     }
 
     private void UI() {
@@ -81,7 +88,7 @@ public class fragment_clean extends FragmentActivity<ActivityCleanBinding> {
                 }else {
                     list_box.remove(file.toString());
                 }
-                menu_deleat.setVisible(list_box.size() > 0);
+                menu_deleat.setVisible(!list_box.isEmpty());
             });
         }
 
@@ -91,8 +98,9 @@ public class fragment_clean extends FragmentActivity<ActivityCleanBinding> {
         }
     };
 
-    class VH extends RecyclerView.ViewHolder {
+    private static class VH extends RecyclerView.ViewHolder {
         public CheckBox checkBox;
+
         public VH(@NonNull View itemView) {
             super(itemView);
             checkBox = itemView.findViewById(R.id.box);

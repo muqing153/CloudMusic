@@ -28,7 +28,6 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:title="歌单"
                 app:layout_collapseMode="pin">
 
                 <LinearLayout

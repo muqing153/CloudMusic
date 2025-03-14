@@ -18,8 +18,10 @@ import android.widget.Filterable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
+import androidx.core.graphics.Insets;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.muqing.AppCompatActivity;
 import com.muqing.gj;
 import com.muqingbfq.R;
 import com.muqingbfq.XM;
@@ -27,7 +29,6 @@ import com.muqingbfq.adapter.AdapterGdH;
 import com.muqingbfq.api.resource;
 import com.muqingbfq.databinding.ActivityGdBinding;
 import com.muqingbfq.databinding.ListGdBBinding;
-import com.muqingbfq.mq.FragmentActivity;
 import com.muqingbfq.mq.VH;
 import com.muqingbfq.mq.wl;
 
@@ -37,7 +38,12 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class gd extends FragmentActivity<ActivityGdBinding> {
+public class gd extends AppCompatActivity<ActivityGdBinding> {
+
+    @Override
+    public void setOnApplyWindowInsetsListener(Insets systemBars, View v) {
+        v.setPadding(systemBars.left, 0, systemBars.right, systemBars.bottom);
+    }
 
     public Adapter adapter = new Adapter();
     int k;
@@ -62,6 +68,7 @@ public class gd extends FragmentActivity<ActivityGdBinding> {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView();
+        setBackToolsBar(binding.toolbar);
         Intent intent = getIntent();
         binding.title.setText(intent.getStringExtra("name"));
 //        k = (int) (getResources().getDisplayMetrics().widthPixels / getResources().getDisplayMetrics().density + 0.5f);

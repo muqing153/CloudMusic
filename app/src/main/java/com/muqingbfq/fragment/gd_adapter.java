@@ -43,7 +43,6 @@ public class gd_adapter extends Fragment<FragmentGdBinding> {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         binding.recyclerview1.setLayoutManager(linearLayoutManager);
         adapterGd = new AdapterGd();
-        binding.recyclerview1.setAdapter(adapterGd);
         binding.recyclerview1.addItemDecoration(new RecyclerView.ItemDecoration() {
             @Override
             public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
@@ -67,23 +66,15 @@ public class gd_adapter extends Fragment<FragmentGdBinding> {
 
         adapterMp3 = new AdapterMp3(this.requireActivity());
         binding.recyclerview2.setLayoutManager(new LinearLayoutManager(getContext()));
-        binding.recyclerview2.setAdapter(adapterMp3);
         mp3list();
         onResume();
-//        requireActivity().findViewById(R.id.linearLayout4).post(new Runnable() {
-//            @Override
-//            public void run() {
-//                binding.recyclerview2.setPadding(0, 0, 0,
-//                        requireActivity().findViewById(R.id.linearLayout4).getHeight());
-//            }
-//        });
     }
 
     private class sx implements Runnable {
         @SuppressLint("NotifyDataSetChanged")
         @Override
         public void run() {
-            binding.recyclerview1.getAdapter().notifyDataSetChanged();
+            binding.recyclerview1.setAdapter(adapterGd);
             binding.recyclerview1Bar.setVisibility(View.GONE);
         }
     }
@@ -117,7 +108,7 @@ public class gd_adapter extends Fragment<FragmentGdBinding> {
                     }
                     FilePath.xrwb(FilePath.filesdri + "songs.json", hq);
                     requireActivity().runOnUiThread(() -> {
-                        adapterMp3.notifyDataSetChanged();
+                        binding.recyclerview2.setAdapter(adapterMp3);
                         binding.recyclerview2Bar.setVisibility(View.GONE);
                     });
                 } catch (Exception e) {
@@ -135,22 +126,22 @@ public class gd_adapter extends Fragment<FragmentGdBinding> {
     @Override
     public void onResume() {
         super.onResume();
-        if (adapterMp3 != null && PlaybackService.mediaSession != null) {
-            PlaybackService.mediaSession.getPlayer().addListener(adapterMp3.playerListener);
-            adapterMp3.notifyDataSetChanged();
-            gj.sc("Fragment 可见");
-        } else {
-            gj.sc("mediaSession==null");
-        }
+//        if (adapterMp3 != null && PlaybackService.mediaSession != null) {
+//            PlaybackService.mediaSession.getPlayer().addListener(adapterMp3.playerListener);
+//            adapterMp3.notifyDataSetChanged();
+//            gj.sc("Fragment 可见");
+//        } else {
+//            gj.sc("mediaSession==null");
+//        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if (PlaybackService.mediaSession != null) {
-            PlaybackService.mediaSession.getPlayer().removeListener(adapterMp3.playerListener);
-            gj.sc("Fragment 不可见");
-        }
+//        if (PlaybackService.mediaSession != null) {
+//            PlaybackService.mediaSession.getPlayer().removeListener(adapterMp3.playerListener);
+//            gj.sc("Fragment 不可见");
+//        }
     }
 
     @Override

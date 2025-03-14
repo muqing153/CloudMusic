@@ -5,17 +5,7 @@
     android:id="@+id/chct"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="false"
-    android:orientation="vertical"
     tools:context=".home">
-
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="&#xA;                style=&quot;@style/Widget.Material3.BottomNavigationView&quot;" />
-
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -137,7 +127,6 @@
 
                 <com.google.android.material.navigationrail.NavigationRailView
                     android:id="@+id/tablayout"
-                    style="@style/Widget.Material3.BottomNavigationView"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     app:menu="@menu/bottom_gd"
@@ -145,9 +134,8 @@
 
                 <androidx.viewpager2.widget.ViewPager2
                     android:id="@+id/viewPager"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_weight="1"
                     tools:ignore="NestedWeights" />
             </LinearLayout>
 

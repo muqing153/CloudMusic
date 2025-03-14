@@ -11,10 +11,7 @@ import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.LayerDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -25,7 +22,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.DecelerateInterpolator;
-import android.widget.SeekBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -44,6 +40,8 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
+import com.google.android.material.slider.Slider;
+import com.muqing.AppCompatActivity;
 import com.muqing.gj;
 import com.muqingbfq.MP3;
 import com.muqingbfq.PlaybackService;
@@ -53,10 +51,8 @@ import com.muqingbfq.bfq_an;
 import com.muqingbfq.databinding.ActivityMusicBinding;
 import com.muqingbfq.fragment.Media;
 import com.muqingbfq.main;
-import com.muqingbfq.mq.AppCompatActivity;
 
 import java.util.Objects;
-
 
 public class Music extends AppCompatActivity<ActivityMusicBinding> implements GestureDetector.OnGestureListener {
 
@@ -133,67 +129,69 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
             updateUI(player);
         }
         binding.tdt.post(() -> TdtHeight = binding.tdt.getHeight());
-        binding.tdt.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        binding.tdt.addOnSliderTouchListener(new Slider.OnSliderTouchListener() {
             @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                long actualPosition = (progress * player.getDuration()) / 100;
-                String time = bfq_an.getTime(actualPosition);
-                binding.timeB.setText(time);
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                // 获取 View 当前的高度;
-                // 创建一个 ValueAnimator，从当前高度逐渐增加到目标高度
-                ValueAnimator animator = ValueAnimator.ofInt(TdtHeight, TdtHeight + 10);
-                animator.setDuration(300); // 设置动画持续时间为 300 毫秒
-                animator.setInterpolator(new DecelerateInterpolator()); // 设置动画插值器
-                // 在动画过程中更新 View 的高度
-                animator.addUpdateListener(animation -> {
-                    // 获取当前动画的值（高度）
-                    int animatedValue = (int) animation.getAnimatedValue();
-
-                    // 更新 View 的高度
-                    ViewGroup.LayoutParams layoutParams = seekBar.getLayoutParams();
-                    layoutParams.height = animatedValue;
-                    seekBar.setLayoutParams(layoutParams);
-                });
-
-                // 开始动画
-                animator.start();
+            public void onStartTrackingTouch(@NonNull Slider slider) {
                 isDrag = true;
             }
 
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                isDrag = false;
-                int progress = seekBar.getProgress();
+            public void onStopTrackingTouch(@NonNull Slider slider) {
+                float progress = slider.getValue();
                 if (progress >= 100) {
                     player.seekToNextMediaItem();
                 } else {
-
-                    long actualPosition = (progress * player.getDuration()) / 100;
+                    long actualPosition = (long) ((progress * player.getDuration()) / 100);
                     player.seekTo(actualPosition);
                 }
-
-
-                ValueAnimator animator = ValueAnimator.ofInt(TdtHeight, TdtHeight - 10);
-                animator.setDuration(300); // 设置动画持续时间为 300 毫秒
-                animator.setInterpolator(new DecelerateInterpolator()); // 设置动画插值器
-                // 在动画过程中更新 View 的高度
-                animator.addUpdateListener(animation -> {
-                    // 获取当前动画的值（高度）
-                    int animatedValue = (int) animation.getAnimatedValue();
-                    // 更新 View 的高度
-                    ViewGroup.LayoutParams layoutParams = seekBar.getLayoutParams();
-                    layoutParams.height = animatedValue;
-                    seekBar.setLayoutParams(layoutParams);
-                });
-
-                // 开始动画
-                animator.start();
+                isDrag = false;
             }
         });
+//        binding.tdt.setThumbShape
+        binding.tdt.addOnChangeListener((slider, value, fromUser) -> {
+            if (fromUser) {
+                long actualPosition = (long) ((value * player.getDuration()) / 100);
+                String time = bfq_an.getTime(actualPosition);
+                binding.timeB.setText(time);
+            }
+        });
+//        binding.tdt.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+//            @Override
+//            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+//                long actualPosition = (progress * player.getDuration()) / 100;
+//                String time = bfq_an.getTime(actualPosition);
+//                binding.timeB.setText(time);
+//            }
+//
+//            @Override
+//            public void onStartTrackingTouch(SeekBar seekBar) {
+//                // 获取 View 当前的高度;
+//                // 创建一个 ValueAnimator，从当前高度逐渐增加到目标高度
+//
+//
+//                // 开始动画
+//                animator.start();
+//                isDrag = true;
+//            }
+//
+//            @Override
+//            public void onStopTrackingTouch(SeekBar seekBar) {
+//                isDrag = false;
+//                int progress = seekBar.getProgress();
+//                if (progress >= 100) {
+//                    player.seekToNextMediaItem();
+//                } else {
+//
+//                    long actualPosition = (progress * player.getDuration()) / 100;
+//                    player.seekTo(actualPosition);
+//                }
+//
+//
+//
+//                // 开始动画
+//                animator.start();
+//            }
+//        });
         binding.back.setOnClickListener(v -> finish());
 
         binding.fragmentBfq.setOnClickListener(v -> {
@@ -293,7 +291,7 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
                     if (progress < 1) {
                         progress = 1;
                     }
-                    binding.tdt.setProgress(progress);
+                    binding.tdt.setValue(progress);
 //                    binding.tdt.setMax(100);
                     binding.lrcView.updateTime(currentPosition, true);
                     binding.timeA.setText(bfq_an.getTime(duration));
@@ -347,6 +345,9 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
                             String[] strings = Media.loadLyric(PlaybackService.lrc);
                             if (strings != null) {
                                 binding.lrcView.loadLyric(strings[0], strings[1]);
+                            }
+                            if (!binding.tdt.isEnabled()) {
+                                binding.tdt.setEnabled(true);
                             }
                             gj.sc("播放开始");
                         }
@@ -491,14 +492,16 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
         binding.zz.setTextColor(color);
         binding.timeA.setTextColor(color);
         binding.timeB.setTextColor(color);
-
-        Drawable progressDrawable = binding.tdt.getProgressDrawable();
-        LayerDrawable layerDrawable = (LayerDrawable) progressDrawable;
-        Drawable progress = layerDrawable.findDrawableByLayerId(android.R.id.progress);
-        progress.setColorFilter(color, PorterDuff.Mode.SRC_IN);
-// 设置进度条背景的颜色
-        Drawable background = layerDrawable.findDrawableByLayerId(android.R.id.background);
-        background.setColorFilter(Color.GRAY, PorterDuff.Mode.SRC_IN);
+        binding.tdt.setTrackActiveTintList(colorStateList);
+//        binding.tdt.th(R.drawable.bf);
+        binding.tdt.setThumbTintList(colorStateList);
+//        Drawable progressDrawable = binding.tdt.getProgressDrawable();
+//        LayerDrawable layerDrawable = (LayerDrawable) progressDrawable;
+//        Drawable progress = layerDrawable.findDrawableByLayerId(android.R.id.progress);
+//        progress.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+//// 设置进度条背景的颜色
+//        Drawable background = layerDrawable.findDrawableByLayerId(android.R.id.background);
+//        background.setColorFilter(Color.GRAY, PorterDuff.Mode.SRC_IN);
     }
 
     /**
@@ -525,7 +528,8 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
                 break;
         }
     }
-    private void setPlayMode(){
+
+    private void setPlayMode() {
         SharedPreferences sharedPreferences = getSharedPreferences("Set_up", Context.MODE_PRIVATE);
         int ms = sharedPreferences.getInt("ms", 1);
         if (ms == 2) {

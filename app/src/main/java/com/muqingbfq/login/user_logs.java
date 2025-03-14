@@ -16,10 +16,10 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 
 import com.google.gson.Gson;
+import com.muqing.AppCompatActivity;
 import com.muqing.gj;
 import com.muqingbfq.databinding.ActivityUserLogsBinding;
 import com.muqingbfq.main;
-import com.muqingbfq.mq.AppCompatActivity;
 import com.muqingbfq.mq.FilePath;
 import com.muqingbfq.mq.wl;
 
@@ -27,8 +27,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Objects;
-
-
 public class user_logs extends AppCompatActivity<ActivityUserLogsBinding> {
     @Override
     protected ActivityUserLogsBinding getViewBindingObject(LayoutInflater layoutInflater) {

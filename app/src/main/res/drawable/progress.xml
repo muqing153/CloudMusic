@@ -1,29 +1,35 @@
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@android:id/background">
+<!--<layer-list xmlns:android="http://schemas.android.com/apk/res/android">-->
+<!--    <item android:id="@android:id/background">-->
 
-        <shape android:shape="rectangle">
-            <corners android:radius="8dp" />
-            <size android:height="13dp" />
-            <solid android:color="#5CCCCCCC" />
-        </shape>
-    </item>
+<!--        <shape android:shape="rectangle">-->
+<!--            <corners android:radius="8dp" />-->
+<!--            <size android:height="13dp" />-->
+<!--            <solid android:color="#5CCCCCCC" />-->
+<!--        </shape>-->
+<!--    </item>-->
 
-    <!--    缓冲区域-->
-    <item android:id="@android:id/secondaryProgress">
-        <clip>
-            <shape>
-                <corners android:radius="8dp" />
-                <solid android:color="#80CCCCCC" />
-            </shape>
-        </clip>
-    </item>
-    <item android:id="@android:id/progress">
-        <scale  android:scaleWidth="100%">
-            <shape android:shape="rectangle">
-                <corners android:radius="50dp" />
-                <size android:height="13dp" />
-                <solid android:color="#FFFFFF" />
-            </shape>
-        </scale>
-    </item>
-</layer-list>
+<!--    &lt;!&ndash;    缓冲区域&ndash;&gt;-->
+<!--    <item android:id="@android:id/secondaryProgress">-->
+<!--        <clip>-->
+<!--            <shape>-->
+<!--                <corners android:radius="8dp" />-->
+<!--                <solid android:color="#80CCCCCC" />-->
+<!--            </shape>-->
+<!--        </clip>-->
+<!--    </item>-->
+<!--    <item android:id="@android:id/progress">-->
+<!--        <scale android:scaleWidth="100%">-->
+<!--            <shape android:shape="rectangle">-->
+<!--                <corners android:radius="8dp" />-->
+<!--                <size android:height="13dp" />-->
+<!--                <solid android:color="#FFFFFF" />-->
+<!--            </shape>-->
+<!--        </scale>-->
+<!--    </item>-->
+<!--</layer-list>-->
+<!-- res/drawable/custom_thumb.xml -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="#FF5733" /> <!-- 设置拇指颜色为红色 -->
+    <size android:width="40dp" android:height="13dp" />
+    <corners android:radius="13dp" /> <!-- 圆形 -->
+</shape>

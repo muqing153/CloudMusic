@@ -39,6 +39,7 @@ class LyricEntry(@JvmField val time: Long, @JvmField val text: String) : Compara
      * @param width 宽度
      * @param align 位置
      */
+    @Suppress("DEPRECATION")
     fun init(
             textPaint: TextPaint,
             secondTextPaint: TextPaint,
@@ -59,6 +60,7 @@ class LyricEntry(@JvmField val time: Long, @JvmField val text: String) : Compara
     }
 
     companion object {
+        @Suppress("DEPRECATION")
         fun createStaticLayout(
                 text: String?,
                 paint: TextPaint,

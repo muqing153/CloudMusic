@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/mpbackground"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".activity.Music">
 
     <LinearLayout
         android:id="@+id/toolbar"
@@ -107,15 +107,16 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <SeekBar
+                    <com.google.android.material.slider.Slider
                         android:id="@+id/tdt"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="3dp"
-                        android:background="@null"
-                        android:progressDrawable="@drawable/progress"
-                        android:theme="@null"
-                        android:thumb="@null" />
+                        android:enabled="false"
+                        android:value="50.0"
+                        android:valueTo="100.0"
+                        app:labelBehavior="gone"
+                        app:thumbHeight="21dp"
+                        app:trackColorInactive="#4DF2ECF6" />
 
                     <LinearLayout
                         android:layout_width="match_parent"

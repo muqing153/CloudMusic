@@ -35,7 +35,6 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.muqingbfq.databinding.ActivitySzBinding;
 import com.muqingbfq.databinding.ActivitySzSetlrcBinding;
-import com.muqingbfq.mq.AppCompatActivity;
 import com.muqingbfq.mq.FloatingLyricsService;
 import com.muqingbfq.mq.Fragment;
 import com.muqingbfq.mq.FilePath;
@@ -43,6 +42,7 @@ import com.muqingbfq.mq.FilePath;
 import java.io.File;
 import java.lang.reflect.Type;
 
+import com.muqing.AppCompatActivity;
 public class sz extends AppCompatActivity<ActivitySzBinding> {
     @Override
     protected ActivitySzBinding getViewBindingObject(LayoutInflater layoutInflater) {

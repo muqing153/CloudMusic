@@ -25,6 +25,7 @@ import com.muqingbfq.mq.Fragment;
 public class bfq_db extends Fragment<FragmentBfqDbBinding> implements GestureDetector.OnGestureListener {
     private GestureDetector gestureDetector;
 
+
     @Override
     protected FragmentBfqDbBinding inflateViewBinding(LayoutInflater inflater, ViewGroup container) {
         return FragmentBfqDbBinding.inflate(inflater, container, false);
@@ -55,13 +56,15 @@ public class bfq_db extends Fragment<FragmentBfqDbBinding> implements GestureDet
     @Override
     public void onResume() {
         super.onResume();
-        main.handler.post(runnable); // 恢复监听或更新UI
+        if (PlaybackService.mediaSession != null) {
+            PlaybackService.mediaSession.getPlayer().addListener(playerListener);
+            setUI(PlaybackService.mediaSession.getPlayer());
+        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        main.handler.removeCallbacks(runnable);
         if (PlaybackService.mediaSession != null) {
             PlaybackService.mediaSession.getPlayer().removeListener(playerListener); // 移除监听器
         }
@@ -84,6 +87,7 @@ public class bfq_db extends Fragment<FragmentBfqDbBinding> implements GestureDet
         } else {
             binding.getRoot().setVisibility(View.GONE);
         }
+
     }
 
     private final Player.Listener playerListener = new Player.Listener() {
@@ -95,24 +99,6 @@ public class bfq_db extends Fragment<FragmentBfqDbBinding> implements GestureDet
         }
     };
 
-    private void setPlay() {
-        if (PlaybackService.mediaSession != null) {
-            PlaybackService.mediaSession.getPlayer().addListener(playerListener);
-        }
-    }
-
-    Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-            if (PlaybackService.mediaSession != null) {
-                setPlay();
-                setUI(PlaybackService.mediaSession.getPlayer());
-                main.handler.removeCallbacks(this);
-            } else {
-                main.handler.postDelayed(this, 1000);
-            }
-        }
-    };
 
     @Override
     public boolean onDown(@NonNull MotionEvent motionEvent) {

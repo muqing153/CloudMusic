@@ -1,5 +1,7 @@
 package com.muqingbfq.mq;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.Intent;
@@ -34,29 +36,38 @@ public class FloatingLyricsService extends Service {
     public Runnable updateSeekBar = new Runnable() {
         @Override
         public void run() {
-            if (PlaybackService.mediaSession == null || LyricViewX.lyricEntryList.isEmpty()) {
-                binding.lrcView.setText("暂无歌词");
-                binding.lrcViewMessage.setText("");
-                handler.postDelayed(this, 1000);
+            if (PlaybackService.mediaSession == null) {
+                handler.postDelayed(this, 1000); // 每秒更新一次进度
                 return;
             }
-            int index = 0;
-            for (int i = 0; i < LyricViewX.lyricEntryList.size(); i++) {
-                LyricEntry lineLrc = LyricViewX.lyricEntryList.get(i);
-                if (lineLrc.time <= PlaybackService.mediaSession.getPlayer().getCurrentPosition()) {
-                    index = i;
-                } else {
-                    break;
-                }
-            }
-            if (index < LyricViewX.lyricEntryList.size()) {
-                LyricEntry currentLrc = LyricViewX.lyricEntryList.get(index);
-                binding.lrcView.setText(currentLrc.text);
-                if (currentLrc.secondText != null) {
-                    binding.lrcViewMessage.setText(currentLrc.secondText);
-                } else {
+            if (PlaybackService.mediaSession.getPlayer().isPlaying()) {
+
+                if (LyricViewX.lyricEntryList.isEmpty()) {
+                    binding.lrcView.setText("暂无歌词");
                     binding.lrcViewMessage.setText("");
+                    handler.postDelayed(this, 1000);
+                    return;
                 }
+                int index = 0;
+                for (int i = 0; i < LyricViewX.lyricEntryList.size(); i++) {
+                    LyricEntry lineLrc = LyricViewX.lyricEntryList.get(i);
+                    if (lineLrc.time <= PlaybackService.mediaSession.getPlayer().getCurrentPosition()) {
+                        index = i;
+                    } else {
+                        break;
+                    }
+                }
+                if (index < LyricViewX.lyricEntryList.size()) {
+                    LyricEntry currentLrc = LyricViewX.lyricEntryList.get(index);
+                    binding.lrcView.setText(currentLrc.text);
+                    if (currentLrc.secondText != null) {
+                        binding.lrcViewMessage.setText(currentLrc.secondText);
+                    } else {
+                        binding.lrcViewMessage.setText("");
+                    }
+                }
+            } else {
+                binding.lrcView.setText("");
             }
             handler.postDelayed(this, 1000); // 每秒更新一次进度
         }
@@ -100,6 +111,7 @@ public class FloatingLyricsService extends Service {
 
     private int initialY;
     private float initialTouchY;
+
     @Override
     public void onCreate() {
         super.onCreate();

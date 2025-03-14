@@ -14,8 +14,7 @@ import androidx.annotation.Nullable;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.muqing.gj;
 import com.muqingbfq.databinding.ActivityYcBinding;
-import com.muqingbfq.mq.AppCompatActivity;
-
+import com.muqing.AppCompatActivity;
 public class yc extends AppCompatActivity<ActivityYcBinding> {
     public Object exception;
     @Override

@@ -60,11 +60,11 @@ public class AdapterGd extends RecyclerView.Adapter<VH<ListGdBinding>> {
             mp3.drawable = holder.binding.image.getDrawable();
             mp3.start(v.getContext(), new String[]{xm.id, xm.name});
         });
+//        gj.sc(xm.picurl);
         Glide.with(holder.itemView.getContext())
                 .asBitmap()
                 .load(xm.picurl)
                 .placeholder(R.drawable.mdimusicbox)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .addListener(new RequestListener<Bitmap>() {
                     @Override
                     public boolean onLoadFailed(@Nullable GlideException e, @Nullable Object model, @NonNull Target<Bitmap> target, boolean isFirstResource) {

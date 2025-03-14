@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/mpbackground">
+    android:background="?android:attr/colorBackground"
+    tools:context=".activity.Music">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/fragment_bfq"
@@ -94,19 +95,21 @@
                 android:textSize="20sp" />
         </LinearLayout>
 
-        <SeekBar
+        <com.google.android.material.slider.Slider
             android:id="@+id/tdt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="3dp"
-            android:background="@null"
-            android:max="100"
-            android:progressDrawable="@drawable/progress"
-            android:theme="@null"
-            android:thumb="@null"
+            android:valueTo="100.0"
+            android:value="50.0"
+            android:enabled="false"
+            app:trackColorInactive="#4DF2ECF6"
+            app:labelBehavior="gone"
+            app:thumbHeight="21dp"
+            app:thumbColor="@color/bj"
             app:layout_constraintBottom_toTopOf="@id/time_a"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            tools:ignore="HardcodedText" />
 
         <TextView
             android:id="@+id/time_a"

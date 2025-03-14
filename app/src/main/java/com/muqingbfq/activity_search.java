@@ -25,11 +25,11 @@ import com.google.android.flexbox.FlexboxLayoutManager;
 import com.google.android.material.search.SearchView;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.muqing.AppCompatActivity;
 import com.muqing.gj;
 import com.muqingbfq.databinding.ActivitySearchBinding;
 import com.muqingbfq.databinding.ListTextBinding;
 import com.muqingbfq.databinding.ViewSearchItemBinding;
-import com.muqingbfq.mq.FragmentActivity;
 import com.muqingbfq.mq.VH;
 import com.muqingbfq.mq.FilePath;
 import com.muqingbfq.view.Edit;
@@ -40,7 +40,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class activity_search extends FragmentActivity<ActivitySearchBinding> {
+public class activity_search extends AppCompatActivity<ActivitySearchBinding> {
     //    private List<String> json_list = new ArrayList<>();
     private final List<String> list = new ArrayList<>();
 
@@ -55,7 +55,7 @@ public class activity_search extends FragmentActivity<ActivitySearchBinding> {
         super.onCreate(savedInstanceState);
 
         setContentView(getViewBinding().getRoot());
-        setToolbar();
+//        setToolbar();
         FlexboxLayoutManager manager = new FlexboxLayoutManager(this) {
             @Override
             public boolean canScrollVertically() {

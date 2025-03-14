@@ -16,15 +16,19 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.graphics.Insets;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewbinding.ViewBinding;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDragHandleView;
+import com.muqing.AppCompatActivity;
+import com.muqing.BaseAdapter;
+import com.muqing.ViewUI.BottomSheet;
 import com.muqingbfq.databinding.ActivityAboutSoftwareBinding;
 import com.muqingbfq.databinding.ListKaifazheBinding;
-import com.muqingbfq.mq.FragmentActivity;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -33,7 +37,13 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-public class activity_about_software extends FragmentActivity<ActivityAboutSoftwareBinding> {
+public class activity_about_software extends AppCompatActivity<ActivityAboutSoftwareBinding> {
+
+    @Override
+    public void setOnApplyWindowInsetsListener(Insets systemBars, View v) {
+        v.setPadding(systemBars.left, 0, systemBars.right, systemBars.bottom);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,9 +78,10 @@ public class activity_about_software extends FragmentActivity<ActivityAboutSoftw
     }
 
     MenuItem itemA;
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        itemA= menu.add("特别鸣谢");
+        itemA = menu.add("特别鸣谢");
         itemA.setTitle("特别鸣谢");
         return super.onCreateOptionsMenu(menu);
     }
@@ -91,14 +102,15 @@ public class activity_about_software extends FragmentActivity<ActivityAboutSoftw
         return ActivityAboutSoftwareBinding.inflate(layoutInflater);
     }
 
-    class botton extends BottomSheetDialog {
+    private static class botton extends BottomSheetDialog {
 
         List<Object[]> list = new ArrayList<>();
+
         public botton(@NonNull Context context) {
             super(context);
             setTitle("特别鸣谢");
-            list.add(new Object[]{"2923268971","薄荷今天吃什么?", "维护开发者", "QQ"});
-            list.add(new Object[]{"3301074923","威廉", "主要测试BUG", "QQ"});
+            list.add(new Object[]{"2923268971", "薄荷今天吃什么?", "维护开发者", "QQ"});
+            list.add(new Object[]{"3301074923", "威廉", "主要测试BUG", "QQ"});
             show();
         }
 
@@ -114,49 +126,35 @@ public class activity_about_software extends FragmentActivity<ActivityAboutSoftw
             linearLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.MATCH_PARENT));
             linearLayout.setOrientation(LinearLayout.VERTICAL);
-            linearLayout.setPadding(50,0,50,500);
+            linearLayout.setPadding(50, 0, 50, 500);
 
             recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-            recyclerView.setAdapter(new RecyclerView.Adapter<VH>() {
-                @NonNull
+            BaseAdapter<ListKaifazheBinding, Object[]> baseAdapter = new BaseAdapter<ListKaifazheBinding, Object[]>(this.getContext(), list) {
+
                 @Override
-                public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                    ListKaifazheBinding binding = ListKaifazheBinding.inflate(getLayoutInflater());
-                    return new VH(binding.getRoot());
+                protected ListKaifazheBinding getViewBindingObject(LayoutInflater inflater, ViewGroup parent, int viewType) {
+                    return ListKaifazheBinding.inflate(inflater, parent, false);
                 }
 
                 @Override
-                public void onBindViewHolder(@NonNull VH holder, int position) {
+                protected void onBindView(Object[] data, ListKaifazheBinding viewBinding, ViewHolder<ListKaifazheBinding> viewHolder, int position) {
+
                     Object[] objects = list.get(position);
-                    holder.name.setText(objects[1].toString());
-                    holder.zz.setText(objects[2].toString());
+                    viewBinding.text1.setText(objects[1].toString());
+                    viewBinding.text2.setText(objects[2].toString());
 //                    https://q1.qlogo.cn/g?b=qq&nk=1966944300&s=100
                     Glide.with(getContext())
                             .load("https://q1.qlogo.cn/g?b=qq&nk=" + objects[0] + "&s=100")
                             .error(R.drawable.ic_launcher_foreground)
-                            .into(holder.imageView);
+                            .into(viewBinding.imageView);
                 }
 
-                @Override
-                public int getItemCount() {
-                    return list.size();
-                }
-            });
+            };
+            recyclerView.setAdapter(baseAdapter);
             linearLayout.setGravity(Gravity.CENTER_HORIZONTAL);
-            linearLayout.addView(new BottomSheetDragHandleView(getContext()));
+            linearLayout.addView(new BottomSheet(getContext()));
             linearLayout.addView(recyclerView);
             setContentView(linearLayout);
-        }
-    }
-
-    class VH extends RecyclerView.ViewHolder {
-        public TextView name, zz;
-        public ImageView imageView;
-        public VH(@NonNull View itemView) {
-            super(itemView);
-            name = itemView.findViewById(R.id.text1);
-            zz = itemView.findViewById(R.id.text2);
-            imageView = itemView.findViewById(R.id.imageView);
         }
     }
 

@@ -162,8 +162,7 @@ object LyricUtil {
     fun getContentFromNetwork(url: String?, charset: String?): String? {
         var lrcText: String? = null
         try {
-            val url = URL(url)
-            val conn = url.openConnection() as HttpURLConnection
+            val conn = URL(url).openConnection() as HttpURLConnection
             conn.requestMethod = "GET"
             conn.connectTimeout = 10000
             conn.readTimeout = 10000
@@ -177,7 +176,7 @@ object LyricUtil {
                 }
                 `is`.close()
                 bos.close()
-                lrcText = bos.toString(charset)
+                lrcText = bos.toString(charset.toString())
             }
         } catch (e: Exception) {
             e.printStackTrace()

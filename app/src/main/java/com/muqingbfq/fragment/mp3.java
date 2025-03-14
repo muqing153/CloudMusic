@@ -37,6 +37,7 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
+import com.muqing.AppCompatActivity;
 import com.muqing.gj;
 import com.muqingbfq.MP3;
 import com.muqingbfq.PlaybackService;
@@ -45,7 +46,6 @@ import com.muqingbfq.adapter.AdapterMp3;
 import com.muqingbfq.api.playlist;
 import com.muqingbfq.databinding.ActivityMp3Binding;
 import com.muqingbfq.main;
-import com.muqingbfq.mq.FragmentActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +53,7 @@ import java.util.Objects;
 
 import jp.wasabeef.glide.transformations.BlurTransformation;
 
-public class mp3 extends FragmentActivity<ActivityMp3Binding> {
+public class mp3 extends AppCompatActivity<ActivityMp3Binding> {
     private final List<MP3> list = new ArrayList<>();
     private List<MP3> list_ys = new ArrayList<>();
     public AdapterMp3 adapter;
@@ -74,13 +74,19 @@ public class mp3 extends FragmentActivity<ActivityMp3Binding> {
         context.startActivity(intent);
     }
 
+    @Override
+    public void setOnApplyWindowInsetsListener(Insets systemBars, View v) {
+        v.setPadding(systemBars.left, 0, systemBars.right, systemBars.bottom);
+    }
+
     public static Drawable drawable = null;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView();
-//        drawable=null;
+        binding.toolbar.setTitle("");
+        setBackToolsBar(binding.toolbar);
         TypedValue typedValue = new TypedValue();
         getTheme().resolveAttribute(android.R.attr.windowBackground, typedValue, true);
         ; // 获取当前主题的背景颜色
@@ -119,7 +125,6 @@ public class mp3 extends FragmentActivity<ActivityMp3Binding> {
             FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) binding.toolbar.getLayoutParams();
             params.setMargins(0, systemBars.top, 0, 0);  // 参数分别是 left, top, right, bottom
             binding.toolbar.setLayoutParams(params);
-
             return insets;
         });
         Intent intent = getIntent();

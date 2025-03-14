@@ -44,15 +44,15 @@
             android:id="@+id/kg"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:layout_margin="3dp"
+            android:layout_marginEnd="6dp"
             android:src="@drawable/zt"
             tools:ignore="ContentDescription" />
         <ImageView
             android:id="@+id/txb"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:layout_margin="3dp"
             android:src="@drawable/gd"
+            android:layout_marginEnd="6dp"
             tools:ignore="ContentDescription" />
     </LinearLayout>
 </com.google.android.material.bottomnavigation.BottomNavigationView>
