@@ -7,10 +7,10 @@
 
 
     <com.google.android.material.card.MaterialCardView
+        style="@style/Widget.Material3.CardView.Elevated"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:cardUseCompatPadding="true"
-        style="@style/Widget.Material3.CardView.Elevated"
         app:contentPadding="10dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -85,6 +85,7 @@
                     android:enabled="false"
                     android:valueFrom="3"
                     android:valueTo="36"
+                    android:value="21"
                     tools:ignore="SpeakableTextPresentCheck" />
 
                 <TextView
@@ -97,16 +98,16 @@
 
             </LinearLayout>
 
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/switch_a3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="歌词开关"
+                android:textSize="20sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/layout1"
+                tools:ignore="HardcodedText" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <com.google.android.material.materialswitch.MaterialSwitch
-        android:id="@+id/switch_a3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="歌词开关"
-        android:textSize="20sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/layout2"
-        tools:ignore="HardcodedText" />
 </LinearLayout>

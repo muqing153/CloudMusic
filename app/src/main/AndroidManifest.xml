@@ -42,7 +42,7 @@
         <activity
             android:name=".home"
             android:exported="true"
-            android:theme="@style/Theme.start">
+            android:windowSoftInputMode="adjustNothing">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -51,7 +51,7 @@
         </activity>
         <activity android:name=".login.user_logs" />
         <activity android:name=".clean.fragment_clean" />
-        <activity android:name=".activity_search" />
+        <activity android:name=".activity.activity_search" />
         <activity android:name=".fragment.mp3" />
         <activity android:name=".fragment.gd" />
         <activity android:name=".activity_about_software" />

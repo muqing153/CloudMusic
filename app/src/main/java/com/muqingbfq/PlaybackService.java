@@ -27,6 +27,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.muqing.gj;
 import com.muqingbfq.api.url;
+import com.muqingbfq.fragment.Media;
 import com.muqingbfq.mq.MediaItemAdapter;
 import com.muqingbfq.mq.FilePath;
 
@@ -71,7 +72,14 @@ public class PlaybackService extends MediaSessionService {
                     player.play();
                 }
             } else if (playbackState == Player.STATE_READY) {
-                AddMediaItem(mediaSession.getPlayer().getCurrentMediaItem());
+                MediaItem currentMediaItem1 = mediaSession.getPlayer().getCurrentMediaItem();
+                new Thread(() -> {
+                    url.getLrc(currentMediaItem1.mediaId);
+                    gj.sc("onPlaybackStateChanged:" + PlaybackService.lrc);
+                    Media.loadLyric(PlaybackService.lrc);
+                }).start();
+                AddMediaItem(currentMediaItem1);
+
             }
 
         }
@@ -83,7 +91,7 @@ public class PlaybackService extends MediaSessionService {
 
         private void AddMediaItem(MediaItem mediaItem) {
             new Thread(() -> {
-                gj.sc("onPlaybackStateChanged");
+//                gj.sc("onPlaybackStateChanged");
                 try {
                     Gson gson = new GsonBuilder()
                             .registerTypeAdapter(MediaItem.class, new MediaItemAdapter()) // 绑定适配器
@@ -118,49 +126,65 @@ public class PlaybackService extends MediaSessionService {
             gj.sc(tracks);
             // Update UI using current tracks.
         }
-
-        int error_count = 0;//设置错误次数
-        MediaItem currentMediaItem = null;
+        int error_count = 0;
         int currentIndex = 0;
+        MediaItem currentMediaItem = null;
 
         @Override
         public void onPlayerError(@NonNull PlaybackException error) {
-            // 当播放发生错误时调用
-            // 如果错误是由于资源找不到
             Player player = mediaSession.getPlayer();
-            if (++error_count > 3) {
-                currentIndex = player.getNextMediaItemIndex();
-                if (currentIndex != C.INDEX_UNSET) {
-                    gj.sc("播放失败，已跳过");
-                    return;
-                } else {
-                    currentMediaItem = player.getMediaItemAt(currentIndex);  // 获取下一首的 MediaItem
-                }
-            } else {
-                currentMediaItem = player.getCurrentMediaItem();
-                currentIndex = player.getCurrentMediaItemIndex();  // 获取当前播放项的索引
+            boolean shuffleModeEnabled = player.getShuffleModeEnabled();
+            if (shuffleModeEnabled) {
+                player.setShuffleModeEnabled(false);
             }
+
+            if (++error_count > 3) {
+                int nextIndex = player.getNextMediaItemIndex();
+                if (nextIndex != C.INDEX_UNSET) {
+                    gj.sc("播放失败，已跳过");
+                    player.seekToDefaultPosition(nextIndex);
+                    player.prepare();
+                    player.play();
+                } else {
+                    gj.sc("播放失败，且无可跳过曲目");
+                }
+                error_count = 0;
+                return;
+            }
+
+            // 尝试修复当前项
+            currentIndex = player.getCurrentMediaItemIndex();
+            currentMediaItem = player.getCurrentMediaItem();
+            if (currentMediaItem == null || currentIndex == C.INDEX_UNSET) {
+                gj.sc("当前播放项无效，无法重试");
+                return;
+            }
+
             new Thread(() -> {
                 MP3 hq = url.hq(new MP3(currentMediaItem.mediaId));
                 hq.picurl = url.picurl(hq.id);
-                // 设置新的 MediaItem
+
                 MediaItem newMediaItem = currentMediaItem.buildUpon()
-                        .setUri(hq.url)  // 更新 URI
-                        .build();  // 构建新的 MediaItem
+                        .setUri(hq.url)
+                        .build();
+
                 main.handler.post(() -> {
                     player.replaceMediaItem(currentIndex, newMediaItem);
                     player.prepare();
                     player.play();
                     error_count = 0;
+                    player.setShuffleModeEnabled(shuffleModeEnabled);
                 });
             }).start();
         }
+
     };
 
 
     @UnstableApi
     public void onCreate() {
-        super.onCreate();if (PlaybackService.mediaSession == null) {
+        super.onCreate();
+        if (PlaybackService.mediaSession == null) {
             PlaybackService.mediaSession = new MediaSession.Builder(this, new ExoPlayer.Builder(this)
                     .build()).build();
         }

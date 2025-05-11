@@ -16,12 +16,14 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
+import com.google.gson.Gson;
 import com.muqing.gj;
 import com.muqingbfq.MP3;
 import com.muqingbfq.XM;
 import com.muqingbfq.adapter.AdapterGdH;
 import com.muqingbfq.adapter.AdapterMp3;
 import com.muqingbfq.databinding.RecyclerVBinding;
+import com.muqingbfq.list.CloudSearch;
 import com.muqingbfq.main;
 import com.muqingbfq.mq.wl;
 
@@ -193,28 +195,20 @@ public class SearchTools {
         } catch (NumberFormatException e) {
             gj.sc(e);
         }
-        String hq = wl.hq("/search", "keywords=" + str + "&type=1", false);
+        String hq = wl.hq("/cloudsearch", new String[][]{
+                {"keywords", str},
+                {"type", "1"},
+        });
         try {
-            JSONArray jsonArray = new JSONObject(hq).getJSONObject("result")
-                    .getJSONArray("songs");
-            int length = jsonArray.length();
-            for (int i = 0; i < length; i++) {
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                String id = jsonObject.getString("id");
-                String name = jsonObject.getString("name");
-                JSONArray artists = jsonObject.getJSONArray("artists");
-                int length1 = artists.length();
-                StringBuilder zz = null;
-                for (int j = 0; j < length1; j++) {
-                    JSONObject josn = artists.getJSONObject(j);
-                    String name_zz = josn.getString("name");
-                    if (zz == null) {
-                        zz = new StringBuilder(name_zz);
-                    } else {
-                        zz.append("/").append(name_zz);
-                    }
+            Gson gson = new Gson();
+            CloudSearch cloudSearch = gson.fromJson(hq, CloudSearch.class);
+            CloudSearch.Result result = cloudSearch.getResult();
+            for (CloudSearch.Song song : result.getSongs()) {
+                StringBuilder zz= new StringBuilder();
+                for (CloudSearch.Artist s : song.ar) {
+                    zz.append(s.name).append(" ");
                 }
-                list.add(new MP3(id, name, zz.toString(), ""));
+                list.add(new MP3(song.id, song.name, zz.toString(), song.al.picUrl));
             }
         } catch (Exception e) {
             gj.sc(e);

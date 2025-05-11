@@ -2,6 +2,8 @@ package com.muqingbfq.adapter;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +25,7 @@ import com.muqingbfq.PlaybackService;
 import com.muqingbfq.R;
 import com.muqingbfq.api.url;
 import com.muqingbfq.databinding.ListMp3ImageBinding;
+import com.muqingbfq.home;
 import com.muqingbfq.main;
 import com.muqingbfq.mq.VH;
 
@@ -37,6 +40,9 @@ public class AdapterMp3 extends RecyclerView.Adapter<VH<ListMp3ImageBinding>> im
     public AdapterMp3() {
 
     }
+
+    private int ColorThis = 0, ColorHighlight = 0;
+
 
     public AdapterMp3(Activity activity) {
         this.activity = activity;
@@ -125,11 +131,18 @@ public class AdapterMp3 extends RecyclerView.Adapter<VH<ListMp3ImageBinding>> im
     @SuppressLint("NotifyDataSetChanged")
     @Override
     public void onBindViewHolder(@NonNull VH<ListMp3ImageBinding> holder, int position) {
+        if (ColorThis == 0 || ColorHighlight == 0) {
+//            ColorThis = gj.getThemeColor(holder.itemView.getContext(), com.google.android.material.R.attr.colorSurface);
+            ColorThis = home.ColorBackground;
+//            ColorHighlight = gj.getThemeColor(holder.itemView.getContext(), com.google.android.material.R.attr.colorSurfaceVariant);
+            ColorHighlight = gj.getThemeColor(holder.itemView.getContext(), com.google.android.material.R.attr.colorPrimaryContainer);
+        }
+
         MP3 x = list.get(position);
         holder.binding.wb1.setText(x.name);
         holder.binding.zz.setText(x.zz);
-        int themeColor = gj.getThemeColor(holder.itemView.getContext(), com.google.android.material.R.attr.colorSurface);
-        holder.binding.getRoot().setCardBackgroundColor(themeColor);
+//        int themeColor = gj.getThemeColor(holder.itemView.getContext(), com.google.android.material.R.attr.colorSurface);
+        holder.binding.getRoot().setCardBackgroundColor(ColorThis);
         if (PlaybackService.mediaSession != null) {
             Player player = PlaybackService.mediaSession.getPlayer();
             MediaItem currentMediaItem = player.getCurrentMediaItem();
@@ -137,8 +150,7 @@ public class AdapterMp3 extends RecyclerView.Adapter<VH<ListMp3ImageBinding>> im
                 String mediaId = currentMediaItem.mediaId;
                 if (mediaId.equals(x.id)) {
 //                    holder.binding.getRoot()
-                    holder.binding.getRoot().setCardBackgroundColor(
-                            gj.getThemeColor(holder.itemView.getContext(), com.google.android.material.R.attr.colorSurfaceVariant));
+                    holder.binding.getRoot().setCardBackgroundColor(ColorHighlight);
                 }
             }
         }
@@ -151,7 +163,7 @@ public class AdapterMp3 extends RecyclerView.Adapter<VH<ListMp3ImageBinding>> im
 //            gj.sc(x.picurl+"?param=50y50");
 //            holder.binding.imageView.setVisibility(View.VISIBLE);
 //            holder.binding.linsum.setVisibility(View.GONE);
-            Glide.with(holder.itemView.getContext()).load(x.picurl+"?param=50y50")
+            Glide.with(holder.itemView.getContext()).load(x.picurl + "?param=100y100")
                     .apply(new RequestOptions().placeholder(R.drawable.ic_launcher_foreground))
                     .error(R.drawable.ic_launcher_foreground)
                     .into(holder.binding.imageView);

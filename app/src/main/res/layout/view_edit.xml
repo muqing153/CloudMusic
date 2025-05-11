@@ -3,13 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingStart="16dp"
-    android:paddingEnd="16dp"
     android:orientation="vertical">
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
         android:hint="请输入内容">
         <EditText
             android:id="@+id/editview"
@@ -22,22 +21,23 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:paddingBottom="16dp"
+        android:layout_marginVertical="16dp"
+        android:layout_marginHorizontal="9dp"
+        android:gravity="center"
         android:orientation="horizontal">
         <Button
             android:id="@+id/button1"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/quxiao"
-            style="?android:attr/buttonBarButtonStyle" />
+            style="@style/Widget.Material3.Button.TextButton"/>
         <Button
             android:id="@+id/button2"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="确定"
-            style="?android:attr/buttonBarButtonStyle" />
+            style="@style/Widget.Material3.Button.TextButton" />
     </LinearLayout>
 </LinearLayout>

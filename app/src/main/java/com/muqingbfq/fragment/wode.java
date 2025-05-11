@@ -13,6 +13,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -21,22 +22,29 @@ import com.bumptech.glide.Glide;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.muqing.BaseAdapter;
+import com.muqing.Fragment;
 import com.muqing.gj;
+import com.muqingbfq.Dialog.DialogEditText;
+import com.muqingbfq.HomeSteer;
 import com.muqingbfq.R;
 import com.muqingbfq.XM;
 import com.muqingbfq.adapter.AdapterGd;
 import com.muqingbfq.adapter.AdapterGdH;
 import com.muqingbfq.databinding.FragmentWdBinding;
+import com.muqingbfq.databinding.ViewButtonBinding;
 import com.muqingbfq.login.user_logs;
 import com.muqingbfq.main;
+import com.muqingbfq.mq.Action;
 import com.muqingbfq.mq.EditViewDialog;
-import com.muqingbfq.mq.Fragment;
 import com.muqingbfq.mq.FilePath;
 import com.muqingbfq.mq.wl;
 
 import org.json.JSONObject;
 
 import java.io.File;
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -56,13 +64,13 @@ public class wode extends Fragment<FragmentWdBinding> {
     };
 
     @Override
-    protected FragmentWdBinding inflateViewBinding(LayoutInflater inflater, ViewGroup container) {
+    protected FragmentWdBinding getViewBindingObject(@NonNull LayoutInflater inflater, @Nullable ViewGroup container) {
         return FragmentWdBinding.inflate(inflater, container, false);
     }
 
     @Override
-    public void setUI(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                      @Nullable Bundle savedInstanceState) {
+    public void setUI(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
         name = binding.text1;
         jieshao = binding.text2;
         imageView = binding.imageView;
@@ -71,49 +79,54 @@ public class wode extends Fragment<FragmentWdBinding> {
         binding.recyclerview1.setNestedScrollingEnabled(false);
         binding.recyclerview1.setLayoutManager(new GridLayoutManager(getContext(), 4));
         binding.recyclerview1.setFocusable(false);
-        binding.recyclerview1.setAdapter(new RecyclerView.Adapter<VH>() {
-            @NonNull
+        List<Object[]> list = Arrays.asList(lista);
+        binding.recyclerview1.setAdapter(new BaseAdapter<ViewButtonBinding, Object[]>(this.requireContext(), list) {
             @Override
-            public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                View inflate = View.inflate(getContext(), R.layout.view_button, null);
-                return new VH(inflate);
+            protected ViewButtonBinding getViewBindingObject(LayoutInflater inflater, ViewGroup parent, int viewType) {
+                return ViewButtonBinding.inflate(inflater, parent, false);
             }
 
             @Override
-            public void onBindViewHolder(@NonNull VH holder, int position) {
-                String s = lista[position][1].toString();
-                holder.textView.setText(s);
-                holder.imageView.setImageResource((Integer) lista[position][0]);
-                String data = lista[position][2].toString();
-                holder.itemView.setOnClickListener(view -> {
-                    switch (data) {
+            protected void onBindView(Object[] data, ViewButtonBinding viewBinding, ViewHolder<ViewButtonBinding> viewHolder, int position) {
+                String s = data[1].toString();
+                viewBinding.text1.setText(s);
+                viewBinding.image.setImageResource((Integer) data[0]);
+                String D = data[2].toString();
+                viewBinding.image.setOnClickListener(view -> {
+                    switch (D) {
                         case "cd.json":
                         case "mp3_listHistory.json":
                         case "mp3_xz.json":
                         case "mp3_like.json":
                             Intent a = new Intent(getContext(), com.muqingbfq.fragment.mp3.class);
-                            a.putExtra("id", data);
+                            a.putExtra("id", D);
                             a.putExtra("name", s);
                             requireContext().startActivity(a);
                             break;
                         case "排行榜":
-                            gd.start(getActivity(), new String[]{data, s});
+                            gd.start(getActivity(), new String[]{D, s});
                             break;
                         case "API":
-                            EditViewDialog editViewDialog = new EditViewDialog(requireContext(), "更换接口API")
-                                    .setMessage("当前接口：\n" + main.api);
-                            editViewDialog.setPositive(view1 -> {
-                                String str = editViewDialog.getEditText();
-                                boolean http = str.startsWith("http");
-                                if (str.isEmpty() || !http) {
-                                    gj.ts(getContext(), "请输入正确的api");
-                                } else {
-                                    gj.ts(getContext(), "更换成功");
-                                    main.api = str;
-                                    FilePath.xrwb(FilePath.filesdri + "API.mq", main.api);
-                                    editViewDialog.dismiss();
-                                }
-                            }).show();
+                            DialogEditText dialogEditText = HomeSteer.getDialogEditText(requireContext(), () -> {
+
+                            }, () -> {
+
+                            });
+                            dialogEditText.show();
+//                            EditViewDialog editViewDialog = new EditViewDialog(requireContext(), "更换接口API")
+//                                    .setMessage("当前接口：\n" + main.api);
+//                            editViewDialog.setPositive(view1 -> {
+//                                String str = editViewDialog.getEditText();
+//                                boolean http = str.startsWith("http");
+//                                if (str.isEmpty() || !http) {
+//                                    gj.ts(getContext(), "请输入正确的api");
+//                                } else {
+//                                    gj.ts(getContext(), "更换成功");
+//                                    main.api = str;
+//                                    FilePath.xrwb(FilePath.filesdri + "API.mq", main.api);
+//                                    editViewDialog.dismiss();
+//                                }
+//                            }).show();
                             break;
                         case "gd":
                             EditViewDialog editViewDialog1 = new EditViewDialog(requireContext(),
@@ -127,13 +140,17 @@ public class wode extends Fragment<FragmentWdBinding> {
                                 Matcher matcher = pattern.matcher(str);
                                 if (matcher.find())
                                     str = matcher.group();
-                                if (!str.isEmpty()) {
-                                    // 使用截取方法获取歌单 ID
-                                    str = str.substring(str.indexOf("id=") + 3, str.indexOf("&"));
+                                if (str.isEmpty()) {
+                                    editViewDialog1.editText.requestFocus();
+//                                    editViewDialog1.editText.setFocusable(true);
+                                    view1.setEnabled(true);
+                                    return;
                                 }
+                                // 使用截取方法获取歌单 ID
+                                str = str.substring(str.indexOf("id=") + 3, str.indexOf("&"));
                                 String finalStr = str;
                                 gj.ts(getContext(), "导入中");
-                                new AdapterGd.baocun(finalStr){
+                                new AdapterGd.baocun(finalStr) {
                                     @Override
                                     public void Yes() {
                                         requireActivity().runOnUiThread(() -> {
@@ -147,11 +164,6 @@ public class wode extends Fragment<FragmentWdBinding> {
                     }
                 });
             }
-
-            @Override
-            public int getItemCount() {
-                return lista.length;
-            }
         });
 
         binding.recyclerview2.setNestedScrollingEnabled(false);
@@ -159,7 +171,9 @@ public class wode extends Fragment<FragmentWdBinding> {
         load = new Load(this);
         LoadPlaylists();
         new threadLogin().start();
+
     }
+
 
     public static Load load;
     ActivityResultLauncher<Intent> dlintent = registerForActivityResult(
@@ -202,17 +216,6 @@ public class wode extends Fragment<FragmentWdBinding> {
     }
 
 
-    private static class VH extends RecyclerView.ViewHolder {
-        public ImageView imageView;
-        public TextView textView;
-
-        public VH(@NonNull View itemView) {
-            super(itemView);
-            imageView = itemView.findViewById(R.id.image);
-            textView = itemView.findViewById(R.id.text1);
-        }
-    }
-
     //登陆 获取用户信息 头像 昵称 签名
     class threadLogin extends Thread {
 
@@ -230,6 +233,10 @@ public class wode extends Fragment<FragmentWdBinding> {
                         requireActivity().runOnUiThread(() -> {
                             binding.text1.setText(nickname);
                             binding.text2.setText(signature);
+                            FragmentActivity activity = getActivity();
+                            if (activity == null || !isAdded()) {
+                                return;
+                            }
                             Glide.with(requireContext())
                                     .load(avatarUrl)
                                     .error(R.drawable.ic_launcher_foreground)
@@ -259,15 +266,18 @@ public class wode extends Fragment<FragmentWdBinding> {
     }
 
 
-    public static class Load{
+    public static class Load {
         private final wode wode;
+
         public Load(wode wode) {
             this.wode = wode;
         }
-        public void run(){
+
+        public void run() {
             wode.LoadPlaylists();
         }
     }
+
     public void LoadPlaylists() {
         File file = new File(FilePath.gd_xz);
         if (file.exists()) {
@@ -281,7 +291,7 @@ public class wode extends Fragment<FragmentWdBinding> {
                 binding.recyclerview2.setAdapter(adapterGdH);
                 binding.recyclerview2Text.setVisibility(adapterGdH.list.isEmpty() ? View.VISIBLE : View.GONE);
             });
-        }else{
+        } else {
             requireActivity().runOnUiThread(() -> binding.recyclerview2Text.setVisibility(View.VISIBLE));
         }
     }

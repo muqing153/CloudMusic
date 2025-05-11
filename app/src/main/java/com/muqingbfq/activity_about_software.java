@@ -54,10 +54,10 @@ public class activity_about_software extends AppCompatActivity<ActivityAboutSoft
         } catch (PackageManager.NameNotFoundException e) {
             yc.start(this, e);
         }
-        setSupportActionBar(findViewById(R.id.toolbar));
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        findViewById(R.id.button1).setOnClickListener(view -> {
-        });
+        setBackToolsBar(binding.toolbar);
+//        setSupportActionBar(binding.toolbar);
+        binding.collapsingToolbar.setTitle("关于软件");
+//        getSupportActionBar().setDisplayShowTitleEnabled(false);
         TextView viewById = findViewById(R.id.text1);
         AssetManager assets = getAssets();
         try {

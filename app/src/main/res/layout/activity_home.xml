@@ -14,7 +14,8 @@
 
         <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:fitsSystemWindows="true">
 
             <com.google.android.material.search.SearchBar
                 android:id="@+id/toolbar"
@@ -31,91 +32,6 @@
             android:layout_height="match_parent"
             android:clipToPadding="false"
             app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />
-
-        <com.google.android.material.search.SearchView
-            android:id="@+id/searchview"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:hint="@string/search"
-            app:layout_anchor="@id/toolbar">
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/search_recycler"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
-                <LinearLayout
-                    android:id="@+id/xxbj1"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_margin="13dp"
-                    android:orientation="vertical">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        tools:ignore="UseCompoundDrawables">
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="@string/lishijilu"
-                            android:textColor="@color/text"
-                            android:textSize="26sp" />
-
-                        <ImageView
-                            android:id="@+id/deleat"
-                            android:layout_width="36dp"
-                            android:layout_height="36dp"
-                            android:layout_marginEnd="10dp"
-                            android:background="?selectableItemBackgroundBorderless"
-                            android:contentDescription="@string/deleat"
-                            android:src="@drawable/delete"
-                            app:tint="@color/text" />
-                    </LinearLayout>
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/list_recycler"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent" />
-                </LinearLayout>
-                <LinearLayout
-                    android:id="@+id/search_fragment"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
-
-                    <com.google.android.material.tabs.TabLayout
-                        android:id="@+id/search_tablayout"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="#0000FFFF">
-
-                        <com.google.android.material.tabs.TabItem
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="歌曲"
-                            tools:ignore="HardcodedText" />
-
-                        <com.google.android.material.tabs.TabItem
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="歌单"
-                            tools:ignore="HardcodedText" />
-                    </com.google.android.material.tabs.TabLayout>
-
-                    <androidx.viewpager2.widget.ViewPager2
-                        android:id="@+id/search_viewPager"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent" />
-                </LinearLayout>
-            </RelativeLayout>
-        </com.google.android.material.search.SearchView>
 
         <LinearLayout
             android:id="@+id/linearLayout4"
@@ -138,7 +54,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                app:menu="@menu/bottom_gd"/>
+                app:menu="@menu/bottom_gd" />
 
         </LinearLayout>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

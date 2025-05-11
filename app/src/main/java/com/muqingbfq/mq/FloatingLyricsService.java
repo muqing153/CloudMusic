@@ -41,7 +41,6 @@ public class FloatingLyricsService extends Service {
                 return;
             }
             if (PlaybackService.mediaSession.getPlayer().isPlaying()) {
-
                 if (LyricViewX.lyricEntryList.isEmpty()) {
                     binding.lrcView.setText("暂无歌词");
                     binding.lrcViewMessage.setText("");

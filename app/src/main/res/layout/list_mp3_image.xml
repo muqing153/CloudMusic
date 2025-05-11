@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     app:cardElevation="0dp"
+    app:cardBackgroundColor="?attr/colorSurface"
     app:cardUseCompatPadding="true">
 
     <LinearLayout
@@ -17,7 +18,7 @@
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/linstart"
-            style="@style/Widget.Material3.CardView.Elevated"
+            style="@style/Widget.Material3.CardView.Filled"
             android:layout_width="56dp"
             android:layout_height="56dp"
             app:cardElevation="0dp">
@@ -65,19 +66,20 @@
 
             <TextView
                 android:id="@+id/wb1"
-                android:layout_width="match_parent"
+                style="@style/TextAppearance.Material3.BodyLarge"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:text="@string/name"
-                android:textColor="@color/text"
-                android:textSize="16sp" />
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:text="@string/name"/>
 
             <TextView
                 android:id="@+id/zz"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/zz"
-                android:textColor="@color/text" />
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:text="@string/zz"/>
         </LinearLayout>
     </LinearLayout>
 

@@ -33,10 +33,10 @@ import com.dirror.lyricviewx.LyricViewX;
 import com.google.android.material.slider.Slider;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.muqing.Fragment;
 import com.muqingbfq.databinding.ActivitySzBinding;
 import com.muqingbfq.databinding.ActivitySzSetlrcBinding;
 import com.muqingbfq.mq.FloatingLyricsService;
-import com.muqingbfq.mq.Fragment;
 import com.muqingbfq.mq.FilePath;
 
 import java.io.File;
@@ -53,12 +53,6 @@ public class sz extends AppCompatActivity<ActivitySzBinding> {
     protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         setContentView();
-        ViewCompat.setOnApplyWindowInsetsListener(binding.getRoot(), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-//            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
         setSupportActionBar(binding.toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         setTitle(getString(R.string.sz));
@@ -151,7 +145,7 @@ public class sz extends AppCompatActivity<ActivitySzBinding> {
         };
 
         @Override
-        protected ActivitySzSetlrcBinding inflateViewBinding(LayoutInflater inflater, ViewGroup container) {
+        protected ActivitySzSetlrcBinding getViewBindingObject(@NonNull LayoutInflater inflater, @Nullable ViewGroup container) {
             return ActivitySzSetlrcBinding.inflate(inflater, container, false);
         }
 
@@ -198,13 +192,13 @@ public class sz extends AppCompatActivity<ActivitySzBinding> {
                         Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getContext().getPackageName()));
                         LyricsService.launch(intent);
                     } else {
-                        getContext().startService(new Intent(getContext(), FloatingLyricsService.class));
+//                        main.application.startService(new Intent(main.application, FloatingLyricsService.class));
                     }
                 } else {
                     if (setup != null) {
                         setup.i = 0;
                     }
-                    main.application.stopService(new Intent(main.application, FloatingLyricsService.class));
+//                    main.application.stopService(new Intent(main.application, FloatingLyricsService.class));
                 }
                 FloatingLyricsService.baocun();
             });

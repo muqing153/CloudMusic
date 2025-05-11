@@ -24,6 +24,7 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -45,7 +46,6 @@ import com.muqingbfq.R;
 import com.muqingbfq.adapter.AdapterMp3;
 import com.muqingbfq.api.playlist;
 import com.muqingbfq.databinding.ActivityMp3Binding;
-import com.muqingbfq.main;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,8 +74,14 @@ public class mp3 extends AppCompatActivity<ActivityMp3Binding> {
         context.startActivity(intent);
     }
 
+
     @Override
     public void setOnApplyWindowInsetsListener(Insets systemBars, View v) {
+        v.setPadding(systemBars.left, 0, systemBars.right, systemBars.bottom);
+//            binding.toolbar.setPadding(0, systemBars.top, 0, 0);
+        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) binding.toolbar.getLayoutParams();
+        params.setMargins(0, systemBars.top, 0, 0);  // 参数分别是 left, top, right, bottom
+        binding.toolbar.setLayoutParams(params);
         v.setPadding(systemBars.left, 0, systemBars.right, systemBars.bottom);
     }
 
@@ -90,43 +96,35 @@ public class mp3 extends AppCompatActivity<ActivityMp3Binding> {
         TypedValue typedValue = new TypedValue();
         getTheme().resolveAttribute(android.R.attr.windowBackground, typedValue, true);
         ; // 获取当前主题的背景颜色
-        if (drawable != null) {
 // 4. 设置到 ImageView 上
-            ImageView imageView = findViewById(R.id.toolbarimage);
-            Glide.with(this)
-                    .load(drawable)
-                    .apply(RequestOptions.bitmapTransform(new BlurTransformation(26, 3)))
-                    .addListener(new RequestListener<Drawable>() {
-                        @Override
-                        public boolean onLoadFailed(@Nullable GlideException e, @Nullable Object model, @NonNull Target<Drawable> target, boolean isFirstResource) {
-                            return false;
-                        }
-
-                        @Override
-                        public boolean onResourceReady(@NonNull Drawable resource, @NonNull Object model, Target<Drawable> target, @NonNull DataSource dataSource, boolean isFirstResource) {
-
-                            // 使用 Glide 加载图片并应用高斯模糊效果
-// 1. 创建渐变遮罩层（从底部白色渐变到顶部透明）
-                            GradientDrawable gradient = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP,
-                                    new int[]{typedValue.data, Color.TRANSPARENT});
-                            gradient.setShape(GradientDrawable.RECTANGLE);
-// 3. 使用 LayerDrawable 来组合模糊图像和渐变效果
-                            LayerDrawable layerDrawable = new LayerDrawable(new Drawable[]{resource, gradient});
-                            imageView.setImageDrawable(layerDrawable);
-                            return true;
-                        }
-                    })
-                    .into(imageView);
+        ImageView imageView = findViewById(R.id.toolbarimage);
+        if (drawable == null) {
+            drawable = ContextCompat.getDrawable(this, R.mipmap.ic_launcher_background);
         }
-        ViewCompat.setOnApplyWindowInsetsListener(binding.getRoot(), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, 0, systemBars.right, systemBars.bottom);
-//            binding.toolbar.setPadding(0, systemBars.top, 0, 0);
-            FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) binding.toolbar.getLayoutParams();
-            params.setMargins(0, systemBars.top, 0, 0);  // 参数分别是 left, top, right, bottom
-            binding.toolbar.setLayoutParams(params);
-            return insets;
-        });
+        Glide.with(this)
+                .load(drawable)
+                .apply(RequestOptions.bitmapTransform(new BlurTransformation(26, 3)))
+                .addListener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, @Nullable Object model, @NonNull Target<Drawable> target, boolean isFirstResource) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(@NonNull Drawable resource, @NonNull Object model, Target<Drawable> target, @NonNull DataSource dataSource, boolean isFirstResource) {
+
+                        // 使用 Glide 加载图片并应用高斯模糊效果
+// 1. 创建渐变遮罩层（从底部白色渐变到顶部透明）
+                        GradientDrawable gradient = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP,
+                                new int[]{typedValue.data, Color.TRANSPARENT});
+                        gradient.setShape(GradientDrawable.RECTANGLE);
+// 3. 使用 LayerDrawable 来组合模糊图像和渐变效果
+                        LayerDrawable layerDrawable = new LayerDrawable(new Drawable[]{resource, gradient});
+                        imageView.setImageDrawable(layerDrawable);
+                        return true;
+                    }
+                })
+                .into(imageView);
         Intent intent = getIntent();
         binding.title.setText(intent.getStringExtra("name"));
         String id = intent.getStringExtra("id");
@@ -174,7 +172,7 @@ public class mp3 extends AppCompatActivity<ActivityMp3Binding> {
         });
         binding.playButton.setOnClickListener(v -> {
             v.setEnabled(false);
-            if (PlaybackService.mediaSession == null) {
+            if (PlaybackService.mediaSession == null || list.isEmpty()) {
                 return;
             }
             Player player = PlaybackService.mediaSession.getPlayer();
@@ -275,7 +273,7 @@ public class mp3 extends AppCompatActivity<ActivityMp3Binding> {
                     playlist.hq_like(list);
                     break;
                 case "cd.json":
-                    playlist.hq_cd(mp3.this, list);
+//                    playlist.hq_cd(mp3.this, list);
                     break;
                 case "mp3_listHistory.json":
                     playlist.hq_listHistory(list);
@@ -285,7 +283,7 @@ public class mp3 extends AppCompatActivity<ActivityMp3Binding> {
                     break;
             }
             list_ys = list;
-            main.handler.post(() -> {
+            runOnUiThread(() -> {
                 Objects.requireNonNull(binding.lb.getAdapter()).notifyDataSetChanged();
                 binding.recyclerview1Bar.setVisibility(View.GONE);
                 if (list.isEmpty()) {
@@ -296,10 +294,6 @@ public class mp3 extends AppCompatActivity<ActivityMp3Binding> {
                 }
             });
         }
-    }
-
-    public static void startactivity(Context context, String id) {
-        context.startActivity(new Intent(context, mp3.class).putExtra("id", id));
     }
 
     @Override

@@ -3,7 +3,6 @@ package com.muqingbfq.activity;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -14,6 +13,8 @@ import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.DisplayMetrics;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
@@ -21,7 +22,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.view.animation.DecelerateInterpolator;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -56,8 +56,8 @@ import java.util.Objects;
 
 public class Music extends AppCompatActivity<ActivityMusicBinding> implements GestureDetector.OnGestureListener {
 
+    Handler handler = new Handler(Looper.getMainLooper());
     private final Player player = PlaybackService.mediaSession.getPlayer();
-    private int TdtHeight = 15;
     public static Bitmap backgroundbitmap = null;
 
     public static void startActivity(Context context, MP3 mp3) {
@@ -124,11 +124,8 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
                 gj.ts(v.getContext(), "已经是第一首了");
             }
         });
-        player.addListener(Listener);
-        if (PlaybackService.mediaSession != null) {
-            updateUI(player);
-        }
-        binding.tdt.post(() -> TdtHeight = binding.tdt.getHeight());
+        binding.tdt.post(() -> {
+        });
         binding.tdt.addOnSliderTouchListener(new Slider.OnSliderTouchListener() {
             @Override
             public void onStartTrackingTouch(@NonNull Slider slider) {
@@ -155,43 +152,6 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
                 binding.timeB.setText(time);
             }
         });
-//        binding.tdt.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-//            @Override
-//            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-//                long actualPosition = (progress * player.getDuration()) / 100;
-//                String time = bfq_an.getTime(actualPosition);
-//                binding.timeB.setText(time);
-//            }
-//
-//            @Override
-//            public void onStartTrackingTouch(SeekBar seekBar) {
-//                // 获取 View 当前的高度;
-//                // 创建一个 ValueAnimator，从当前高度逐渐增加到目标高度
-//
-//
-//                // 开始动画
-//                animator.start();
-//                isDrag = true;
-//            }
-//
-//            @Override
-//            public void onStopTrackingTouch(SeekBar seekBar) {
-//                isDrag = false;
-//                int progress = seekBar.getProgress();
-//                if (progress >= 100) {
-//                    player.seekToNextMediaItem();
-//                } else {
-//
-//                    long actualPosition = (progress * player.getDuration()) / 100;
-//                    player.seekTo(actualPosition);
-//                }
-//
-//
-//
-//                // 开始动画
-//                animator.start();
-//            }
-//        });
         binding.back.setOnClickListener(v -> finish());
 
         binding.fragmentBfq.setOnClickListener(v -> {
@@ -276,6 +236,8 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
 
     //是否拖动
     private boolean isDrag = false;
+
+    private String lrc;
     Runnable runnable = new Runnable() {
         @Override
         public void run() {
@@ -296,6 +258,13 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
                     binding.lrcView.updateTime(currentPosition, true);
                     binding.timeA.setText(bfq_an.getTime(duration));
                     binding.timeB.setText(bfq_an.getTime(currentPosition));
+                }
+                if (!Objects.equals(lrc, PlaybackService.lrc)) {
+                    lrc = PlaybackService.lrc;
+                    String[] strings = Media.loadLyric(PlaybackService.lrc);
+                    if (strings != null) {
+                        binding.lrcView.loadLyric(strings[0], strings[1]);
+                    }
                 }
             }
             // 计划下一次更新
@@ -342,13 +311,6 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
                 switch (playbackState) {
                     case Player.STATE_READY:
                         if (player.getPlayWhenReady()) {
-                            String[] strings = Media.loadLyric(PlaybackService.lrc);
-                            if (strings != null) {
-                                binding.lrcView.loadLyric(strings[0], strings[1]);
-                            }
-                            if (!binding.tdt.isEnabled()) {
-                                binding.tdt.setEnabled(true);
-                            }
                             gj.sc("播放开始");
                         }
                         break;
@@ -361,7 +323,6 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
                 }
             }
             updateUI(player);
-
         }
     };
 
@@ -373,14 +334,18 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
     @Override
     protected void onResume() {
         super.onResume();
-        main.handler.post(runnable);
+        handler.post(runnable);
+        player.addListener(Listener);
+        updateUI(player);
+
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         // 取消所有未完成的任务
-        main.handler.removeCallbacks(runnable);
+        handler.removeCallbacks(runnable);
+        player.removeListener(Listener);
     }
 
 
@@ -493,15 +458,7 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
         binding.timeA.setTextColor(color);
         binding.timeB.setTextColor(color);
         binding.tdt.setTrackActiveTintList(colorStateList);
-//        binding.tdt.th(R.drawable.bf);
         binding.tdt.setThumbTintList(colorStateList);
-//        Drawable progressDrawable = binding.tdt.getProgressDrawable();
-//        LayerDrawable layerDrawable = (LayerDrawable) progressDrawable;
-//        Drawable progress = layerDrawable.findDrawableByLayerId(android.R.id.progress);
-//        progress.setColorFilter(color, PorterDuff.Mode.SRC_IN);
-//// 设置进度条背景的颜色
-//        Drawable background = layerDrawable.findDrawableByLayerId(android.R.id.background);
-//        background.setColorFilter(Color.GRAY, PorterDuff.Mode.SRC_IN);
     }
 
     /**

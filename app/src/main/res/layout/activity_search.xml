@@ -4,48 +4,60 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activity_search">
-
-    <com.google.android.material.search.SearchView
-        android:id="@+id/searchview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:hint="@string/search"
-        app:layout_anchor="@id/toolbar">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/search_recycler"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
-    </com.google.android.material.search.SearchView>
+    tools:context=".activity.activity_search">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/barlayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <com.google.android.material.search.SearchBar
-            android:id="@+id/toolbar"
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.Material3.CardView.Filled"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/search"
-            app:defaultMarginsEnabled="true"
-            app:hideNavigationIcon="false"
-            app:layout_scrollFlags="exitUntilCollapsed"
-            app:navigationIcon="@drawable/end" />
-    </com.google.android.material.appbar.AppBarLayout>
+            android:layout_margin="1dp"
+            app:cardCornerRadius="36dp"
+            app:cardElevation="0dp"
+            app:cardUseCompatPadding="true"
+            app:strokeWidth="0dp">
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:gravity="center_vertical"
+                android:transitionName="edit">
+
+                <ImageView
+                    android:id="@+id/end_bar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="9dp"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:src="@drawable/end" />
+
+                <EditText
+                    android:id="@+id/edit"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginVertical="9dp"
+                    android:layout_marginStart="9dp"
+                    android:layout_marginEnd="9dp"
+                    android:background="@android:color/transparent" />
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+    </com.google.android.material.appbar.AppBarLayout>
     <RelativeLayout
+        android:id="@+id/relative"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginHorizontal="16dp"
         android:layout_weight="1"
-        android:transitionName="edit"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
-
         <LinearLayout
-            android:id="@+id/xxbj1"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
@@ -57,39 +69,52 @@
                 tools:ignore="UseCompoundDrawables">
 
                 <TextView
+                    style="@style/TextAppearance.Material3.BodyLarge"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/lishijilu"
-                    android:textColor="@color/text"
-                    android:textSize="26sp" />
+                    android:text="@string/lishijilu" />
 
                 <ImageView
                     android:id="@+id/deleat"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
                     android:layout_marginEnd="10dp"
                     android:background="?selectableItemBackgroundBorderless"
                     android:contentDescription="@string/deleat"
-                    android:src="@drawable/delete"
-                    app:tint="@color/text" />
+                    android:src="@drawable/delete" />
             </LinearLayout>
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/list_recycler"
+                android:id="@+id/lishi_list"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="wrap_content"
+                tools:itemCount="1" />
         </LinearLayout>
-
-        <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/search_fragment"
-            android:name="com.muqingbfq.fragment.search"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone"
-            tools:layout="@layout/fragment_search" />
     </RelativeLayout>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/search_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />
+    <LinearLayout
+        android:id="@+id/line3"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tablayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/viewpager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragment_db"
         android:name="com.muqingbfq.fragment.bfq_db"

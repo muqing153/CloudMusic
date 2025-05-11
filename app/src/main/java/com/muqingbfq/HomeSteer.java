@@ -15,7 +15,11 @@ import androidx.annotation.NonNull;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.muqing.gj;
 import com.muqingbfq.Dialog.DialogEditText;
+import com.muqingbfq.activity.activity_search;
 import com.muqingbfq.login.user_logs;
+import com.muqingbfq.mq.Action;
+import com.muqingbfq.mq.FilePath;
+import com.muqingbfq.mq.TaskAction;
 import com.muqingbfq.mq.wl;
 import com.muqingbfq.view.Edit;
 
@@ -81,8 +85,7 @@ public class HomeSteer {
         }
     }
 
-
-    String[] stringIp = new String[]{"https://ncm.nekogan.com", "https://api.csm.sayqz.com"};
+    public static final String[] stringIp = new String[]{"https://ncm.nekogan.com", "https://api.csm.sayqz.com"};
 
     /**
      * 设置IP地址
@@ -92,7 +95,7 @@ public class HomeSteer {
         main.api = nickname.getString("IP", "");
         if (TextUtils.isEmpty(main.api)) {
 
-            DialogEditText dialogEditText = getDialogEditText(nickname);
+            DialogEditText dialogEditText = getDialogEditText(home, () -> home.finish(), this::One);
             dialogEditText.binding.edittext.addTextChangedListener(new Edit.TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence var1, int var2, int var3, int var4) {
@@ -117,19 +120,33 @@ public class HomeSteer {
     }
 
     @NonNull
-    private DialogEditText getDialogEditText(SharedPreferences nickname) {
-        DialogEditText dialogEditText = new DialogEditText(home, stringIp);
-        dialogEditText.setTitle("IP");
-        dialogEditText.setMessage("请输入部署了NeteaseCloudMusicApi的服务器地址");
+    public static DialogEditText getDialogEditText(Context context, Action f,Action p) {
+        DialogEditText dialogEditText = new DialogEditText(context, stringIp);
+        if (main.api.isEmpty()) {
+            dialogEditText.setTitle("Api");
+            dialogEditText.setMessage("请输入部署了NeteaseCloudMusicApi的服务器地址");
+        }else{
+            dialogEditText.setTitle("更换Api");
+            dialogEditText.setMessage("当前接口：\n" + main.api);
+        }
         dialogEditText.setPositiveButton((view) -> {
-            main.api = dialogEditText.binding.edittext.getText().toString();
-            nickname.edit().putString("IP", main.api).apply();
-            One();
-            dialogEditText.alertDialog.dismiss();
-
+            String str = dialogEditText.binding.edittext.getText().toString();
+            boolean http = str.startsWith("http");
+            if (str.isEmpty() || !http) {
+                gj.ts(context, "请输入正确的api");
+            } else {
+                gj.ts(context, "更换成功");
+                main.api = str;
+                SharedPreferences sp = context.getSharedPreferences("Set_up", Context.MODE_PRIVATE);
+                sp.edit().putString("IP", main.api).apply();
+                dialogEditText.alertDialog.dismiss();
+                p.execute();
+            }
+//            main.api = dialogEditText.binding.edittext.getText().toString();
+//            dialogEditText.alertDialog.dismiss();
         });
         dialogEditText.binding.Yes.isEnabled();
-        dialogEditText.setNegativeButton((view) -> home.finish());
+        dialogEditText.setNegativeButton((view) -> f.execute());
         return dialogEditText;
     }
 }

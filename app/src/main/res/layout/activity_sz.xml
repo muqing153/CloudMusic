@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
     android:orientation="vertical"
     tools:context=".sz">
 
@@ -34,30 +33,31 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
                     android:layout_marginBottom="6dp"
-                    android:text="主题"/>
+                    android:text="主题" />
 
                 <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/switch_a1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:checked="true"
-                    android:textSize="20sp"
-                    android:text="跟随系统模式来选择" />
+                    android:text="跟随系统模式来选择"
+                    android:textSize="20sp" />
 
                 <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/switch_a2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="20sp"
-                    android:text="深色模式" />
+                    android:text="深色模式"
+                    android:textSize="20sp" />
 
             </LinearLayout>
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
                 android:layout_marginBottom="6dp"
-                android:text="歌词"/>
+                android:text="歌词" />
 
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/fragment_setlrc"

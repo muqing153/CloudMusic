@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.muqing.Fragment;
 import com.muqing.gj;
 import com.muqingbfq.MP3;
 import com.muqingbfq.PlaybackService;
@@ -20,7 +21,6 @@ import com.muqingbfq.adapter.AdapterMp3;
 import com.muqingbfq.api.resource;
 import com.muqingbfq.databinding.FragmentGdBinding;
 import com.muqingbfq.main;
-import com.muqingbfq.mq.Fragment;
 import com.muqingbfq.mq.FilePath;
 import com.muqingbfq.mq.wl;
 
@@ -30,10 +30,6 @@ import org.json.JSONObject;
 public class gd_adapter extends Fragment<FragmentGdBinding> {
     AdapterMp3 adapterMp3;
 
-    @Override
-    protected FragmentGdBinding inflateViewBinding(LayoutInflater inflater, ViewGroup container) {
-        return FragmentGdBinding.inflate(inflater, container, false);
-    }
 
     AdapterGd adapterGd;
 
@@ -126,22 +122,27 @@ public class gd_adapter extends Fragment<FragmentGdBinding> {
     @Override
     public void onResume() {
         super.onResume();
-//        if (adapterMp3 != null && PlaybackService.mediaSession != null) {
-//            PlaybackService.mediaSession.getPlayer().addListener(adapterMp3.playerListener);
-//            adapterMp3.notifyDataSetChanged();
-//            gj.sc("Fragment 可见");
-//        } else {
-//            gj.sc("mediaSession==null");
-//        }
+        if (adapterMp3 != null && PlaybackService.mediaSession != null) {
+            PlaybackService.mediaSession.getPlayer().addListener(adapterMp3.playerListener);
+            adapterMp3.notifyDataSetChanged();
+            gj.sc("Fragment 可见");
+        } else {
+            gj.sc("mediaSession==null");
+        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-//        if (PlaybackService.mediaSession != null) {
-//            PlaybackService.mediaSession.getPlayer().removeListener(adapterMp3.playerListener);
-//            gj.sc("Fragment 不可见");
-//        }
+        if (PlaybackService.mediaSession != null) {
+            PlaybackService.mediaSession.getPlayer().removeListener(adapterMp3.playerListener);
+            gj.sc("Fragment 不可见");
+        }
+    }
+
+    @Override
+    protected FragmentGdBinding getViewBindingObject(@NonNull LayoutInflater inflater, @Nullable ViewGroup container) {
+        return FragmentGdBinding.inflate(inflater, container, false);
     }
 
     @Override

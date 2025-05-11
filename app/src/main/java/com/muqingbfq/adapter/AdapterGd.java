@@ -162,6 +162,7 @@ public class AdapterGd extends RecyclerView.Adapter<VH<ListGdBinding>> {
                         }
                         try {
                             xms.removeIf(xm1 -> xm1.id.equals(xm.id));
+                            FilePath.sc(FilePath.gd + xm.id);
                             FilePath.xrwb(FilePath.gd_xz, gson.toJson(xms));
                             wode.load.run();
                         } catch (Exception e) {
@@ -198,7 +199,9 @@ public class AdapterGd extends RecyclerView.Adapter<VH<ListGdBinding>> {
                     xms.add(0, playlistContent);
                     FilePath.xrwb(FilePath.gd_xz, gson.toJson(xms));
                     FilePath.xrwb(FilePath.gd + Id, gethq);
-                    wode.load.run();
+                    if (wode.load != null) {
+                        wode.load.run();
+                    }
                     Yes();
                 } catch (JSONException e) {
                     throw new RuntimeException(e);

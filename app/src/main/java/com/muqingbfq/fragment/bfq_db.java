@@ -15,19 +15,19 @@ import androidx.media3.common.MediaMetadata;
 import androidx.media3.common.Player;
 import androidx.media3.common.util.Util;
 
+import com.muqing.Fragment;
+import com.muqing.gj;
 import com.muqingbfq.PlaybackService;
 import com.muqingbfq.R;
 import com.muqingbfq.activity.Music;
 import com.muqingbfq.databinding.FragmentBfqDbBinding;
-import com.muqingbfq.main;
-import com.muqingbfq.mq.Fragment;
 
 public class bfq_db extends Fragment<FragmentBfqDbBinding> implements GestureDetector.OnGestureListener {
     private GestureDetector gestureDetector;
 
 
     @Override
-    protected FragmentBfqDbBinding inflateViewBinding(LayoutInflater inflater, ViewGroup container) {
+    protected FragmentBfqDbBinding getViewBindingObject(@NonNull LayoutInflater inflater, @Nullable ViewGroup container) {
         return FragmentBfqDbBinding.inflate(inflater, container, false);
     }
 
@@ -43,6 +43,7 @@ public class bfq_db extends Fragment<FragmentBfqDbBinding> implements GestureDet
             }
         });
         binding.getRoot().setOnTouchListener((view, motionEvent) -> {
+            gj.sc("手势");
             gestureDetector.onTouchEvent(motionEvent);
             if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
                 binding.linearLayout.setTranslationX(0);
@@ -129,12 +130,12 @@ public class bfq_db extends Fragment<FragmentBfqDbBinding> implements GestureDet
         }
         if (player.getCurrentMediaItemIndex() == 0) {
             //如果没有上一曲
-            if (v < 0) {
+            if (binding.linearLayout.getTranslationX() - v >= 0) {
                 v = 0;
             }
-        }else if (player.getCurrentMediaItemIndex() == player.getMediaItemCount() - 1) {
+        } else if (player.getCurrentMediaItemIndex() == player.getMediaItemCount() - 1) {
             //如果没有下一曲
-            if (v > 0) {
+            if (binding.linearLayout.getTranslationX() - v <= 0) {
                 v = 0;
             }
         }

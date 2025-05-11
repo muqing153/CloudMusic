@@ -2,13 +2,16 @@
     <!-- Base application theme. -->
     <style name="Theme.muqing" parent="Theme.Material3.Light.NoActionBar">
         <item name="android:windowLightStatusBar">true</item>
-        <!--使用动画-->
         <item name="android:windowContentTransitions">true</item>
+        <!-- enable window content transitions -->
+        <item name="android:windowActivityTransitions">true</item>
         <!-- 添加主题属性以启用沉浸式状态栏 -->
+        <!--         设置沉浸式状态栏 -->
+        <item name="android:statusBarColor">?android:attr/colorBackground</item>
+        <!--         设置沉浸式导航栏 -->
+        <item name="android:navigationBarColor">?android:attr/colorBackground</item>
         <!--        <item name="android:windowTranslucentStatus">true</item>-->
         <!--        <item name="android:windowTranslucentNavigation">true</item>-->
-
-
         <item name="colorPrimary">@color/md_theme_primary</item>
         <item name="colorOnPrimary">@color/md_theme_onPrimary</item>
         <item name="colorPrimaryContainer">@color/md_theme_primaryContainer</item>
@@ -57,13 +60,12 @@
         <item name="colorSurfaceContainerHighest">@color/md_theme_surfaceContainerHighest</item>
     </style>
 
-    <style name="Theme.start" parent="Theme.Material3.Light.NoActionBar">
-        <item name="android:windowIsTranslucent">false</item>
-        <item name="android:statusBarColor">@color/white</item>
-        <item name="android:windowBackground">@color/white</item>
-    </style>
-
-
+<!--    <style name="Theme.start" parent="Theme.Material3.Light.NoActionBar">-->
+<!--        <item name="android:windowIsTranslucent">false</item>-->
+<!--        <item name="android:statusBarColor">@color/white</item>-->
+<!--        <item name="android:windowBackground">@color/white</item>-->
+<!--    </style>-->
+<!--    -->
     <style name="fragment_dialog" parent="Theme.muqing">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>
@@ -75,8 +77,5 @@
         <item name="android:backgroundDimEnabled">true</item>
     </style>
 
-    <style name="CustomSliderStyle" parent="Widget.Material3.Slider">
-<!--        <item name="thumbTrackGapSize">@color/md_theme_primary</item>-->
-    </style>
 
 </resources>

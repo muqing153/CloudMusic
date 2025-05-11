@@ -101,7 +101,6 @@
             android:layout_height="wrap_content"
             android:valueTo="100.0"
             android:value="50.0"
-            android:enabled="false"
             app:trackColorInactive="#4DF2ECF6"
             app:labelBehavior="gone"
             app:thumbHeight="21dp"

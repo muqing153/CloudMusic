@@ -1,6 +1,7 @@
 package com.muqingbfq;
 
 import android.app.Application;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
@@ -33,17 +34,9 @@ public class main extends Application {
         if (FilePath.filesdri == null) {
             new FilePath(this);
         }
-        File file = new File(FilePath.filesdri + "API.mq");
-        if (file.exists() && file.isFile()) {
-            String dqwb = FilePath.dqwb(file.toString());
-            if (!TextUtils.isEmpty(dqwb) && dqwb.startsWith("http")) {
-                api = dqwb;
-            } else {
-                file.delete();
-            }
-        } else {
-            FilePath.xrwb(file.toString(), main.api);
-        }
+
+        SharedPreferences nickname = getSharedPreferences("Set_up", Context.MODE_PRIVATE);
+        main.api = nickname.getString("IP", "");
         application = this;
         sp = getSharedPreferences("Set_up", MODE_PRIVATE);
         edit = sp.edit();
