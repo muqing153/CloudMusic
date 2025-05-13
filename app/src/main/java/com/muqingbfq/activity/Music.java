@@ -40,6 +40,7 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
+import com.dirror.lyricviewx.LyricViewX;
 import com.google.android.material.slider.Slider;
 import com.muqing.AppCompatActivity;
 import com.muqing.gj;
@@ -139,6 +140,7 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
                     player.seekToNextMediaItem();
                 } else {
                     long actualPosition = (long) ((progress * player.getDuration()) / 100);
+//                    binding.lrcView.updateTime(actualPosition, true);
                     player.seekTo(actualPosition);
                 }
                 isDrag = false;
@@ -175,7 +177,7 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
 
         binding.lrcView.setDraggable(true, time -> {
             player.seekTo(time);
-            return false;
+            return true;
         });
 
         binding.lrcView.setOnSingerClickListener(() -> switchViews(binding.lrcView, binding.cardview));
@@ -226,8 +228,13 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
 
         });
 
-        binding.download.setOnClickListener(v ->
-                new FileDownloader(Music.this).downloadFile(player.getCurrentMediaItem().localConfiguration.uri.toString(), player.getCurrentMediaItem()));
+        binding.download.setOnClickListener(v ->{
+            if (player.getCurrentMediaItem() == null || player.getCurrentMediaItem().localConfiguration == null) {
+                gj.ts(this, "当前没有播放歌曲");
+                return;
+            }
+            new FileDownloader(Music.this).downloadFile(player.getCurrentMediaItem().localConfiguration.uri.toString(), player.getCurrentMediaItem());
+        });
         SharedPreferences sharedPreferences = getSharedPreferences("Set_up", MODE_PRIVATE);
 
         setPlayMode(sharedPreferences.getInt("ms", 1));
@@ -236,9 +243,8 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
 
     //是否拖动
     private boolean isDrag = false;
-
     private String lrc;
-    Runnable runnable = new Runnable() {
+    public Runnable runnable = new Runnable() {
         @Override
         public void run() {
             if (!isDrag) {
@@ -255,7 +261,7 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
                     }
                     binding.tdt.setValue(progress);
 //                    binding.tdt.setMax(100);
-                    binding.lrcView.updateTime(currentPosition, true);
+                    binding.lrcView.updateTime(currentPosition, false);
                     binding.timeA.setText(bfq_an.getTime(duration));
                     binding.timeB.setText(bfq_an.getTime(currentPosition));
                 }
@@ -264,6 +270,7 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
                     String[] strings = Media.loadLyric(PlaybackService.lrc);
                     if (strings != null) {
                         binding.lrcView.loadLyric(strings[0], strings[1]);
+//                        binding.lrcView.loadLyric(LyricViewX.lyricEntryList);
                     }
                 }
             }
@@ -292,18 +299,18 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
             }
 
             // 监听下一曲事件
-            if (events.contains(Player.EVENT_MEDIA_ITEM_TRANSITION)) {
-                MediaItem currentMediaItem = player.getCurrentMediaItem();
-                if (currentMediaItem != null) {
-                    gj.sc("播放下一曲: ");
-                }
-            }
-
-            // 监听上一曲事件（通常通过手动调用控制播放器的skipToPrevious方法实现）
-            if (events.contains(Player.EVENT_MEDIA_ITEM_TRANSITION)) {
-                // 你的逻辑代码，处理上一曲
-                gj.sc("播放上一曲");
-            }
+//            if (events.contains(Player.EVENT_MEDIA_ITEM_TRANSITION)) {
+//                MediaItem currentMediaItem = player.getCurrentMediaItem();
+//                if (currentMediaItem != null) {
+//                    gj.sc("播放下一曲: ");
+//                }
+//            }
+//
+//            // 监听上一曲事件（通常通过手动调用控制播放器的skipToPrevious方法实现）
+//            if (events.contains(Player.EVENT_MEDIA_ITEM_TRANSITION)) {
+//                // 你的逻辑代码，处理上一曲
+//                gj.sc("播放上一曲");
+//            }
 
             if (events.contains(Player.EVENT_PLAYBACK_STATE_CHANGED)) {
                 int playbackState = player.getPlaybackState();
@@ -360,7 +367,11 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
             String artist = metadata.artist != null ? metadata.artist.toString() : "未知艺术家";
             binding.name.setText(title);
             binding.zz.setText(artist);
-            SetBackGround(metadata.artworkUri);
+            if (metadata.artworkUri != null) {
+                SetBackGround(metadata.artworkUri);
+            } else if (metadata.artworkData != null) {
+                SetBackGround(metadata.artworkData);
+            }
         }
         boolean islike = bfq_an.islike(Objects.requireNonNull(player.getCurrentMediaItem()).mediaId);
         if (islike) {
@@ -371,7 +382,7 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
     }
 
 
-    private void SetBackGround(Uri artworkUri) {
+    private void SetBackGround(Object artworkUri) {
         Glide.with(this)
                 .asBitmap()
                 .load(artworkUri)

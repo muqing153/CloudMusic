@@ -43,7 +43,7 @@ public class bfq_db extends Fragment<FragmentBfqDbBinding> implements GestureDet
             }
         });
         binding.getRoot().setOnTouchListener((view, motionEvent) -> {
-            gj.sc("手势");
+//            gj.sc("手势");
             gestureDetector.onTouchEvent(motionEvent);
             if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
                 binding.linearLayout.setTranslationX(0);

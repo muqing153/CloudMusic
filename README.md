@@ -1,6 +1,8 @@
 ## 简介
 一个对接网易云的音乐播放器
-
+### 依赖(必须重要)
+* [AndroidMuqing](https://github.com/muqing153/AndroidMuqing.git)
+* 这是作者每一个Android项目都会使用的工具模块
 ## 截图
 暂无
 ## 联系作者

@@ -155,18 +155,16 @@ public class AdapterMp3 extends RecyclerView.Adapter<VH<ListMp3ImageBinding>> im
             }
         }
 
-        if (Strings.isNullOrEmpty(x.picurl)) {
-            holder.binding.text1.setText(String.valueOf(position + 1));
-            holder.binding.imageView.setVisibility(ViewGroup.GONE);
-            holder.binding.linsum.setVisibility(View.VISIBLE);
-        } else {
-//            gj.sc(x.picurl+"?param=50y50");
-//            holder.binding.imageView.setVisibility(View.VISIBLE);
-//            holder.binding.linsum.setVisibility(View.GONE);
-            Glide.with(holder.itemView.getContext()).load(x.picurl + "?param=100y100")
+        if (x.picurl != null || x.picdata != null) {
+            Object object = x.picurl != null ? x.picurl + "?param=100y100" : x.picdata;
+            Glide.with(holder.itemView.getContext()).load(object)
                     .apply(new RequestOptions().placeholder(R.drawable.ic_launcher_foreground))
                     .error(R.drawable.ic_launcher_foreground)
                     .into(holder.binding.imageView);
+        } else {
+            holder.binding.text1.setText(String.valueOf(position + 1));
+            holder.binding.imageView.setVisibility(ViewGroup.GONE);
+            holder.binding.linsum.setVisibility(View.VISIBLE);
         }
 
         holder.itemView.setOnClickListener(view -> {

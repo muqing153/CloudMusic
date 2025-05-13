@@ -6,6 +6,7 @@
     android:orientation="vertical">
 
 
+
     <com.google.android.material.card.MaterialCardView
         style="@style/Widget.Material3.CardView.Elevated"
         android:layout_width="match_parent"
@@ -98,15 +99,14 @@
 
             </LinearLayout>
 
-            <com.google.android.material.materialswitch.MaterialSwitch
+            <com.muqing.ViewUI.SettingSwitch
                 android:id="@+id/switch_a3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="歌词开关"
-                android:textSize="20sp"
+                app:title="歌词开关"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/layout1"
-                tools:ignore="HardcodedText" />
+                app:layout_constraintTop_toBottomOf="@+id/layout1"/>
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
 

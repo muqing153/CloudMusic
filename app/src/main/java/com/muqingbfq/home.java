@@ -22,6 +22,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.muqing.AppCompatActivity;
 import com.muqing.Dialog.DialogEditText;
+import com.muqing.ViewUI.SettingSwitch;
 import com.muqing.gj;
 import com.muqingbfq.activity.activity_search;
 import com.muqingbfq.databinding.ActivityHomeBinding;
@@ -42,11 +43,7 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
     public static int ColorBackground = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-//        setTheme(R.style.Theme_muqing);
-        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
-
-//        new androidx.compose.material3.SliderKt(this);
         HomeSteer homeSteer = new HomeSteer(this, this::UI);
         SessionToken sessionToken =
                 new SessionToken(this, new ComponentName(this, PlaybackService.class));
@@ -68,7 +65,7 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
     public void setOnApplyWindowInsetsListener(Insets systemBars, View v) {
 //            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
         v.setPadding(systemBars.left, 0, systemBars.right, 0);
-        binding.chb.setPadding(0, systemBars.top, 0, systemBars.bottom);
+//        binding.chb.setPadding(0, systemBars.top, 0, systemBars.bottom);
 //        binding.toolbar.set
     }
 
@@ -107,10 +104,12 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
         });
         binding.viewPager.setCurrentItem(0, false);
         if (!gj.isTablet(this)) {
-            binding.linearLayout4.post(() -> {
-                int height = binding.linearLayout4.getHeight();
-                binding.viewPager.setPadding(0, 0, 0, height);
-            });
+            if (binding.linearLayout4 != null) {
+                binding.linearLayout4.post(() -> {
+                    int height = binding.linearLayout4.getHeight();
+                    binding.viewPager.setPadding(0, 0, 0, height);
+                });
+            }
         }
         setSupportActionBar(binding.toolbar);
         binding.toolbar.setOnClickListener((DialogEditText.OnClickListener) view -> activity_search.start(home.this, binding.toolbar));

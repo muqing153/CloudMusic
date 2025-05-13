@@ -15,12 +15,14 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -30,10 +32,13 @@ import com.colorpicker.ColorPickerView;
 import com.colorpicker.builder.ColorPickerDialogBuilder;
 import com.dirror.lyricviewx.LyricEntry;
 import com.dirror.lyricviewx.LyricViewX;
+import com.google.android.material.color.DynamicColors;
 import com.google.android.material.slider.Slider;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.muqing.Fragment;
+import com.muqing.ViewUI.SettingTextView;
+import com.muqing.databinding.ViewSeetingSwitchtBinding;
 import com.muqingbfq.databinding.ActivitySzBinding;
 import com.muqingbfq.databinding.ActivitySzSetlrcBinding;
 import com.muqingbfq.mq.FloatingLyricsService;
@@ -41,8 +46,10 @@ import com.muqingbfq.mq.FilePath;
 
 import java.io.File;
 import java.lang.reflect.Type;
+import java.util.Objects;
 
 import com.muqing.AppCompatActivity;
+
 public class sz extends AppCompatActivity<ActivitySzBinding> {
     @Override
     protected ActivitySzBinding getViewBindingObject(LayoutInflater layoutInflater) {
@@ -53,51 +60,51 @@ public class sz extends AppCompatActivity<ActivitySzBinding> {
     protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         setContentView();
-        setSupportActionBar(binding.toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        SettingTextView
+        setBackToolsBar(binding.toolbar);
         setTitle(getString(R.string.sz));
         SharedPreferences theme = getSharedPreferences("theme", MODE_PRIVATE);
         @SuppressLint("CommitPrefEdits") SharedPreferences.Editor edit = theme.edit();
         int i = theme.getInt("theme", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-        if (i == AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM) {
-            binding.switchA1.setChecked(true);
-            binding.switchA2.setEnabled(false);
-        } else {
-            binding.switchA1.setChecked(false);
-            binding.switchA2.setEnabled(true);
-            binding.switchA2.setChecked(i == AppCompatDelegate.MODE_NIGHT_YES);
-        }
-        binding.switchA1.setOnCheckedChangeListener((compoundButton, b) -> {
-            if (b) {
-// 跟随系统设置切换颜色模式
-                int ms = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
-                AppCompatDelegate.setDefaultNightMode(ms);
-                edit.putInt("theme", ms);
-                edit.apply();
+        String[] stringstheme = getResources().getStringArray(R.array.theme);
+        binding.settingA1.setTitle(i == AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM ? stringstheme[0] :
+                i == AppCompatDelegate.MODE_NIGHT_YES ? stringstheme[2] : stringstheme[1]);
+        binding.settingA1.setOnClickListener(view -> {
+            PopupMenu popupMenu = new PopupMenu(view.getContext(), view);
+            for (String string : stringstheme) {
+                popupMenu.getMenu().add(string);
             }
-            binding.switchA2.setEnabled(!b);
-        });
-        binding.switchA2.setOnCheckedChangeListener((compoundButton, b) -> {
-            if (compoundButton.isEnabled()) {
-                int ms;
-                if (b) {
-                    ms = AppCompatDelegate.MODE_NIGHT_YES;
-                } else {
-                    ms = AppCompatDelegate.MODE_NIGHT_NO;
+            popupMenu.setOnMenuItemClickListener(item -> {
+                int themeMode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
+                switch (Objects.requireNonNull(item.getTitle()).toString()) {
+                    case "跟随系统":
+                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                        break;
+                    case "深色模式":
+                        AppCompatDelegate.setDefaultNightMode(themeMode = AppCompatDelegate.MODE_NIGHT_YES);
+                        break;
+                    case "浅色模式":
+                        AppCompatDelegate.setDefaultNightMode(themeMode = AppCompatDelegate.MODE_NIGHT_NO);
+                        break;
+                    default:
+                        break;
                 }
-                AppCompatDelegate.setDefaultNightMode(ms);
-                edit.putInt("theme", ms);
-                edit.commit();
-            }
-        });
-    }
+                binding.settingA1.setTitle(themeMode == AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM ? stringstheme[0] :
+                        themeMode == AppCompatDelegate.MODE_NIGHT_YES ? stringstheme[2] : stringstheme[1]);
+                edit.putInt("theme", themeMode).apply();
+                return false;
+            });
+            popupMenu.show();
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            finish();
+        });
+        if (DynamicColors.isDynamicColorAvailable()) {
+            binding.switchA2.setEnabled(true);
+            binding.switchA2.setOnCheckedChangeListener((compoundButton, b) -> theme.edit().putBoolean("dynamic", b).apply());
+        } else {
+            binding.switchA2.setEnabled(false);
+            binding.switchA2.setMessage("你的系统版本暂不支持此功能");
         }
-        return super.onOptionsItemSelected(item);
+        binding.switchA2.setChecked(theme.getBoolean("dynamic", false));
     }
 
     public static class setlrc extends Fragment<ActivitySzSetlrcBinding> implements Slider.OnSliderTouchListener, Slider.OnChangeListener {

@@ -106,13 +106,13 @@ public class FileDownloader {
                         if (mp3file.hasId3v2Tag()) {
                             ID3v2 id3v2Tag = mp3file.getId3v2Tag();
                             // 设置新的ID值
-//                            gj.sc(x.name);
                             id3v2Tag.setTitle(title.toString());
                             id3v2Tag.setArtist(artist.toString());
                             id3v2Tag.setAlbum(artist.toString());
                             id3v2Tag.setLyrics(com.muqingbfq.api.url.Lrc(x.mediaId));
                             ByteArrayOutputStream o = new ByteArrayOutputStream();
                             String artworkUri = x.mediaMetadata.artworkUri.toString();
+                            gj.sc(artworkUri);
                             Request build = new Request.Builder().url(artworkUri)
                                     .build();
                             Response execute = client.newCall(build).execute();

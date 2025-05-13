@@ -32,9 +32,9 @@ import com.dirror.lyricviewx.extension.BlurMaskFilterExt
 import com.lalilu.easeview.EaseView
 import com.lalilu.easeview.animatevalue.BoolValue
 import com.lalilu.easeview.animatevalue.FloatListAnimateValue
+import com.muqing.gj
 import com.muqingbfq.R
 import java.io.File
-import kotlin.concurrent.thread
 import kotlin.math.abs
 import kotlin.math.max
 
@@ -63,6 +63,7 @@ open class LyricViewX : EaseView, LyricViewXInterface {
                 lyricEntryList.addAll(lrcEntries)
             }
             lyricEntryList.sort()
+//            lyricEntryList = LyricUtil.parseLrc(arrayOf(a, b))
         }
     }
 
@@ -104,7 +105,8 @@ open class LyricViewX : EaseView, LyricViewXInterface {
     private var animator: ValueAnimator? = null
     private var gestureDetector: GestureDetector? = null
     private var scroller: Scroller? = null
-    private var flag: Any? = null
+
+    //    private var flag: Any? = null
     private var isTouching = false
     private var isFling = false
     private var textGravity = GRAVITY_CENTER // 歌词显示位置，靠左 / 居中 / 靠右
@@ -163,13 +165,13 @@ open class LyricViewX : EaseView, LyricViewXInterface {
     private var animateStartOffset = 0f         // 动画起始Offset
 
     private val viewPortSpringAnimator = springAnimationOf(
-            getter = { mViewPortOffset },
-            setter = { value ->
-                if (!isShowTimeline.value && !isTouching && !isFling) {
-                    mViewPortOffset = value
-                    invalidate()
-                }
+        getter = { mViewPortOffset },
+        setter = { value ->
+            if (!isShowTimeline.value && !isTouching && !isFling) {
+                mViewPortOffset = value
+                invalidate()
             }
+        }
     ).withSpringForceProperties {
         dampingRatio = dampingRatioForViewPort
         stiffness = stiffnessForViewPort
@@ -180,16 +182,16 @@ open class LyricViewX : EaseView, LyricViewXInterface {
      * 弹性动画Scroller
      */
     private val progressSpringAnimator = springAnimationOf(
-            getter = { mCurrentOffset },
-            setter = { value ->
-                animateProgress = normalize(animateStartOffset, animateTargetOffset, value)
-                mCurrentOffset = value
+        getter = { mCurrentOffset },
+        setter = { value ->
+            animateProgress = normalize(animateStartOffset, animateTargetOffset, value)
+            mCurrentOffset = value
 
-                if (!isShowTimeline.value && !isTouching && !isFling) {
-                    viewPortSpringAnimator.animateToFinalPosition(animateTargetOffset)
-                }
-                invalidate()
+            if (!isShowTimeline.value && !isTouching && !isFling) {
+                viewPortSpringAnimator.animateToFinalPosition(animateTargetOffset)
             }
+            invalidate()
+        }
     ).withSpringForceProperties {
         dampingRatio = dampingRatioForLyric
         stiffness = stiffnessForLyric
@@ -200,62 +202,78 @@ open class LyricViewX : EaseView, LyricViewXInterface {
     private fun init(attrs: AttributeSet?) {
         readyHelper.readyState = STATE_INITIALIZING
         val typedArray = context.obtainStyledAttributes(attrs, R.styleable.LyricView)
-        currentTextSize = typedArray.getDimension(R.styleable.LyricView_lrcTextSize, resources.getDimension(R.dimen.lrc_text_size))
-        normalTextSize = typedArray.getDimension(R.styleable.LyricView_lrcNormalTextSize, resources.getDimension(R.dimen.lrc_text_size))
+        currentTextSize = typedArray.getDimension(
+            R.styleable.LyricView_lrcTextSize,
+            resources.getDimension(R.dimen.lrc_text_size)
+        )
+        normalTextSize = typedArray.getDimension(
+            R.styleable.LyricView_lrcNormalTextSize,
+            resources.getDimension(R.dimen.lrc_text_size)
+        )
         if (normalTextSize == 0f) {
             normalTextSize = currentTextSize
         }
 
         sentenceDividerHeight =
-                typedArray.getDimension(R.styleable.LyricView_lrcSentenceDividerHeight, resources.getDimension(R.dimen.lrc_sentence_divider_height))
+            typedArray.getDimension(
+                R.styleable.LyricView_lrcSentenceDividerHeight,
+                resources.getDimension(R.dimen.lrc_sentence_divider_height)
+            )
         translateDividerHeight =
-                typedArray.getDimension(R.styleable.LyricView_lrcTranslateDividerHeight, resources.getDimension(R.dimen.lrc_translate_divider_height))
+            typedArray.getDimension(
+                R.styleable.LyricView_lrcTranslateDividerHeight,
+                resources.getDimension(R.dimen.lrc_translate_divider_height)
+            )
         val defDuration = resources.getInteger(R.integer.lrc_animation_duration)
-        animationDuration = typedArray.getInt(R.styleable.LyricView_lrcAnimationDuration, defDuration).toLong()
         animationDuration =
-                if (animationDuration < 0) defDuration.toLong() else animationDuration
+            typedArray.getInt(R.styleable.LyricView_lrcAnimationDuration, defDuration).toLong()
+        animationDuration =
+            if (animationDuration < 0) defDuration.toLong() else animationDuration
 
         normalTextColor = typedArray.getColor(
-                R.styleable.LyricView_lrcNormalTextColor,
-                ContextCompat.getColor(context, R.color.lrc_normal_text_color)
+            R.styleable.LyricView_lrcNormalTextColor,
+            ContextCompat.getColor(context, R.color.lrc_normal_text_color)
         )
         currentTextColor = typedArray.getColor(
-                R.styleable.LyricView_lrcCurrentTextColor,
-                ContextCompat.getColor(context, R.color.lrc_current_text_color)
+            R.styleable.LyricView_lrcCurrentTextColor,
+            ContextCompat.getColor(context, R.color.lrc_current_text_color)
         )
         timelineTextColor = typedArray.getColor(
-                R.styleable.LyricView_lrcTimelineTextColor,
-                ContextCompat.getColor(context, R.color.lrc_timeline_text_color)
+            R.styleable.LyricView_lrcTimelineTextColor,
+            ContextCompat.getColor(context, R.color.lrc_timeline_text_color)
         )
         defaultLabel = typedArray.getString(R.styleable.LyricView_lrcLabel)
         defaultLabel = if (defaultLabel.isNullOrEmpty()) "暂无歌词" else defaultLabel
         lrcPadding = typedArray.getDimension(R.styleable.LyricView_lrcPadding, 0f)
         timelineColor = typedArray.getColor(
-                R.styleable.LyricView_lrcTimelineColor,
-                ContextCompat.getColor(context, R.color.lrc_timeline_color)
+            R.styleable.LyricView_lrcTimelineColor,
+            ContextCompat.getColor(context, R.color.lrc_timeline_color)
         )
         val timelineHeight = typedArray.getDimension(
-                R.styleable.LyricView_lrcTimelineHeight,
-                resources.getDimension(R.dimen.lrc_timeline_height)
+            R.styleable.LyricView_lrcTimelineHeight,
+            resources.getDimension(R.dimen.lrc_timeline_height)
         )
         playDrawable = typedArray.getDrawable(R.styleable.LyricView_lrcPlayDrawable)
         playDrawable = if (playDrawable == null) ContextCompat.getDrawable(
-                context,
-                R.drawable.lrc_play
+            context,
+            R.drawable.lrc_play
         ) else playDrawable
         timeTextColor = typedArray.getColor(
-                R.styleable.LyricView_lrcTimeTextColor,
-                ContextCompat.getColor(context, R.color.lrc_time_text_color)
+            R.styleable.LyricView_lrcTimeTextColor,
+            ContextCompat.getColor(context, R.color.lrc_time_text_color)
         )
         val timeTextSize = typedArray.getDimension(
-                R.styleable.LyricView_lrcTimeTextSize,
-                resources.getDimension(R.dimen.lrc_time_text_size)
+            R.styleable.LyricView_lrcTimeTextSize,
+            resources.getDimension(R.dimen.lrc_time_text_size)
         )
         textGravity = typedArray.getInteger(R.styleable.LyricView_lrcTextGravity, GRAVITY_CENTER)
-        translateTextScaleValue = typedArray.getFloat(R.styleable.LyricView_lrcTranslateTextScaleValue, 1f)
+        translateTextScaleValue =
+            typedArray.getFloat(R.styleable.LyricView_lrcTranslateTextScaleValue, 1f)
         horizontalOffset = typedArray.getDimension(R.styleable.LyricView_lrcHorizontalOffset, 0f)
-        horizontalOffsetPercent = typedArray.getDimension(R.styleable.LyricView_lrcHorizontalOffsetPercent, 0.5f)
-        itemOffsetPercent = typedArray.getDimension(R.styleable.LyricView_lrcItemOffsetPercent, 0.5f)
+        horizontalOffsetPercent =
+            typedArray.getDimension(R.styleable.LyricView_lrcHorizontalOffsetPercent, 0.5f)
+        itemOffsetPercent =
+            typedArray.getDimension(R.styleable.LyricView_lrcItemOffsetPercent, 0.5f)
         isDrawTranslation = typedArray.getBoolean(R.styleable.LyricView_lrcIsDrawTranslation, false)
         typedArray.recycle()
         drawableWidth = resources.getDimension(R.dimen.lrc_drawable_width).toInt()
@@ -319,20 +337,22 @@ open class LyricViewX : EaseView, LyricViewXInterface {
             isDrawTranslationAnimator.animateToFinalPosition(if (value) 1000f else 0f)
         }
     private val isDrawTranslationAnimator = springAnimationOf(
-            getter = { isDrawTranslationValue * 1000f },
-            setter = {
-                isDrawTranslationValue = it / 1000f
+        getter = { isDrawTranslationValue * 1000f },
+        setter = {
+            isDrawTranslationValue = it / 1000f
 
-                if (!isTouching && !isFling) {
-                    viewPortSpringAnimator.cancel()
+            if (!isTouching && !isFling) {
+                viewPortSpringAnimator.cancel()
 
-                    val targetOffset = if (isDrawTranslation) getMaxOffset(focusLine) else getMinOffset(focusLine)
-                    val animateValue = if (isDrawTranslation) isDrawTranslationValue else 1f - isDrawTranslationValue
+                val targetOffset =
+                    if (isDrawTranslation) getMaxOffset(focusLine) else getMinOffset(focusLine)
+                val animateValue =
+                    if (isDrawTranslation) isDrawTranslationValue else 1f - isDrawTranslationValue
 
-                    mViewPortOffset = lerp(viewPortStartOffset, targetOffset, animateValue)
-                }
-                invalidate()
-            },
+                mViewPortOffset = lerp(viewPortStartOffset, targetOffset, animateValue)
+            }
+            invalidate()
+        },
     ).withSpringForceProperties {
         dampingRatio = SpringForce.DAMPING_RATIO_NO_BOUNCY
         stiffness = SpringForce.STIFFNESS_LOW
@@ -345,17 +365,17 @@ open class LyricViewX : EaseView, LyricViewXInterface {
             lyricPaint.color = currentTextColor
             lyricPaint.textSize = normalTextSize
             LyricEntry.createStaticLayout(
-                    defaultLabel,
-                    lyricPaint,
-                    lrcWidth,
-                    Layout.Alignment.ALIGN_CENTER
+                defaultLabel,
+                lyricPaint,
+                lrcWidth,
+                Layout.Alignment.ALIGN_CENTER
             )?.let {
                 drawText(
-                        canvas = canvas,
-                        staticLayout = it,
-                        calcHeightOnly = false,
-                        yOffset = startOffset,
-                        yClipPercentage = 1f
+                    canvas = canvas,
+                    staticLayout = it,
+                    calcHeightOnly = false,
+                    yOffset = startOffset,
+                    yClipPercentage = 1f
                 )
             }
             return false
@@ -381,8 +401,8 @@ open class LyricViewX : EaseView, LyricViewXInterface {
             timePaint.color = timelineColor
             timePaint.alpha = alpha
             canvas.drawLine(
-                    timeTextWidth.toFloat(), centerY,
-                    (width - timeTextWidth).toFloat(), centerY, timePaint
+                timeTextWidth.toFloat(), centerY,
+                (width - timeTextWidth).toFloat(), centerY, timePaint
             )
 
             // 绘制当前时间
@@ -406,7 +426,8 @@ open class LyricViewX : EaseView, LyricViewXInterface {
 
         for (i in lyricEntryList.indices) {
             // 根据上一项所计算得到的offset值，判断当前元素是否在需要绘制的区间，如果不在，则只需要计算高度不进行绘制相关计算
-            calcHeightOnly = getOffset(i - 1) !in (mViewPortOffset - height)..(mViewPortOffset + height)
+            calcHeightOnly =
+                getOffset(i - 1) !in (mViewPortOffset - height)..(mViewPortOffset + height)
             progressKeeper.updateTargetValue(i, if (currentLine == i) animateProgress else 0f)
             progress = progressKeeper.getValueByIndex(i)
             scaleValue = 1f
@@ -417,7 +438,8 @@ open class LyricViewX : EaseView, LyricViewXInterface {
                     // 当前行动画未结束
                     progress > 0f -> {
                         scaleValue = calcScaleValue(currentTextSize, normalTextSize, progress)
-                        lyricPaint.color = lerpColor(normalTextColor, currentTextColor, progress.coerceIn(0f, 1f))
+                        lyricPaint.color =
+                            lerpColor(normalTextColor, currentTextColor, progress.coerceIn(0f, 1f))
                     }
 
                     isShowTimeline.value && i == currentCenterLine -> {
@@ -448,12 +470,12 @@ open class LyricViewX : EaseView, LyricViewXInterface {
             }
 
             val itemHeight = drawLyricEntry(
-                    canvas = canvas,
-                    entry = lyricEntryList[i],
-                    calcHeightOnly = calcHeightOnly,
-                    yOffset = yOffset,
-                    scaleValue = scaleValue,
-                    blurRadius = radius,
+                canvas = canvas,
+                entry = lyricEntryList[i],
+                calcHeightOnly = calcHeightOnly,
+                yOffset = yOffset,
+                scaleValue = scaleValue,
+                blurRadius = radius,
             ) { minHeight, maxHeight ->
                 minOffsetKeeper[i] = yMinOffset + calcOffsetOfItem(minHeight, sentenceDividerHeight)
                 yMinOffset += minHeight
@@ -479,13 +501,13 @@ open class LyricViewX : EaseView, LyricViewXInterface {
      * @return 该组歌词的实际绘制高度
      */
     private fun drawLyricEntry(
-            canvas: Canvas,
-            entry: LyricEntry,
-            calcHeightOnly: Boolean,
-            yOffset: Float,
-            scaleValue: Float,
-            blurRadius: Int,
-            callback: (minHeight: Float, maxHeight: Float) -> Unit = { _, _ -> }
+        canvas: Canvas,
+        entry: LyricEntry,
+        calcHeightOnly: Boolean,
+        yOffset: Float,
+        scaleValue: Float,
+        blurRadius: Int,
+        callback: (minHeight: Float, maxHeight: Float) -> Unit = { _, _ -> }
     ): Float {
         var tempHeight = 0f
         var minTempHeight = 0f
@@ -493,13 +515,13 @@ open class LyricViewX : EaseView, LyricViewXInterface {
 
         entry.staticLayout?.let {
             tempHeight += drawText(
-                    canvas = canvas,
-                    staticLayout = it,
-                    calcHeightOnly = calcHeightOnly,
-                    yOffset = yOffset,
-                    yClipPercentage = 1f,
-                    scale = scaleValue,
-                    blurRadius = blurRadius
+                canvas = canvas,
+                staticLayout = it,
+                calcHeightOnly = calcHeightOnly,
+                yOffset = yOffset,
+                yClipPercentage = 1f,
+                scale = scaleValue,
+                blurRadius = blurRadius
             )
             minTempHeight = tempHeight
             maxTempHeight = tempHeight
@@ -509,14 +531,14 @@ open class LyricViewX : EaseView, LyricViewXInterface {
                 maxTempHeight += translateDividerHeight
 
                 tempHeight += drawText(
-                        canvas = canvas,
-                        staticLayout = second,
-                        calcHeightOnly = calcHeightOnly,
-                        yOffset = yOffset + tempHeight,
-                        yClipPercentage = isDrawTranslationValue,
-                        alpha = isDrawTranslationValue,
-                        scale = scaleValue,
-                        blurRadius = blurRadius
+                    canvas = canvas,
+                    staticLayout = second,
+                    calcHeightOnly = calcHeightOnly,
+                    yOffset = yOffset + tempHeight,
+                    yClipPercentage = isDrawTranslationValue,
+                    alpha = isDrawTranslationValue,
+                    scale = scaleValue,
+                    blurRadius = blurRadius
                 ) { _, max ->
                     maxTempHeight += max
                 }
@@ -542,16 +564,16 @@ open class LyricViewX : EaseView, LyricViewXInterface {
      * @return 实际绘制高度
      */
     private fun drawText(
-            canvas: Canvas,
-            staticLayout: StaticLayout,
-            calcHeightOnly: Boolean = false,
-            yOffset: Float,
-            @FloatRange(from = 0.0, to = 1.0)
-            yClipPercentage: Float = 1f,
-            scale: Float = 1f,
-            alpha: Float = 1f,
-            blurRadius: Int = 0,
-            callback: (minHeight: Float, maxHeight: Float) -> Unit = { _, _ -> }
+        canvas: Canvas,
+        staticLayout: StaticLayout,
+        calcHeightOnly: Boolean = false,
+        yOffset: Float,
+        @FloatRange(from = 0.0, to = 1.0)
+        yClipPercentage: Float = 1f,
+        scale: Float = 1f,
+        alpha: Float = 1f,
+        blurRadius: Int = 0,
+        callback: (minHeight: Float, maxHeight: Float) -> Unit = { _, _ -> }
     ): Float {
         if (staticLayout.lineCount == 0) {
             callback(0f, 0f)
@@ -579,11 +601,17 @@ open class LyricViewX : EaseView, LyricViewXInterface {
          */
         repeat(staticLayout.lineCount) {
             itemActualHeight = lineHeight * yClipPercentage
-            pivotYTemp = yTemp + itemActualHeight - staticLayout.paint.descent()  // TextPaint修改textSize所实现的缩放效果应该就是descent线上的缩放(感觉效果差不多)
+            pivotYTemp =
+                yTemp + itemActualHeight - staticLayout.paint.descent()  // TextPaint修改textSize所实现的缩放效果应该就是descent线上的缩放(感觉效果差不多)
 
             canvas.save()
             canvas.translate(lrcPadding, yOffset)
-            canvas.clipRect(-lrcPadding, yTemp, staticLayout.width.toFloat() + lrcPadding, yTemp + itemActualHeight)
+            canvas.clipRect(
+                -lrcPadding,
+                yTemp,
+                staticLayout.width.toFloat() + lrcPadding,
+                yTemp + itemActualHeight
+            )
 
             // 根据文字的gravity设置缩放基点坐标
             when (textGravity) {
@@ -621,73 +649,80 @@ open class LyricViewX : EaseView, LyricViewXInterface {
      * 手势监听器
      */
     private val mSimpleOnGestureListener: SimpleOnGestureListener =
-            object : SimpleOnGestureListener() {
+        object : SimpleOnGestureListener() {
 
-                override fun onDown(e: MotionEvent): Boolean {
-                    // 有歌词并且设置了 mOnPlayClickListener
-                    if (onPlayClickListener != null) {
-                        scroller!!.forceFinished(true)
-                        removeCallbacks(hideTimelineRunnable)
-                        isTouching = true
-                        invalidate()
-                        return true
-                    }
-                    return super.onDown(e)
+            override fun onDown(e: MotionEvent): Boolean {
+                // 有歌词并且设置了 mOnPlayClickListener
+                if (onPlayClickListener != null) {
+                    scroller!!.forceFinished(true)
+                    removeCallbacks(hideTimelineRunnable)
+                    isTouching = true
+                    invalidate()
+//                    gj.sc("onDown() invalidate()")
+
+                    return true
                 }
+                return super.onDown(e)
+            }
 
-                override fun onScroll(e1: MotionEvent?, e2: MotionEvent, distanceX: Float, distanceY: Float): Boolean {
-                    if (hasLrc()) {
-                        // 如果没显示 Timeline 的时候，distanceY 一段距离后再显示时间线
-                        if (!isShowTimeline.value && abs(distanceY) >= 10) {
-                            // 滚动显示时间线
-                            isShowTimeline.value = true
-                        }
-                        mViewPortOffset += -distanceY
-                        mViewPortOffset.coerceIn(getOffset(lyricEntryList.size - 1), getOffset(0))
-                        invalidate()
-                        return true
+            override fun onScroll(
+                e1: MotionEvent?,
+                e2: MotionEvent,
+                distanceX: Float,
+                distanceY: Float
+            ): Boolean {
+                if (hasLrc()) {
+                    // 如果没显示 Timeline 的时候，distanceY 一段距离后再显示时间线
+                    if (!isShowTimeline.value && abs(distanceY) >= 10) {
+                        // 滚动显示时间线
+                        isShowTimeline.value = true
                     }
-                    return super.onScroll(e1, e2, distanceX, distanceY)
+                    mViewPortOffset += -distanceY
+                    mViewPortOffset.coerceIn(getOffset(lyricEntryList.size - 1), getOffset(0))
+                    invalidate()
+                    return true
                 }
+                return super.onScroll(e1, e2, distanceX, distanceY)
+            }
 
-                fun onFling(
-                        e1: MotionEvent?,
-                        e2: MotionEvent?,
-                        velocityX: Float?,
-                        velocityY: Float?
-                ): Boolean {
-                    if (hasLrc()) {
-                        scroller!!.fling(
-                                0, mViewPortOffset.toInt(), 0,
-                                velocityY!!.toInt(), 0, 0,
-                                getOffset(lyricEntryList.size - 1).toInt(),
-                                getOffset(0).toInt()
-                        )
-                        isFling = true
-                        return true
-                    }
-                    return super.onFling(e1!!, e2!!, velocityX!!, velocityY!!)
+            fun onFling(
+                e1: MotionEvent?,
+                e2: MotionEvent?,
+                velocityX: Float?,
+                velocityY: Float?
+            ): Boolean {
+                if (hasLrc()) {
+                    scroller!!.fling(
+                        0, mViewPortOffset.toInt(), 0,
+                        velocityY!!.toInt(), 0, 0,
+                        getOffset(lyricEntryList.size - 1).toInt(),
+                        getOffset(0).toInt()
+                    )
+                    isFling = true
+                    return true
                 }
+                return super.onFling(e1!!, e2!!, velocityX!!, velocityY!!)
+            }
 
-                override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
-                    if (!hasLrc() || !isShowTimeline.value || !e.insideOf(playDrawable?.bounds)) {
-                        onSingerClickListener?.onClick()
-                        return super.onSingleTapConfirmed(e)
-                    }
-
-                    val centerLine = centerLine
-                    val centerLineTime = lyricEntryList[centerLine].time
-                    // onPlayClick 消费了才更新 UI
-                    if (onPlayClickListener?.onPlayClick(centerLineTime) == true) {
-                        isShowTimeline.value = false
-                        removeCallbacks(hideTimelineRunnable)
-                        smoothScrollTo(centerLine)
-                        invalidate()
-                        return true
-                    }
+            override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
+                if (!hasLrc() || !isShowTimeline.value || !e.insideOf(playDrawable?.bounds)) {
+                    onSingerClickListener?.onClick()
                     return super.onSingleTapConfirmed(e)
                 }
+
+                val centerLine = centerLine
+                val centerLineTime = lyricEntryList[centerLine].time
+                // onPlayClick 消费了才更新 UI
+                if (onPlayClickListener?.onPlayClick(centerLineTime) == true) {
+                    isShowTimeline.value = false
+                    removeCallbacks(hideTimelineRunnable)
+                    smoothScrollTo(centerLine)
+                    invalidate()
+                    return true
+                }
+                return super.onSingleTapConfirmed(e)
             }
+        }
 
     private val hideTimelineRunnable = Runnable {
         if (hasLrc() && isShowTimeline.value) {
@@ -716,6 +751,7 @@ open class LyricViewX : EaseView, LyricViewXInterface {
     }
 
     private fun onLrcLoaded(entryList: List<LyricEntry>?) {
+        lyricEntryList.clear()
         if (!entryList.isNullOrEmpty()) {
             lyricEntryList.addAll(entryList)
         }
@@ -747,8 +783,8 @@ open class LyricViewX : EaseView, LyricViewXInterface {
         secondLyricPaint.textSize = lyricPaint.textSize * translateTextScaleValue
         for (lrcEntry in lyricEntryList) {
             lrcEntry.init(
-                    lyricPaint, secondLyricPaint,
-                    lrcWidth.toInt(), textGravity.toLayoutAlign()
+                lyricPaint, secondLyricPaint,
+                lrcWidth.toInt(), textGravity.toLayoutAlign()
             )
         }
         mCurrentOffset = startOffset
@@ -963,20 +999,9 @@ open class LyricViewX : EaseView, LyricViewXInterface {
     override fun loadLyric(mainLyricText: String?, secondLyricText: String?) {
         runOnMain {
             reset()
-            val sb = StringBuilder("file://")
-            sb.append(mainLyricText)
-            if (secondLyricText != null) {
-                sb.append("#").append(secondLyricText)
-            }
-            val flag = sb.toString()
-            this@LyricViewX.flag = flag
-            thread {
-                val lrcEntries = LyricUtil.parseLrc(arrayOf(mainLyricText, secondLyricText))
-                runOnMain {
-                    onLrcLoaded(lrcEntries)
-                    this@LyricViewX.flag = null
-                }
-            }
+//            lrc(mainLyricText, secondLyricText)
+            val lrcEntries = LyricUtil.parseLrc(arrayOf(mainLyricText, secondLyricText))
+            onLrcLoaded(lrcEntries)
         }
     }
 
@@ -1025,7 +1050,7 @@ open class LyricViewX : EaseView, LyricViewXInterface {
     override fun setLyricEntryList(newList: List<LyricEntry>) {
         reset()
         onLrcLoaded(newList)
-        this@LyricViewX.flag = null
+//        this@LyricViewX.flag = null
     }
 
     override fun getCurrentLineLyricEntry(): LyricEntry? {
@@ -1037,8 +1062,8 @@ open class LyricViewX : EaseView, LyricViewXInterface {
 
     override fun setLyricTypeface(file: File) {
         val typeface = file.takeIf { it.exists() }
-                ?.runCatching { Typeface.createFromFile(this) }
-                ?.getOrNull() ?: return
+            ?.runCatching { Typeface.createFromFile(this) }
+            ?.getOrNull() ?: return
 
         setLyricTypeface(typeface)
     }

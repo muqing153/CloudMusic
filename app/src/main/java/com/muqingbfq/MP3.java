@@ -1,5 +1,7 @@
 package com.muqingbfq;
 
+import android.graphics.drawable.Drawable;
+
 import androidx.annotation.NonNull;
 
 import java.io.Serializable;
@@ -9,6 +11,7 @@ public class MP3 implements Serializable {
     public String id, name, zz, url;
     //    音乐的贴图
     public String picurl;
+    public byte[] picdata;
     public MP3(){}
 
 
@@ -22,6 +25,7 @@ public class MP3 implements Serializable {
         this.zz = zz;
         this.picurl = picurl;
     }
+
 
     @Override
     public boolean equals(Object o) {

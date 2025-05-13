@@ -15,6 +15,7 @@ import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ProcessLifecycleOwner;
 
+import com.google.android.material.color.DynamicColors;
 import com.muqing.gj;
 import com.muqingbfq.mq.FloatingLyricsService;
 import com.muqingbfq.mq.FilePath;
@@ -47,6 +48,12 @@ public class main extends Application {
             edit.putInt("theme", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
             edit.apply();
         }
+
+        //是否大于Android12+=
+        if (theme.getBoolean("dynamic", false) && DynamicColors.isDynamicColorAvailable()) {
+            DynamicColors.applyToActivitiesIfAvailable(this);
+        }
+
         AppCompatDelegate.setDefaultNightMode(i);
         // 注册 ProcessLifecycleOwner 以监听应用生命周期事件
         ProcessLifecycleOwner.get().getLifecycle().addObserver(new DefaultLifecycleObserver() {

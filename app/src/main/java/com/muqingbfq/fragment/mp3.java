@@ -91,6 +91,7 @@ public class mp3 extends AppCompatActivity<ActivityMp3Binding> {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView();
+        binding.playButton.setVisibility(View.GONE);
         binding.toolbar.setTitle("");
         setBackToolsBar(binding.toolbar);
         TypedValue typedValue = new TypedValue();
@@ -288,9 +289,11 @@ public class mp3 extends AppCompatActivity<ActivityMp3Binding> {
                 binding.recyclerview1Bar.setVisibility(View.GONE);
                 if (list.isEmpty()) {
                     binding.recyclerview1Text.setVisibility(View.VISIBLE);
+                    binding.playButton.setVisibility(View.GONE);
                     binding.recyclerview1Text.setOnClickListener(v -> new start(id));
                 } else {
                     binding.recyclerview1Text.setVisibility(View.GONE);
+                    binding.playButton.setVisibility(View.VISIBLE);
                 }
             });
         }

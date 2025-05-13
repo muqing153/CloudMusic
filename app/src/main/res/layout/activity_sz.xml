@@ -12,7 +12,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:title="@string/sz" />
-
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -35,20 +34,18 @@
                     android:layout_marginBottom="6dp"
                     android:text="主题" />
 
-                <com.google.android.material.materialswitch.MaterialSwitch
-                    android:id="@+id/switch_a1"
+                <com.muqing.ViewUI.SettingTextView
+                    android:id="@+id/setting_a1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:checked="true"
-                    android:text="跟随系统模式来选择"
-                    android:textSize="20sp" />
-
-                <com.google.android.material.materialswitch.MaterialSwitch
+                    app:title="跟随系统"/>
+                <com.muqing.ViewUI.SettingSwitch
                     android:id="@+id/switch_a2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="深色模式"
-                    android:textSize="20sp" />
+                    app:title="动态颜色"
+                    app:message="你的系统版本暂不支持此功能"
+                    app:enabled="false"/>
 
             </LinearLayout>
 

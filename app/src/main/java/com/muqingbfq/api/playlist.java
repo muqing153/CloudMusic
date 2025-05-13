@@ -151,20 +151,18 @@ public class playlist extends Thread {
             File file = new File(FilePath.mp3);
             File[] files = file.listFiles();
             list.clear();
-            for (File value : files) {
-                ID3v2 mp3File = new Mp3File(value).getId3v2Tag();
-                String id = value.getName();
-                String name = mp3File.getTitle();
-                String zz = mp3File.getArtist();
-//                Bitmap bitmap = null;
-//                // 获取专辑封面图像的二进制数据
-//                byte[] imageData = mp3File.getAlbumImage();
-//                if (imageData != null) {
-////                    Log.d("ImageData", "专辑封面图像大小: " + imageData.length + " 字节");
-//                    // 将二进制数据保存为文件或显示
-//                    bitmap = BitmapFactory.decodeByteArray(imageData, 0, imageData.length);
-//                }
-                list.add(new MP3(id, name, zz, null));
+            if (files != null) {
+                for (File value : files) {
+                    ID3v2 mp3File = new Mp3File(value).getId3v2Tag();
+                    String id = value.getName();
+                    String name = mp3File.getTitle();
+                    String zz = mp3File.getArtist();
+                    byte[] albumImageData = mp3File.getAlbumImage();
+
+                    MP3 mp3 = new MP3(id, name, zz, null);
+                    mp3.picdata = albumImageData;
+                    list.add(mp3);
+                }
             }
             return true;
         } catch (Exception e) {

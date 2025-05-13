@@ -10,8 +10,10 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 
+import androidx.core.graphics.Insets;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.android.flexbox.FlexboxLayoutManager;
@@ -21,6 +23,7 @@ import com.muqing.AppCompatActivity;
 import com.muqing.BaseAdapter;
 import com.muqing.Dialog.DialogEditText;
 import com.muqing.gj;
+import com.muqing.wj;
 import com.muqingbfq.databinding.ActivitySearchBinding;
 import com.muqingbfq.databinding.ListTextBinding;
 import com.muqingbfq.databinding.ViewSearchItemBinding;
@@ -34,6 +37,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,7 +49,9 @@ public class activity_search extends AppCompatActivity<ActivitySearchBinding> {
                 .makeSceneTransitionAnimation(context, view, "edit");
         context.startActivity(new Intent(context, activity_search.class), options.toBundle());
     }
-
+    public void setOnApplyWindowInsetsListener(Insets systemBars, View v) {
+        v.setPadding(systemBars.left, 0, systemBars.right, systemBars.bottom);
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,13 +107,24 @@ public class activity_search extends AppCompatActivity<ActivitySearchBinding> {
         });
         binding.lishiList.setLayoutManager(new FlexboxLayoutManager(this));
         searchTools = new SearchTools(this, binding.tablayout, binding.viewpager);
-        binding.lishiList.setAdapter(new SearchRecordAdapter(this, new ArrayList<>(), binding.edit){
+        binding.lishiList.setAdapter(searchRecordAdapter = new SearchRecordAdapter(this, new ArrayList<>(), binding.edit) {
             @Override
             public void Click(String data) {
                 SearchStart(data);
             }
         });
+        binding.edit.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                String keyword = binding.edit.getText().toString().trim();
+                SearchStart(keyword);
+                return true;
+            }
+            return false;
+        });
+
     }
+
+    SearchRecordAdapter searchRecordAdapter;
 
     SearchTools searchTools;
     private String search_str;//当前搜索的字符串
@@ -125,6 +142,27 @@ public class activity_search extends AppCompatActivity<ActivitySearchBinding> {
 //                                    取消edit焦点
         binding.edit.clearFocus();
         searchTools.sx(search_str);
+        if (searchRecordAdapter != null) {
+            List<String> list = searchRecordAdapter.dataList;
+            int position = list.indexOf(s);
+            if (position != -1) {
+                if (position != 0) {
+                    list.remove(position);
+                    list.add(0, s);
+                    searchRecordAdapter.notifyItemMoved(position, 0);
+                }
+                // 如果 position == 0，则不需要动
+            } else {
+                list.add(0, s);
+                searchRecordAdapter.notifyItemInserted(0);
+                if (!list.isEmpty()) {
+                    searchRecordAdapter.notifyItemRangeChanged(position, list.size() - position);
+                }
+            }
+            // 保存到本地 JSON 文件
+            wj.xrwb(new File(FilePath.filesdri, FilePath.lishi_json), new Gson().toJson(list));
+        }
+
     }
 
     @Override
@@ -154,6 +192,7 @@ public class activity_search extends AppCompatActivity<ActivitySearchBinding> {
 
     public static class SearchRecordAdapter extends BaseAdapter<ListTextBinding, String> {
         EditText searchView;
+
         public SearchRecordAdapter(Context context, List<String> list, EditText searchView) {
             super(context, list);
             this.searchView = searchView;
@@ -194,13 +233,14 @@ public class activity_search extends AppCompatActivity<ActivitySearchBinding> {
         @Override
         protected void onBindView(String data, ListTextBinding viewBinding, ViewHolder<ListTextBinding> viewHolder, int position) {
             viewBinding.getRoot().setText(data);
-            viewBinding.getRoot().setOnClickListener(v -> {
-                searchView.setText(data);
-                Click(data);
-            });
+            viewBinding.getRoot().setOnClickListener(v -> Click(data));
             viewBinding.getRoot().setOnCloseIconClickListener(view -> {
                 dataList.remove(data);
-                notifyItemRemoved(position);
+                this.notifyItemRemoved(position);
+                if (position != dataList.size()) {
+                    notifyItemRangeChanged(position, dataList.size() - position);
+                }
+//                notifyItemRangeChanged(position, dataList.size() - position); // 可选：刷新后续位置
                 FilePath.xrwb(FilePath.filesdri + FilePath.lishi_json, new Gson().toJson(dataList));
             });
         }

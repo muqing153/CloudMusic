@@ -71,12 +71,14 @@ public class PlaybackService extends MediaSessionService {
                     player.seekTo(0, 0);
                     player.play();
                 }
-            } else if (playbackState == Player.STATE_READY) {
+            } else if (playbackState == Player.EVENT_MEDIA_ITEM_TRANSITION) {
                 MediaItem currentMediaItem1 = mediaSession.getPlayer().getCurrentMediaItem();
                 new Thread(() -> {
-                    url.getLrc(currentMediaItem1.mediaId);
-                    gj.sc("onPlaybackStateChanged:" + PlaybackService.lrc);
-                    Media.loadLyric(PlaybackService.lrc);
+                    if (currentMediaItem1 != null) {
+                        url.getLrc(currentMediaItem1.mediaId);
+//                        gj.sc("onPlaybackStateChanged:" + PlaybackService.lrc);
+                        Media.loadLyric(PlaybackService.lrc);
+                    }
                 }).start();
                 AddMediaItem(currentMediaItem1);
 
@@ -126,6 +128,7 @@ public class PlaybackService extends MediaSessionService {
             gj.sc(tracks);
             // Update UI using current tracks.
         }
+
         int error_count = 0;
         int currentIndex = 0;
         MediaItem currentMediaItem = null;
@@ -159,9 +162,11 @@ public class PlaybackService extends MediaSessionService {
                 gj.sc("当前播放项无效，无法重试");
                 return;
             }
-
             new Thread(() -> {
                 MP3 hq = url.hq(new MP3(currentMediaItem.mediaId));
+                if (hq == null) {
+                    return;
+                }
                 hq.picurl = url.picurl(hq.id);
 
                 MediaItem newMediaItem = currentMediaItem.buildUpon()
@@ -255,19 +260,28 @@ public class PlaybackService extends MediaSessionService {
 
     public static MediaItem GetMp3(MP3 mp3) {
         // 创建媒体的元数据（如标题、描述、图片等）
-        MediaMetadata mediaMetadata = new MediaMetadata.Builder()
+        MediaMetadata.Builder builder = new MediaMetadata.Builder()
                 .setTitle(mp3.name)
                 .setArtist(mp3.zz)
-                .setAlbumTitle(mp3.zz)
-                .setArtworkUri(Uri.parse(mp3.picurl)) // 图片URL
-                .build();
+                .setAlbumTitle(mp3.zz);
+        if (mp3.picurl != null) {
+            builder.setArtworkUri(Uri.parse(mp3.picurl));
+        } else if (mp3.picdata != null) {
+            builder.maybeSetArtworkData(mp3.picdata, mp3.picdata.length);
+        }
+        MediaMetadata mediaMetadata = builder.build();
 // 创建带有元数据的 MediaItem
-        return new MediaItem.Builder()
+        MediaItem.Builder metadata = new MediaItem.Builder()
                 .setMediaId(mp3.id) // 设置媒体的唯一ID
                 .setUri(Strings.isNullOrEmpty(mp3.url) ? "" : mp3.url)
-                .setMediaMetadata(mediaMetadata) // 将元数据添加到 MediaItem
-                .build();
+                .setMediaMetadata(mediaMetadata);
+//        if (mp3.picurl != null) {
+//
+//        }else if (mp3.picdata)
+
+        return metadata.build();
     }
+
 
     public static void AddMediaItem(MP3 mp3) {
         if (mediaSession != null) {

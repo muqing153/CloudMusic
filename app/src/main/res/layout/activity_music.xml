@@ -11,7 +11,7 @@
         android:id="@+id/fragment_bfq"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_weight="1">
 
@@ -53,7 +53,7 @@
         app:cardBackgroundColor="@color/tm"
         app:cardCornerRadius="180dp"
         app:cardElevation="0dp"
-        app:layout_constraintBottom_toBottomOf="@id/fragment_bfq"
+        app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -99,16 +99,16 @@
             android:id="@+id/tdt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:valueTo="100.0"
             android:value="50.0"
-            app:trackColorInactive="#4DF2ECF6"
+            android:valueTo="100.0"
             app:labelBehavior="gone"
-            app:thumbHeight="21dp"
-            app:thumbColor="@color/bj"
             app:layout_constraintBottom_toTopOf="@id/time_a"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            tools:ignore="HardcodedText" />
+            app:thumbColor="@color/bj"
+            app:thumbHeight="21dp"
+            app:trackColorInactive="#4DF2ECF6"
+            tools:ignore="HardcodedText,SpeakableTextPresentCheck" />
 
         <TextView
             android:id="@+id/time_a"
