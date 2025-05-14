@@ -1,5 +1,6 @@
 package com.muqingbfq;
 
+import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -131,7 +132,7 @@ public class PlaybackService extends MediaSessionService {
 
         int error_count = 0;
         int currentIndex = 0;
-        MediaItem currentMediaItem = null;
+        private MediaItem currentMediaItem = null;
 
         @Override
         public void onPlayerError(@NonNull PlaybackException error) {

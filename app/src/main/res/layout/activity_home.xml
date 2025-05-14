@@ -50,12 +50,9 @@
 
             <com.google.android.material.bottomnavigation.BottomNavigationView
                 android:id="@+id/tablayout"
-                style="@style/Widget.Material3.BottomNavigationView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 app:menu="@menu/bottom_gd" />
-
         </LinearLayout>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

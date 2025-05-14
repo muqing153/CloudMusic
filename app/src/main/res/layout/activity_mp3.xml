@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"
         android:layout_width="match_parent"
@@ -22,8 +23,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:importantForAccessibility="no"
-                tools:src="@mipmap/back"
-                android:scaleType="fitXY"/>
+                android:scaleType="fitXY"
+                tools:src="@mipmap/back" />
 
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/toolbar"
@@ -92,15 +93,6 @@
         <!--        android:fadingEdgeLength="50dp"-->
     </RelativeLayout>
 
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/fragment_db"
-        android:name="com.muqingbfq.fragment.bfq_db"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:alpha="0.9"
-        tools:layout="@layout/fragment_bfq_db" />
-
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/playButton"
         android:layout_width="wrap_content"
@@ -110,4 +102,17 @@
         android:src="@drawable/play"
         app:layout_anchor="@id/appbar"
         app:layout_anchorGravity="end|bottom|right" />
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/fragment_db"
+            android:name="com.muqingbfq.fragment.bfq_db"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            tools:layout="@layout/fragment_bfq_db" />
+<!--    <com.google.android.material.bottomnavigation.BottomNavigationView-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_gravity="bottom" />-->
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

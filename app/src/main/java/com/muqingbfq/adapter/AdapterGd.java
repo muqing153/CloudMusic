@@ -26,6 +26,7 @@ import com.bumptech.glide.request.target.Target;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
+import com.muqing.BaseAdapter;
 import com.muqing.gj;
 import com.muqingbfq.MP3;
 import com.muqingbfq.PlaybackService;
@@ -45,23 +46,25 @@ import org.json.JSONException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AdapterGd extends RecyclerView.Adapter<VH<ListGdBinding>> {
-
-    public List<XM> list = new ArrayList<>();
-    @NonNull
-    @Override
-    public VH<ListGdBinding> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new VH<>(ListGdBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
+public class AdapterGd extends BaseAdapter<ListGdBinding, XM> {
+    public AdapterGd(Context context) {
+        super(context);
     }
+
     @Override
-    public void onBindViewHolder(@NonNull VH<ListGdBinding> holder, int position) {
-        XM xm = list.get(position);
-        holder.itemView.setOnClickListener(v -> {
-            mp3.drawable = holder.binding.image.getDrawable();
+    protected ListGdBinding getViewBindingObject(LayoutInflater inflater, ViewGroup parent, int viewType) {
+        return ListGdBinding.inflate(inflater, parent, false);
+    }
+
+    @Override
+    protected void onBindView(XM data, ListGdBinding viewBinding, ViewHolder<ListGdBinding> viewHolder, int position) {
+        XM xm = dataList.get(position);
+        viewBinding.getRoot().setOnClickListener(v -> {
+            mp3.drawable = viewBinding.image.getDrawable();
             mp3.start(v.getContext(), new String[]{xm.id, xm.name});
         });
 //        gj.sc(xm.picurl);
-        Glide.with(holder.itemView.getContext())
+        Glide.with(context)
                 .asBitmap()
                 .load(xm.picurl)
                 .placeholder(R.drawable.mdimusicbox)
@@ -76,21 +79,23 @@ public class AdapterGd extends RecyclerView.Adapter<VH<ListGdBinding>> {
                                                    @NonNull Object model, Target<Bitmap> target,
                                                    @NonNull DataSource dataSource, boolean isFirstResource) {
                         Palette.from(resource).generate(palette -> {
+                            assert palette != null;
                             int color = palette.getLightMutedColor(Color.WHITE);
                             GradientDrawable gradientDrawable = new GradientDrawable(
                                     GradientDrawable.Orientation.BOTTOM_TOP,
                                     new int[]{color, color});
                             gradientDrawable.setAlpha(128);
-                            holder.binding.text1.setBackground(gradientDrawable);
-                            holder.binding.getRoot().setRippleColor(ColorStateList.valueOf(color));
+                            viewBinding.text1.setBackground(gradientDrawable);
+                            viewBinding.getRoot().setRippleColor(ColorStateList.valueOf(color));
                         });
-                        holder.binding.image.setImageBitmap(resource);
+                        viewBinding.image.setImageBitmap(resource);
                         return true;
                     }
                 })
-                .into(holder.binding.image);
-        holder.binding.text1.setText(xm.name);
-        holder.binding.kg.setOnClickListener(new View.OnClickListener() {
+                .into(viewBinding.image);
+
+        viewBinding.text1.setText(xm.name);
+        viewBinding.kg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 new Thread() {
@@ -99,10 +104,6 @@ public class AdapterGd extends RecyclerView.Adapter<VH<ListGdBinding>> {
                     public void run() {
                         super.run();
                         List<MP3> an = playlist.hq(xm.id);
-//                        if (bfqkz.ms == 2) {
-////                            Collections.shuffle(bfqkz.list);
-//                        }
-
                         main.handler.post(() -> {
                             if (PlaybackService.mediaSession == null) {
                                 return;
@@ -126,18 +127,12 @@ public class AdapterGd extends RecyclerView.Adapter<VH<ListGdBinding>> {
                 }.start();
             }
         });
-        holder.itemView.setOnLongClickListener(v -> {
+        viewBinding.getRoot().setOnLongClickListener(v -> {
             setOnLongClickListener(v.getContext(), xm);
             return false;
         });
 
     }
-
-    @Override
-    public int getItemCount() {
-        return list.size();
-    }
-
 
     @SuppressLint("NotifyDataSetChanged")
     public static void setOnLongClickListener(Context context, XM xm) {

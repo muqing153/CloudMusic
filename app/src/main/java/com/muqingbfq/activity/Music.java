@@ -11,10 +11,10 @@ import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
@@ -40,7 +40,6 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
-import com.dirror.lyricviewx.LyricViewX;
 import com.google.android.material.slider.Slider;
 import com.muqing.AppCompatActivity;
 import com.muqing.gj;
@@ -48,6 +47,7 @@ import com.muqingbfq.MP3;
 import com.muqingbfq.PlaybackService;
 import com.muqingbfq.R;
 import com.muqingbfq.api.FileDownloader;
+import com.muqingbfq.api.url;
 import com.muqingbfq.bfq_an;
 import com.muqingbfq.databinding.ActivityMusicBinding;
 import com.muqingbfq.fragment.Media;
@@ -228,12 +228,42 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
 
         });
 
-        binding.download.setOnClickListener(v ->{
+        binding.download.setOnClickListener(v -> {
             if (player.getCurrentMediaItem() == null || player.getCurrentMediaItem().localConfiguration == null) {
                 gj.ts(this, "当前没有播放歌曲");
                 return;
             }
+            if (TextUtils.isEmpty(player.getCurrentMediaItem().localConfiguration.uri.toString())) {
+//                new Thread(() -> {
+//                    String s = url.songurlv1(player.getCurrentMediaItem().mediaId);
+//                    if (s == null) {
+//                        gj.ts(this, "当前歌曲没有下载");
+//                    }
+//                    runOnUiThread(() -> new FileDownloader(Music.this)
+//                            .downloadFile(player.getCurrentMediaItem().localConfiguration.uri.toString(), player.getCurrentMediaItem()));
+//                }).start();
+                MediaItem currentMediaItem = player.getCurrentMediaItem();
+                int index = player.getCurrentMediaItemIndex();
+                boolean shuffleModeEnabled = player.getShuffleModeEnabled();
+                new Thread(() -> {
+                    String hq = url.songurlv1(currentMediaItem.mediaId);
+                    if (hq == null) {
+                        gj.sc("无法修复当前播放项"+currentMediaItem.mediaId);
+                        return;
+                    }
+                    MediaItem newMediaItem = currentMediaItem.buildUpon()
+                            .setUri(hq)
+                            .build();
+                    runOnUiThread(() -> {
+                        player.replaceMediaItem(index, newMediaItem);
+                        player.setShuffleModeEnabled(shuffleModeEnabled);
+                        new FileDownloader(Music.this).downloadFile(hq, player.getCurrentMediaItem());
+                    });
+                }).start();
+                return;
+            }
             new FileDownloader(Music.this).downloadFile(player.getCurrentMediaItem().localConfiguration.uri.toString(), player.getCurrentMediaItem());
+
         });
         SharedPreferences sharedPreferences = getSharedPreferences("Set_up", MODE_PRIVATE);
 
@@ -297,7 +327,6 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
                     gj.sc("播放暂停");
                 }
             }
-
             // 监听下一曲事件
 //            if (events.contains(Player.EVENT_MEDIA_ITEM_TRANSITION)) {
 //                MediaItem currentMediaItem = player.getCurrentMediaItem();
@@ -305,13 +334,6 @@ public class Music extends AppCompatActivity<ActivityMusicBinding> implements Ge
 //                    gj.sc("播放下一曲: ");
 //                }
 //            }
-//
-//            // 监听上一曲事件（通常通过手动调用控制播放器的skipToPrevious方法实现）
-//            if (events.contains(Player.EVENT_MEDIA_ITEM_TRANSITION)) {
-//                // 你的逻辑代码，处理上一曲
-//                gj.sc("播放上一曲");
-//            }
-
             if (events.contains(Player.EVENT_PLAYBACK_STATE_CHANGED)) {
                 int playbackState = player.getPlaybackState();
 

@@ -16,7 +16,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -34,8 +33,6 @@ import com.muqingbfq.adapter.AdapterGdH;
 import com.muqingbfq.databinding.FragmentWdBinding;
 import com.muqingbfq.databinding.ViewButtonBinding;
 import com.muqingbfq.login.user_logs;
-import com.muqingbfq.main;
-import com.muqingbfq.mq.Action;
 import com.muqingbfq.mq.EditViewDialog;
 import com.muqingbfq.mq.FilePath;
 import com.muqingbfq.mq.wl;
@@ -43,9 +40,9 @@ import com.muqingbfq.mq.wl;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -75,6 +72,10 @@ public class wode extends Fragment<FragmentWdBinding> {
         jieshao = binding.text2;
         imageView = binding.imageView;
         binding.cardview.setOnClickListener(new dl());
+        binding.cardview.setOnLongClickListener(view -> {
+            gj.fz(view.getContext(), wl.Cookie);
+            return false;
+        });
 
         binding.recyclerview1.setNestedScrollingEnabled(false);
         binding.recyclerview1.setLayoutManager(new GridLayoutManager(getContext(), 4));
@@ -108,25 +109,9 @@ public class wode extends Fragment<FragmentWdBinding> {
                             break;
                         case "API":
                             DialogEditText dialogEditText = HomeSteer.getDialogEditText(requireContext(), () -> {
-
                             }, () -> {
-
                             });
                             dialogEditText.show();
-//                            EditViewDialog editViewDialog = new EditViewDialog(requireContext(), "更换接口API")
-//                                    .setMessage("当前接口：\n" + main.api);
-//                            editViewDialog.setPositive(view1 -> {
-//                                String str = editViewDialog.getEditText();
-//                                boolean http = str.startsWith("http");
-//                                if (str.isEmpty() || !http) {
-//                                    gj.ts(getContext(), "请输入正确的api");
-//                                } else {
-//                                    gj.ts(getContext(), "更换成功");
-//                                    main.api = str;
-//                                    FilePath.xrwb(FilePath.filesdri + "API.mq", main.api);
-//                                    editViewDialog.dismiss();
-//                                }
-//                            }).show();
                             break;
                         case "gd":
                             EditViewDialog editViewDialog1 = new EditViewDialog(requireContext(),
@@ -285,11 +270,12 @@ public class wode extends Fragment<FragmentWdBinding> {
             Gson gson = new Gson();
             TypeToken<List<XM>> typeToken = new TypeToken<List<XM>>() {
             };
-            AdapterGdH adapterGdH = new AdapterGdH();
-            adapterGdH.list = gson.fromJson(dqwb, typeToken.getType());
+            AdapterGdH adapterGdH = new AdapterGdH(requireContext());
+            adapterGdH.dataList.clear();
+            adapterGdH.dataList.addAll(Objects.requireNonNull(gson.fromJson(dqwb, typeToken.getType())));
             requireActivity().runOnUiThread(() -> {
                 binding.recyclerview2.setAdapter(adapterGdH);
-                binding.recyclerview2Text.setVisibility(adapterGdH.list.isEmpty() ? View.VISIBLE : View.GONE);
+                binding.recyclerview2Text.setVisibility(adapterGdH.dataList.isEmpty() ? View.VISIBLE : View.GONE);
             });
         } else {
             requireActivity().runOnUiThread(() -> binding.recyclerview2Text.setVisibility(View.VISIBLE));

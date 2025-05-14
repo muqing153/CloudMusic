@@ -24,7 +24,7 @@
             android:layout_width="26dp"
             android:layout_height="26dp"
             android:importantForAccessibility="no"
-            android:src="@drawable/zt"
+            android:src="@drawable/play"
             app:layout_constraintBottom_toTopOf="@+id/text1"
             app:layout_constraintEnd_toEndOf="parent" />
 

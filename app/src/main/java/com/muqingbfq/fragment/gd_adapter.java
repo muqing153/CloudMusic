@@ -38,7 +38,7 @@ public class gd_adapter extends Fragment<FragmentGdBinding> {
                       @Nullable Bundle savedInstanceState) {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         binding.recyclerview1.setLayoutManager(linearLayoutManager);
-        adapterGd = new AdapterGd();
+        adapterGd = new AdapterGd(requireContext());
         binding.recyclerview1.addItemDecoration(new RecyclerView.ItemDecoration() {
             @Override
             public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
@@ -55,7 +55,7 @@ public class gd_adapter extends Fragment<FragmentGdBinding> {
             @Override
             public void run() {
                 super.run();
-                resource.recommend(adapterGd.list);
+                resource.recommend(adapterGd.dataList);
                 main.handler.post(new sx());
             }
         }.start();

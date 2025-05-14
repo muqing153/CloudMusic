@@ -1,6 +1,7 @@
 package com.muqingbfq;
 
 import android.content.ComponentName;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -17,6 +18,8 @@ import androidx.media3.session.MediaController;
 import androidx.media3.session.SessionToken;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
+import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.elevation.SurfaceColors;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -64,7 +67,7 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
     @Override
     public void setOnApplyWindowInsetsListener(Insets systemBars, View v) {
 //            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-        v.setPadding(systemBars.left, 0, systemBars.right, 0);
+//        v.setPadding(systemBars.left, 0, systemBars.right, 0);
 //        binding.chb.setPadding(0, systemBars.top, 0, systemBars.bottom);
 //        binding.toolbar.set
     }
@@ -127,8 +130,6 @@ public class home extends AppCompatActivity<ActivityHomeBinding> {
 //            tablayout.setSelectedItemId(itemId);
             return true;
         });
-
-//        SearchUI();
     }
     @Override
     protected void onPause() {

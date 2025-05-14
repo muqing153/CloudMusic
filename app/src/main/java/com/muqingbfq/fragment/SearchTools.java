@@ -137,7 +137,7 @@ public class SearchTools {
                         } else {
                             binding.recyclerviewText.setVisibility(View.GONE);
                         }
-                        binding.recycleview.setAdapter(new AdapterGdH(list));
+                        binding.recycleview.setAdapter(new AdapterGdH(requireContext(), list));
                     });
                 }
             }.start();

@@ -28,8 +28,6 @@ import com.muqingbfq.XM;
 import com.muqingbfq.adapter.AdapterGdH;
 import com.muqingbfq.api.resource;
 import com.muqingbfq.databinding.ActivityGdBinding;
-import com.muqingbfq.databinding.ListGdBBinding;
-import com.muqingbfq.mq.VH;
 import com.muqingbfq.mq.wl;
 
 import org.json.JSONArray;
@@ -45,7 +43,7 @@ public class gd extends AppCompatActivity<ActivityGdBinding> {
         v.setPadding(systemBars.left, 0, systemBars.right, systemBars.bottom);
     }
 
-    public Adapter adapter = new Adapter();
+    public Adapter adapter;
     int k;
 
     public static void start(Activity context, String[] str, View view) {
@@ -75,6 +73,7 @@ public class gd extends AppCompatActivity<ActivityGdBinding> {
 //        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, k / 120);
         binding.lb.setLayoutManager(new LinearLayoutManager(this));
         binding.lb.setAdapter(adapter);
+        adapter = new Adapter(this);
 
         binding.edittext.addTextChangedListener(new TextWatcher() {
             @Override
@@ -114,7 +113,8 @@ public class gd extends AppCompatActivity<ActivityGdBinding> {
         public start(String id) {
             binding.recyclerview1Bar.setVisibility(View.VISIBLE);
             this.id = id;
-            adapter.list.clear();
+            adapter.dataList.clear();
+
             start();
         }
 
@@ -122,7 +122,7 @@ public class gd extends AppCompatActivity<ActivityGdBinding> {
         public void run() {
             super.run();
             if (id.equals("排行榜")) {
-                resource.leaderboard(adapter.list);
+                resource.leaderboard(adapter.dataList);
             } else {
                 String hq = wl.hq("/search", new String[][]{
                                 {"keywords", id},
@@ -130,17 +130,18 @@ public class gd extends AppCompatActivity<ActivityGdBinding> {
                                 {"type", "1000"}
                         }
                 );
-//                "keywords=" + id + "&limit=" + (k * 3) + "&type=1000"
                 try {
-                    JSONArray jsonArray = new JSONObject(hq).getJSONObject("result")
-                            .getJSONArray("playlists");
-                    int length = jsonArray.length();
-                    for (int i = 0; i < length; i++) {
-                        JSONObject jsonObject = jsonArray.getJSONObject(i);
-                        String id = jsonObject.getString("id");
-                        String name = jsonObject.getString("name");
-                        String coverImgUrl = jsonObject.getString("coverImgUrl");
-                        adapter.list.add(new XM(id, name, coverImgUrl));
+                    if (hq != null) {
+                        JSONArray jsonArray = new JSONObject(hq).getJSONObject("result")
+                                .getJSONArray("playlists");
+                        int length = jsonArray.length();
+                        for (int i = 0; i < length; i++) {
+                            JSONObject jsonObject = jsonArray.getJSONObject(i);
+                            String id = jsonObject.getString("id");
+                            String name = jsonObject.getString("name");
+                            String coverImgUrl = jsonObject.getString("coverImgUrl");
+                            adapter.dataList.add(new XM(id, name, coverImgUrl));
+                        }
                     }
                 } catch (Exception e) {
                     gj.sc(e);
@@ -149,7 +150,7 @@ public class gd extends AppCompatActivity<ActivityGdBinding> {
             runOnUiThread(() -> {
                 binding.lb.setAdapter(adapter);
                 binding.recyclerview1Bar.setVisibility(View.GONE);
-                if (adapter.list.isEmpty()) {
+                if (adapter.dataList.isEmpty()) {
                     binding.recyclerview1Text.setVisibility(View.VISIBLE);
                     binding.recyclerview1Text.setOnClickListener(v -> new start(id));
                 } else {
@@ -242,15 +243,11 @@ public class gd extends AppCompatActivity<ActivityGdBinding> {
 
 
     public class Adapter extends AdapterGdH implements Filterable {
-        private List<XM> list_ys;
+        private final List<XM> list_ys;
 
-        public Adapter() {
-            list_ys = list;
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull VH<ListGdBBinding> holder, int position) {
-            super.onBindViewHolder(holder, position);
+        public Adapter(Context context) {
+            super(context);
+            list_ys = dataList;
         }
 
         @Override
@@ -259,9 +256,10 @@ public class gd extends AppCompatActivity<ActivityGdBinding> {
                 @Override
                 protected FilterResults performFiltering(CharSequence charSequence) {
                     String charString = charSequence.toString();
+                    dataList.clear();
                     if (charString.isEmpty()) {
                         //没有过滤的内容，则使用源数据
-                        list = list_ys;
+                        dataList.addAll(list_ys);
                     } else {
                         List<XM> filteredList = new ArrayList<>();
                         for (int i = 0; i < list_ys.size(); i++) {
@@ -270,11 +268,10 @@ public class gd extends AppCompatActivity<ActivityGdBinding> {
                                 filteredList.add(list_ys.get(i));
                             }
                         }
-                        list = filteredList;
+                        dataList.addAll(filteredList);
                     }
-
                     FilterResults filterResults = new FilterResults();
-                    filterResults.values = list;
+                    filterResults.values = dataList;
                     return filterResults;
                 }
 
@@ -283,7 +280,8 @@ public class gd extends AppCompatActivity<ActivityGdBinding> {
                 @SuppressWarnings("unchecked")
                 @Override
                 protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-                    list = (List<XM>) filterResults.values;
+                    dataList.clear();
+                    dataList.addAll((List<XM>) filterResults.values);
                     binding.lb.setAdapter(adapter);
                 }
             };

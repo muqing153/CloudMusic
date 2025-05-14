@@ -21,8 +21,25 @@ public class url extends Thread {
         start();
     }
 
+    public static String songurlv1(String id) {
+        String hq = wl.hq(api, new String[][]{
+                {"id", id},
+                {"level", "exhigh"}
+        });
+        try {
+            if (hq != null) {
+                JSONObject json = new JSONObject(hq);
+                JSONArray data = json.getJSONArray("data");
+                JSONObject jsonObject = data.getJSONObject(0);
+                return jsonObject.getString("url");
+            }
+        } catch (JSONException e) {
+            gj.sc("url songurlv1:" + e);
+        }
+        return null;
+    }
+
     public static MP3 hq(MP3 x) {
-//        gj.sc(x.id);
         MP3 mp3 = new MP3();
         mp3.name = x.name;
         mp3.id = x.id;

@@ -50,7 +50,7 @@ public class activity_search extends AppCompatActivity<ActivitySearchBinding> {
         context.startActivity(new Intent(context, activity_search.class), options.toBundle());
     }
     public void setOnApplyWindowInsetsListener(Insets systemBars, View v) {
-        v.setPadding(systemBars.left, 0, systemBars.right, systemBars.bottom);
+//        v.setPadding(systemBars.left, 0, systemBars.right, systemBars.bottom);
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {

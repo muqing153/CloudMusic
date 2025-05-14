@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
@@ -27,7 +28,9 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.Player;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -77,7 +80,7 @@ public class mp3 extends AppCompatActivity<ActivityMp3Binding> {
 
     @Override
     public void setOnApplyWindowInsetsListener(Insets systemBars, View v) {
-        v.setPadding(systemBars.left, 0, systemBars.right, systemBars.bottom);
+//        v.setPadding(systemBars.left, 0, systemBars.right, systemBars.bottom);
 //            binding.toolbar.setPadding(0, systemBars.top, 0, 0);
         FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) binding.toolbar.getLayoutParams();
         params.setMargins(0, systemBars.top, 0, 0);  // 参数分别是 left, top, right, bottom
@@ -153,7 +156,6 @@ public class mp3 extends AppCompatActivity<ActivityMp3Binding> {
         });
 
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
-
             @Override
             public void handleOnBackPressed() {
                 if (binding.edittext.getVisibility() == View.VISIBLE) {
@@ -167,10 +169,7 @@ public class mp3 extends AppCompatActivity<ActivityMp3Binding> {
                 }
             }
         });
-        binding.fragmentDb.post(() -> {
-            int height = binding.fragmentDb.getHeight();
-            binding.lb.setPadding(0, 0, 0, height);
-        });
+        binding.fragmentDb.post(() -> binding.lb.setPadding(0, 0, 0, binding.fragmentDb.getHeight()));
         binding.playButton.setOnClickListener(v -> {
             v.setEnabled(false);
             if (PlaybackService.mediaSession == null || list.isEmpty()) {
@@ -179,12 +178,8 @@ public class mp3 extends AppCompatActivity<ActivityMp3Binding> {
             Player player = PlaybackService.mediaSession.getPlayer();
             player.clearMediaItems();
             List<MP3> aalist = new ArrayList<>(list);
-//            if (bfqkz.ms == 2) {
-//                Collections.shuffle(aalist);
-//            }
             for (int i = 0; i < aalist.size(); i++) {
                 MP3 mp3 = aalist.get(i);
-//                            mp3 = url.hq(mp3);
                 MediaItem mediaItem = PlaybackService.GetMp3(mp3);
                 player.addMediaItem(mediaItem);
             }
@@ -195,22 +190,19 @@ public class mp3 extends AppCompatActivity<ActivityMp3Binding> {
             PlaybackService.list.clear();
             PlaybackService.list.addAll(aalist);
             PlaybackService.ListSave();
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    while (true) {
-                        try {
-                            Thread.sleep(500);
-                            //检测音乐是否播放
-                            runOnUiThread(() -> {
-                                if (!player.isPlaying()) {
-                                    return;
-                                }
-                                v.setEnabled(true);
-                            });
-                        } catch (InterruptedException e) {
-                            throw new RuntimeException(e);
-                        }
+            new Thread(() -> {
+                while (true) {
+                    try {
+                        Thread.sleep(500);
+                        //检测音乐是否播放
+                        runOnUiThread(() -> {
+                            if (!player.isPlaying()) {
+                                return;
+                            }
+                            v.setEnabled(true);
+                        });
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
                     }
                 }
             }).start();

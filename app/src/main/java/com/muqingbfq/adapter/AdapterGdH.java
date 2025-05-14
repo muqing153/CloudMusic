@@ -1,5 +1,6 @@
 package com.muqingbfq.adapter;
 
+import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.view.LayoutInflater;
@@ -8,45 +9,36 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.palette.graphics.Palette;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
-import com.muqing.gj;
+import com.muqing.BaseAdapter;
 import com.muqingbfq.XM;
 import com.muqingbfq.databinding.ListGdBBinding;
 import com.muqingbfq.fragment.mp3;
-import com.muqingbfq.mq.VH;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class AdapterGdH extends RecyclerView.Adapter<VH<ListGdBBinding>> {
+public class AdapterGdH extends BaseAdapter<ListGdBBinding, XM> {
 
-    public List<XM> list = new ArrayList<>();
-
-    public AdapterGdH() {}
-    public AdapterGdH(List<XM> list) {
-        this.list = list;
+    public AdapterGdH(Context context, List<XM> dataList) {
+        super(context, dataList);
     }
 
-
-    @NonNull
-    @Override
-    public VH<ListGdBBinding> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new VH<>(ListGdBBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
+    public AdapterGdH(Context context) {
+        super(context);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull VH<ListGdBBinding> holder, int position) {
-        XM xm = list.get(position);
-        holder.binding.text1.setText(xm.name);
-        holder.binding.text2.setText(xm.message);
+    protected void onBindView(XM xm, ListGdBBinding viewBinding, ViewHolder<ListGdBBinding> viewHolder, int position) {
+
+        viewBinding.text1.setText(xm.name);
+        viewBinding.text2.setText(xm.message);
 //        gj.sc(xm.picurl);
-        Glide.with(holder.itemView.getContext())
+        Glide.with(context)
                 .asBitmap()
                 .load(xm.picurl)
                 .addListener(new RequestListener<Bitmap>() {
@@ -60,30 +52,34 @@ public class AdapterGdH extends RecyclerView.Adapter<VH<ListGdBBinding>> {
                                                    @NonNull Object model, Target<Bitmap> target,
                                                    @NonNull DataSource dataSource, boolean isFirstResource) {
                         Palette.from(resource).generate(palette -> {
-                            Palette.Swatch lightVibrantSwatch = palette.getVibrantSwatch();
+                            Palette.Swatch lightVibrantSwatch = null;
+                            if (palette != null) {
+                                lightVibrantSwatch = palette.getVibrantSwatch();
+                            }
                             if (lightVibrantSwatch != null) {
                                 int color = lightVibrantSwatch.getRgb();
-                                holder.binding.text1.setTextColor(color);
-                                holder.binding.getRoot().setRippleColor(ColorStateList.valueOf(color));
+                                viewBinding.text1.setTextColor(color);
+                                viewBinding.getRoot().setRippleColor(ColorStateList.valueOf(color));
                             }
                         });
-                        holder.binding.image.setImageBitmap(resource);
+                        viewBinding.image.setImageBitmap(resource);
                         return true;
                     }
                 })
-                .into(holder.binding.image);
-        holder.binding.getRoot().setOnClickListener(v -> {
-            mp3.drawable = holder.binding.image.getDrawable();
+                .into(viewBinding.image);
+
+        viewBinding.getRoot().setOnClickListener(v -> {
+            mp3.drawable = viewBinding.image.getDrawable();
             mp3.start(v.getContext(), new String[]{xm.id, xm.name});
         });
-        holder.binding.getRoot().setOnLongClickListener(v -> {
+        viewBinding.getRoot().setOnLongClickListener(v -> {
             AdapterGd.setOnLongClickListener(v.getContext(), xm);
             return false;
         });
     }
 
     @Override
-    public int getItemCount() {
-        return list.size();
+    protected ListGdBBinding getViewBindingObject(LayoutInflater inflater, ViewGroup parent, int viewType) {
+        return ListGdBBinding.inflate(inflater, parent, false);
     }
 }
